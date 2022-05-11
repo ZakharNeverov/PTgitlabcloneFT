@@ -35,7 +35,6 @@ std::map< std::string, std::vector< int > > teslenko::TextAnalyzer::analyze(cons
     throw std::logic_error("Can't open file");
   }
   dictionary_ = std::map< std::string, std::vector< int > >{ };
-  //std::map< std::string, std::vector< int > > dictionary_ = { };
   std::vector< int > vector;
   auto word_regex = std::regex{ "[a-zA-Z0-9]+" };
   auto line = std::string{ };
