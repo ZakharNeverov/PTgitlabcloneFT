@@ -106,7 +106,9 @@ namespace teslenko
   }
 }
 
-void teslenko::TextAnalyzer::uniteDictionaries(std::vector< std::map< std::string, std::vector< int > > >& arrayDictionaries, std::ostream& os)
+namespace tesl = teslenko;
+
+void tesl::TextAnalyzer::uniteDictionaries(std::vector< std::map< std::string, std::vector< int > > >& arrayDictionaries, std::ostream& os)
 {
   for (size_t i = 0; i < arrayDictionaries.size() - 1; i++)
   {
@@ -179,7 +181,7 @@ void teslenko::TextAnalyzer::uniteDictionaries(std::vector< std::map< std::strin
   printDictionary(arrayDictionaries[0], os);
 }
 
-void teslenko::TextAnalyzer::subtractionDictionaries(std::vector< std::map< std::string, std::vector< int > > >& arrayDictionaries, std::ostream& os)
+void tesl::TextAnalyzer::subtractionDictionaries(std::vector< std::map< std::string, std::vector< int > > >& arrayDictionaries, std::ostream& os)
 {
   std::vector< std::string > tempKeys;
   for (size_t i = 0; i < arrayDictionaries.size() - 1; i++)
@@ -214,7 +216,7 @@ void teslenko::TextAnalyzer::subtractionDictionaries(std::vector< std::map< std:
   printDictionary(arrayDictionaries[0], os);
 }
 
-void teslenko::TextAnalyzer::getIntersectionDictionaries(std::vector< std::map< std::string, std::vector< int > > >& arrayDictionaries, std::ostream& os)
+void tesl::TextAnalyzer::getIntersectionDictionaries(std::vector< std::map< std::string, std::vector< int > > >& arrayDictionaries, std::ostream& os)
 {
   std::vector< std::string > tempKeys;
   for (size_t i = 0; i < arrayDictionaries.size() - 1; i++)
@@ -249,7 +251,7 @@ void teslenko::TextAnalyzer::getIntersectionDictionaries(std::vector< std::map< 
   printDictionary(arrayDictionaries[0], os);
 }
 
-bool teslenko::TextAnalyzer::searchWord(std::map< std::string, std::vector< int > >& dictionary_, const std::string& word)
+bool tesl::TextAnalyzer::searchWord(std::map< std::string, std::vector< int > >& dictionary_, const std::string& word)
 {
   std::map< std::string, std::vector< int > >::const_iterator it = dictionary_.find(word);
   if (it == dictionary_.end())
