@@ -1,4 +1,4 @@
-#ifndef TEXT_ANALYZER_H
+ifndef TEXT_ANALYZER_H
 #define TEXT_ANALYZER_H
 
 #include <ios>
