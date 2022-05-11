@@ -25,7 +25,7 @@ namespace teslenko
     void printAnalysis(std::ostream& os, const std::string& filename);
     void uniteDictionaries(std::vector< std::map< std::string, std::vector< int > > >& arrayDict, std::ostream& os);
     void subtractionDictionaries(std::vector< std::map< std::string, std::vector< int > > >& arrayDict, std::ostream& os);
-    void getIntersectionDictionaries(std::vector< std::map< std::string, std::vector< int > > >& arrayDict, std::ostream& os);
+    void intersectDictionaries(std::vector< std::map< std::string, std::vector< int > > >& arrayDict, std::ostream& os);
     bool searchWord(std::map< std::string, std::vector< int > >& dictionary_, const std::string& word);
 
   private:

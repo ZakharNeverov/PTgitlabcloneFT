@@ -216,7 +216,7 @@ void tesl::TextAnalyzer::subtractionDictionaries(std::vector< std::map< std::str
   printDictionary(arrayDict[0], os);
 }
 
-void tesl::TextAnalyzer::getIntersectionDictionaries(std::vector< std::map< std::string, std::vector< int > > >& arrayDict, std::ostream& os)
+void tesl::TextAnalyzer::intersectDictionaries(std::vector< std::map< std::string, std::vector< int > > >& arrayDict, std::ostream& os)
 {
   std::vector< std::string > tempKeys;
   for (size_t i = 0; i < arrayDict.size() - 1; i++)

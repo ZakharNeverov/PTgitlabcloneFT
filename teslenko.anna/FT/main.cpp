@@ -115,7 +115,7 @@ int main()
         }
         if (ch == "4")
         {
-          textAnalyzer.getIntersectionDictionaries(arrayDictionaries, out);
+          textAnalyzer.intersectDictionaries(arrayDictionaries, out);
         }
       }
       out << "\n";
