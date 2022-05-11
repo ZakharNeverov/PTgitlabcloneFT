@@ -108,31 +108,31 @@ namespace teslenko
 
 namespace tesl = teslenko;
 
-void tesl::TextAnalyzer::uniteDictionaries(std::vector< std::map< std::string, std::vector< int > > >& arrayDictionaries, std::ostream& os)
+void tesl::TextAnalyzer::uniteDictionaries(std::vector< std::map< std::string, std::vector< int > > >& arrayDict, std::ostream& os)
 {
-  for (size_t i = 0; i < arrayDictionaries.size() - 1; i++)
+  for (size_t i = 0; i < arrayDict.size() - 1; i++)
   {
-    auto ot = arrayDictionaries[0].begin();
-    if (arrayDictionaries[0].size() == 0 && arrayDictionaries[i + 1].size() != 0)
+    auto ot = arrayDict[0].begin();
+    if (arrayDict[0].size() == 0 && arrayDict[i + 1].size() != 0)
     {
-      for (auto it = arrayDictionaries[i + 1].begin(); it != arrayDictionaries[i + 1].end(); ++it)
+      for (auto it = arrayDict[i + 1].begin(); it != arrayDict[i + 1].end(); ++it)
       {
-        arrayDictionaries[0].insert(std::make_pair((*it).first, (*it).second));
+        arrayDict[0].insert(std::make_pair((*it).first, (*it).second));
       }
     }
     else
     {
-      for (auto it = arrayDictionaries[i + 1].begin(); it != arrayDictionaries[i + 1].end(); ++it)
+      for (auto it = arrayDict[i + 1].begin(); it != arrayDict[i + 1].end(); ++it)
       {
-        while (ot != arrayDictionaries[0].end() && (*ot).first < (*it).first)
+        while (ot != arrayDict[0].end() && (*ot).first < (*it).first)
         {
           ot++;
         }
-        if (ot == arrayDictionaries[0].end())
+        if (ot == arrayDict[0].end())
         {
-          while (it != arrayDictionaries[i + 1].end())
+          while (it != arrayDict[i + 1].end())
           {
-            arrayDictionaries[0].insert(std::make_pair((*it).first, (*it).second));
+            arrayDict[0].insert(std::make_pair((*it).first, (*it).second));
             ++it;
           }
           break;
@@ -173,32 +173,32 @@ void tesl::TextAnalyzer::uniteDictionaries(std::vector< std::map< std::string, s
         }
         else
         {
-          arrayDictionaries[0].insert(std::make_pair((*it).first, (*it).second));
+          arrayDict[0].insert(std::make_pair((*it).first, (*it).second));
         }
       }
     }
   }
-  printDictionary(arrayDictionaries[0], os);
+  printDictionary(arrayDict[0], os);
 }
 
-void tesl::TextAnalyzer::subtractionDictionaries(std::vector< std::map< std::string, std::vector< int > > >& arrayDictionaries, std::ostream& os)
+void tesl::TextAnalyzer::subtractionDictionaries(std::vector< std::map< std::string, std::vector< int > > >& arrayDict, std::ostream& os)
 {
   std::vector< std::string > tempKeys;
-  for (size_t i = 0; i < arrayDictionaries.size() - 1; i++)
+  for (size_t i = 0; i < arrayDict.size() - 1; i++)
   {
-    auto ot = arrayDictionaries[0].begin();
-    if (arrayDictionaries[0].size() == 0 && arrayDictionaries[i + 1].size() != 0)
+    auto ot = arrayDict[0].begin();
+    if (arrayDict[0].size() == 0 && arrayDict[i + 1].size() != 0)
     {
-      printDictionary(arrayDictionaries[0], os);
+      printDictionary(arrayDict[0], os);
       return;
     }
-    for (auto it = arrayDictionaries[i + 1].begin(); it != arrayDictionaries[i + 1].end(); ++it)
+    for (auto it = arrayDict[i + 1].begin(); it != arrayDict[i + 1].end(); ++it)
     {
-      while (ot != arrayDictionaries[0].end() && (*ot).first < (*it).first)
+      while (ot != arrayDict[0].end() && (*ot).first < (*it).first)
       {
         ot++;
       }
-      if (ot == arrayDictionaries[0].end())
+      if (ot == arrayDict[0].end())
       {
         break;
       }
@@ -211,25 +211,25 @@ void tesl::TextAnalyzer::subtractionDictionaries(std::vector< std::map< std::str
   for (size_t i = 0; i < tempKeys.size(); i++ )
   {
     std::string key = tempKeys[i];
-    arrayDictionaries[0].erase(key);
+    arrayDict[0].erase(key);
   }
-  printDictionary(arrayDictionaries[0], os);
+  printDictionary(arrayDict[0], os);
 }
 
-void tesl::TextAnalyzer::getIntersectionDictionaries(std::vector< std::map< std::string, std::vector< int > > >& arrayDictionaries, std::ostream& os)
+void tesl::TextAnalyzer::getIntersectionDictionaries(std::vector< std::map< std::string, std::vector< int > > >& arrayDict, std::ostream& os)
 {
   std::vector< std::string > tempKeys;
-  for (size_t i = 0; i < arrayDictionaries.size() - 1; i++)
+  for (size_t i = 0; i < arrayDict.size() - 1; i++)
   {
-    auto ot = arrayDictionaries[0].begin();
-    for (auto it = arrayDictionaries[i + 1].begin(); it != arrayDictionaries[i + 1].end(); ++it)
+    auto ot = arrayDict[0].begin();
+    for (auto it = arrayDict[i + 1].begin(); it != arrayDict[i + 1].end(); ++it)
     {
-      while (ot != arrayDictionaries[0].end() && (*ot).first < (*it).first)
+      while (ot != arrayDict[0].end() && (*ot).first < (*it).first)
       {
         tempKeys.push_back((*ot).first);
         ot++;
       }
-      if (ot == arrayDictionaries[0].end())
+      if (ot == arrayDict[0].end())
       {
         break;
       }
@@ -246,9 +246,9 @@ void tesl::TextAnalyzer::getIntersectionDictionaries(std::vector< std::map< std:
   for (size_t i = 0; i < tempKeys.size(); i++)
   {
     std::string key = tempKeys[i];
-    arrayDictionaries[0].erase(key);
+    arrayDict[0].erase(key);
   }
-  printDictionary(arrayDictionaries[0], os);
+  printDictionary(arrayDict[0], os);
 }
 
 bool tesl::TextAnalyzer::searchWord(std::map< std::string, std::vector< int > >& dictionary_, const std::string& word)
