@@ -91,12 +91,20 @@ namespace dudnik
   }
   Dict uniteAll(const AllDicts& dicts)
   {
-    Args args;
-    for (auto&& elem: dicts)
+    if (dicts.size() < 2)
     {
-      args.push_back(elem.first);
+      throw std::invalid_argument(BAD_ARGS);
     }
-    return unite(args, dicts);
+    auto prev = dicts.begin()->second;
+    return std::accumulate(
+      ++std::begin(dicts),
+      std::end(dicts),
+      prev,
+      [&](Dict& curr, const std::pair< std::string, Dict >& next) -> Dict
+      {
+        return basicUnite(curr, next.second);
+      }
+    );
   }
   void replace(const std::string& name, int key, const std::string& newValue, AllDicts& dicts)
   {
@@ -132,30 +140,29 @@ namespace dudnik
   }
   bool equal(const Args& args, const AllDicts& dicts)
   {
-    if (args.empty())
+    if (args.size() < 2)
     {
       throw std::invalid_argument(BAD_ARGS);
     }
-    auto argsIt = args.begin();
-    while (argsIt != args.end())
+    auto sampleIt = dicts.find(args.front());
+    if (sampleIt == dicts.end())
     {
-      auto lhsIt = dicts.find(*argsIt);
-      ++argsIt;
-      if (argsIt == args.end())
-      {
-        break;
-      }
-      auto rhsIt = dicts.find(*argsIt);
-      if ((lhsIt == dicts.end()) || (rhsIt == dicts.end()))
-      {
-        throw std::invalid_argument(BAD_ARGS);
-      }
-      if (lhsIt->second != rhsIt->second)
-      {
-        return false;
-      }
+      throw std::invalid_argument(BAD_ARGS);
     }
-    return true;
+    auto diffElem = std::find_if_not(
+      std::begin(args),
+      std::end(args),
+      [&](const std::string& name) -> bool
+      {
+        auto dictIt = dicts.find(name);
+        if (dictIt == dicts.end())
+        {
+          throw std::invalid_argument(BAD_ARGS);
+        }
+        return (dictIt->second == sampleIt->second);
+      }
+    );
+    return (diffElem == dicts.end());
   }
   void insert(const std::string& name, int key, const std::string& value, AllDicts& dicts)
   {
