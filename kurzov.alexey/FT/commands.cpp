@@ -79,7 +79,7 @@ void kurzov::doUnion(const std::string& str, dicts_t& dicts)
   std::for_each(names_iter, names.end(),
    [&](const std::string& name)
    {
-     kurzov::unionDict(dicts[name], new_dict);
+     new_dict = kurzov::unionDicts(dicts[name], new_dict);
    });
 
   dicts[new_dict_name] = new_dict;

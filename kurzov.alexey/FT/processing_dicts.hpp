@@ -9,7 +9,6 @@ namespace kurzov
   ru_list_t concatRuLists(const ru_list_t&, const ru_list_t&);
 
   dict_t unionDicts(const dict_t&, const dict_t&);
-  void unionDict(const dict_t&, dict_t&);
 
   dict_t intersectDicts(const dict_t&, const dict_t&);
   ru_list_t intersectRuList(const ru_list_t&, const ru_list_t&);

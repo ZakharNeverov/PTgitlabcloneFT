@@ -27,7 +27,7 @@ kurzov::ru_list_t kurzov::splitStringToTranslation(std::string str)
   ru_list_t ru_list;
   while (!str.empty())
   {
-    ru_list.push_back(kurzov::getNextWord(str, ','));
+    ru_list.insert(kurzov::getNextWord(str, ','));
   }
   return ru_list;
 }

@@ -3,13 +3,13 @@
 
 #include <iosfwd>
 #include <string>
-#include <deque>
+#include <set>
 #include <map>
 
 namespace kurzov
 {
   using en_word_t = std::string;
-  using ru_list_t = std::deque< std::string >;
+  using ru_list_t = std::set< std::string >;
   using dict_t = std::map< en_word_t, ru_list_t >;
   using dicts_t = std::map< std::string, dict_t >;
 
