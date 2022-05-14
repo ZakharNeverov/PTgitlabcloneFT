@@ -87,7 +87,6 @@ void kurzov::doUnion(const std::string& str, dicts_t& dicts)
 
 void kurzov::doComplement(const std::string& str, dicts_t& dicts)
 {
-
   std::vector< std::string > names = getNamesFromString(str);
   if (names.size() != 3)
   {
@@ -112,11 +111,76 @@ void kurzov::doComplement(const std::string& str, dicts_t& dicts)
   dicts[new_dict_name] = new_dict;
 }
 
-void kurzov::doIntersect(const std::string&, dicts_t&)
-{}
+void kurzov::doIntersect(const std::string& str, dicts_t& dicts)
+{
+  std::vector< std::string > names = getNamesFromString(str);
+  if (names.size() < 3)
+  {
+    throw std::invalid_argument("Bad dicts number!");
+  }
+  auto names_iter = names.begin();
+  std::string new_dict_name = *names_iter;
+  names_iter = names.erase(names_iter);
+  if (!isValidDicts(names, dicts))
+  {
+    throw std::invalid_argument("Bad dict names!");
+  }
 
-void kurzov::doLoad(const std::string&, dicts_t&)
-{}
+  dicts_t::iterator first_dict_iter = dicts.find(*(names_iter++));
+  dicts_t::iterator second_dict_iter = dicts.find(*(names_iter++));
 
-void kurzov::doTranslate(const std::string&, dicts_t&, std::ostream&)
-{}
+  dict_t new_dict = kurzov::intersectDicts(first_dict_iter->second, second_dict_iter->second);
+  while (names_iter != names.end())
+  {
+    second_dict_iter = dicts.find(*(names_iter++));
+    new_dict = kurzov::intersectDicts(second_dict_iter->second, new_dict);
+  }
+
+  dicts[new_dict_name] = new_dict;
+}
+
+void kurzov::doLoad(const std::string& str, dicts_t& dicts)
+{
+  std::vector< std::string > names = getNamesFromString(str);
+  if (names.size() != 2)
+  {
+    throw std::invalid_argument("Bad number of args!");
+  }
+  std::string new_dict_name = names.at(0);
+  std::string new_dict_filename = names.at(1);
+
+  if (!isValidDict(new_dict_name, dicts) || !loadNewDict(new_dict_name, new_dict_filename, dicts))
+  {
+    throw std::logic_error("Bad dict!");
+  }
+}
+
+void kurzov::doTranslate(const std::string& str, dicts_t& dicts, std::ostream& out)
+{
+  std::vector< std::string > names = getNamesFromString(str);
+  if (names.size() != 2)
+  {
+    throw std::invalid_argument("Bad number of args!");
+  }
+
+  if (isValidDict(names.at(0), dicts))
+  {
+    const dict_t& dict = dicts[names.at(0)];
+    std::string english_word = names.at(1);
+
+    auto translation_iter = dict.find(english_word);
+    if (translation_iter == dict.end())
+    {
+      kurzov::outNone(out);
+    }
+    else
+    {
+      out << english_word << ' ';
+      kurzov::printRuList(translation_iter->second, out);
+    }
+  }
+  else
+  {
+    throw std::logic_error("Bad args!");
+  }
+}
