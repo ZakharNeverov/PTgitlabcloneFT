@@ -149,7 +149,7 @@ void kurzov::doLoad(const std::string& str, dicts_t& dicts)
   std::string new_dict_name = names.at(0);
   std::string new_dict_filename = names.at(1);
 
-  if (!isValidDict(new_dict_name, dicts) || !loadNewDict(new_dict_name, new_dict_filename, dicts))
+  if (!loadNewDict(new_dict_name, new_dict_filename, dicts))
   {
     throw std::logic_error("Bad dict!");
   }
