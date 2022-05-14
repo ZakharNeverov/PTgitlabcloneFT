@@ -76,11 +76,11 @@ void kurzov::doUnion(const std::string& str, dicts_t& dicts)
   dicts_t::iterator second_dict_iter = dicts.find(*(names_iter++));
 
   dict_t new_dict = kurzov::unionDicts(first_dict_iter->second, second_dict_iter->second);
-  while (names_iter != names.end())
-  {
-    second_dict_iter = dicts.find(*(names_iter++));
-    kurzov::unionDict(second_dict_iter->second, new_dict);
-  }
+  std::for_each(names_iter, names.end(),
+   [&](const std::string& name)
+   {
+     kurzov::unionDict(dicts[name], new_dict);
+   });
 
   dicts[new_dict_name] = new_dict;
 }
@@ -130,11 +130,11 @@ void kurzov::doIntersect(const std::string& str, dicts_t& dicts)
   dicts_t::iterator second_dict_iter = dicts.find(*(names_iter++));
 
   dict_t new_dict = kurzov::intersectDicts(first_dict_iter->second, second_dict_iter->second);
-  while (names_iter != names.end())
-  {
-    second_dict_iter = dicts.find(*(names_iter++));
-    new_dict = kurzov::intersectDicts(second_dict_iter->second, new_dict);
-  }
+  std::for_each(names_iter, names.end(),
+   [&](const std::string& name)
+   {
+     new_dict = kurzov::intersectDicts(dicts[name], new_dict);
+   });
 
   dicts[new_dict_name] = new_dict;
 }
