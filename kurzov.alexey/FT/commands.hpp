@@ -5,13 +5,12 @@
 
 namespace kurzov
 {
-  using istream_t = std::istream;
-  bool doPrint(istream_t&, dicts_t&, std::ostream&);
-  bool doUnion(istream_t&, dicts_t&);
-  bool doComplement(istream_t&, dicts_t&);
-  bool doIntersect(istream_t&, dicts_t&);
-  bool doLoad(istream_t&, dicts_t&);
-  bool doTranslate(istream_t&, dicts_t&, std::ostream&);
+  void doPrint(const std::string&, dicts_t&, std::ostream&);
+  void doUnion(const std::string&, dicts_t&);
+  void doComplement(const std::string&, dicts_t&);
+  void doIntersect(const std::string&, dicts_t&);
+  void doLoad(const std::string&, dicts_t&);
+  void doTranslate(const std::string&, dicts_t&, std::ostream&);
 }
 
 #endif

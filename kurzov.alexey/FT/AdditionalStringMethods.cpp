@@ -1,4 +1,5 @@
 #include "AdditionalStringMethods.hpp"
+#include <iostream>
 #include <string>
 
 std::string kurzov::getNextWord(std::string& str, char delimeter)

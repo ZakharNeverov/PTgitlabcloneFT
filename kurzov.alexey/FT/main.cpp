@@ -2,6 +2,7 @@
 #include <fstream>
 #include <functional>
 #include <limits>
+#include "io_structs.hpp"
 #include "io_dicts.hpp"
 #include "processing_dicts.hpp"
 #include "commands.hpp"
@@ -38,14 +39,14 @@ int main(int argc, char** argv)
   }
 
   using namespace std::placeholders;
-  using command_t = std::function< bool(kurzov::istream_t&) >;
+  using command_t = std::function< void(const std::string&) >;
   std::map< std::string, command_t > commands({
       {"print", std::bind(kurzov::doPrint, _1, std::ref(dicts), std::ref(std::cout))},
-      //  {"union", std::bind(kurzov::doUnion, _1, std::ref(dicts))},
-      //  {"comlement", std::bind(kurzov::doComplement, _1, std::ref(dicts))},
-      //  {"intersect", std::bind(kurzov::doIntersect, _1, std::ref(dicts))},
-      //  {"load", std::bind(kurzov::doLoad, _1, std::ref(dicts))},
-      //  {"translate", std::bind(kurzov::doTranslate, _1, std::ref(dicts), std::ref(std::cout))},
+      {"union", std::bind(kurzov::doUnion, _1, std::ref(dicts))},
+      {"complement", std::bind(kurzov::doComplement, _1, std::ref(dicts))},
+      {"intersect", std::bind(kurzov::doIntersect, _1, std::ref(dicts))},
+      {"load", std::bind(kurzov::doLoad, _1, std::ref(dicts))},
+      {"translate", std::bind(kurzov::doTranslate, _1, std::ref(dicts), std::ref(std::cout))},
   });
 
   while (!std::cin.eof())
@@ -56,18 +57,20 @@ int main(int argc, char** argv)
     if (!command_name.empty())
     {
       auto command_iter = commands.find(command_name);
-      if (command_iter != commands.end() && command_iter->second(std::cin))
+      std::string command = "";
+      std::getline(std::cin, command);
+      try
       {
-        std::cout << '\n';
-      }
-      else
-      {
-        std::cout << "<INVALID COMMAND>\n";
-        if ((std::cin.fail() && !std::cin.eof()) || command_iter == commands.end())
+        if (command_iter == commands.end())
         {
-          std::cin.clear();
-          std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
+          throw std::invalid_argument("Bad command name");
         }
+        command_iter->second(command);
+      }
+      catch (const std::exception& e)
+      {
+        std::cerr << e.what() << std::endl;
+        // std::cout << "<INVALID COMMAND>\n";
       }
     }
   }
