@@ -16,16 +16,6 @@ int main(int argc, char** argv)
 
   kurzov::dicts_t dicts;
 
-  kurzov::loadNewDict("dict_1", "dict_1.txt", dicts);
-  kurzov::printDict(dicts.at("dict_1"), std::cout);
-  std::cout << "==========\n";
-  kurzov::loadNewDict("dict_2", "dict_2.txt", dicts);
-  kurzov::printDict(dicts.at("dict_2"), std::cout);
-  std::cout << "==========\n";
-  kurzov::loadNewDict("dict_3", "dict_3.txt", dicts);
-  kurzov::printDict(dicts.at("dict_3"), std::cout);
-  std::cout << "==========\n";
-
   for (int i = 1; i < argc; ++i)
   {
     std::string newdict_filename = argv[i];
@@ -40,14 +30,15 @@ int main(int argc, char** argv)
 
   using namespace std::placeholders;
   using command_t = std::function< void(const std::string&) >;
-  std::map< std::string, command_t > commands({
-      {"print", std::bind(kurzov::doPrint, _1, std::ref(dicts), std::ref(std::cout))},
-      {"union", std::bind(kurzov::doUnion, _1, std::ref(dicts))},
-      {"complement", std::bind(kurzov::doComplement, _1, std::ref(dicts))},
-      {"intersect", std::bind(kurzov::doIntersect, _1, std::ref(dicts))},
-      {"load", std::bind(kurzov::doLoad, _1, std::ref(dicts))},
-      {"translate", std::bind(kurzov::doTranslate, _1, std::ref(dicts), std::ref(std::cout))},
-  });
+  std::map< std::string, command_t > commands(
+   {
+     {"print", std::bind(kurzov::doPrint, _1, std::ref(dicts), std::ref(std::cout))},
+     {"union", std::bind(kurzov::doUnion, _1, std::ref(dicts))},
+     {"complement", std::bind(kurzov::doComplement, _1, std::ref(dicts))},
+     {"intersect", std::bind(kurzov::doIntersect, _1, std::ref(dicts))},
+     {"load", std::bind(kurzov::doLoad, _1, std::ref(dicts))},
+     {"translate", std::bind(kurzov::doTranslate, _1, std::ref(dicts), std::ref(std::cout))},
+   });
 
   while (!std::cin.eof())
   {
@@ -67,10 +58,9 @@ int main(int argc, char** argv)
         }
         command_iter->second(command);
       }
-      catch (const std::exception& e)
+      catch (const std::exception&)
       {
-        std::cerr << e.what() << std::endl;
-        // std::cout << "<INVALID COMMAND>\n";
+        std::cout << "<INVALID COMMAND>\n";
       }
     }
   }
