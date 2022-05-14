@@ -13,8 +13,8 @@ namespace kurzov
   dict_t intersectDicts(const dict_t&, const dict_t&);
   ru_list_t intersectRuList(const ru_list_t&, const ru_list_t&);
 
-  dict_t comlementDicts(const dict_t&, const dict_t&);
-  ru_list_t comlementRuLists(const ru_list_t&, const ru_list_t&);
+  dict_t complementDicts(const dict_t&, const dict_t&);
+  ru_list_t complementRuLists(const ru_list_t&, const ru_list_t&);
 }
 
 #endif

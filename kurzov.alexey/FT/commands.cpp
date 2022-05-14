@@ -1,10 +1,9 @@
 #include "commands.hpp"
+#include <iostream>
 #include <stdexcept>
 #include <vector>
 #include <algorithm>
 #include <functional>
-#include "io_structs.hpp"
-#include "StreamGuard.hpp"
 #include "processing_dicts.hpp"
 #include "CommandsMessages.hpp"
 #include "AdditionalStringMethods.hpp"
@@ -106,7 +105,7 @@ void kurzov::doComplement(const std::string& str, dicts_t& dicts)
   dict_t first_dict = first_dict_iter->second;
   dict_t second_dict = second_dict_iter->second;
 
-  dict_t new_dict = kurzov::comlementDicts(first_dict, second_dict);
+  dict_t new_dict = kurzov::complementDicts(first_dict, second_dict);
 
   dicts[new_dict_name] = new_dict;
 }

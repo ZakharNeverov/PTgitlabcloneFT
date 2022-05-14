@@ -87,7 +87,7 @@ kurzov::ru_list_t kurzov::intersectRuList(const ru_list_t& first, const ru_list_
   return new_list;
 }
 
-kurzov::dict_t kurzov::comlementDicts(const dict_t& first, const dict_t& second)
+kurzov::dict_t kurzov::complementDicts(const dict_t& first, const dict_t& second)
 {
   dict_t new_dict = first;
   auto cmp_less = KeysCmp< dict_t::key_compare >{};
@@ -98,13 +98,13 @@ kurzov::dict_t kurzov::comlementDicts(const dict_t& first, const dict_t& second)
   std::for_each(inters.begin(), inters.end(),
    [&new_dict,&first,&second](const dict_t::value_type& pair)
    {
-     new_dict[pair.first] = comlementRuLists(first.at(pair.first), second.at(pair.first));
+     new_dict[pair.first] = complementRuLists(first.at(pair.first), second.at(pair.first));
    });
 
   return new_dict;
 }
 
-kurzov::ru_list_t kurzov::comlementRuLists(const ru_list_t& first, const ru_list_t& second)
+kurzov::ru_list_t kurzov::complementRuLists(const ru_list_t& first, const ru_list_t& second)
 {
   ru_list_t new_list;
   std::set_difference(first.begin(), first.end(), second.begin(), second.end(), std::inserter(new_list, new_list.begin()));
