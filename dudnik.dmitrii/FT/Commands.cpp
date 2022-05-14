@@ -162,7 +162,7 @@ namespace dudnik
         return (dictIt->second == sampleIt->second);
       }
     );
-    return (diffElem == dicts.end());
+    return (diffElem == args.end());
   }
   void insert(const std::string& name, int key, const std::string& value, AllDicts& dicts)
   {
