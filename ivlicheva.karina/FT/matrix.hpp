@@ -286,10 +286,10 @@ template< typename T >
 ivlicheva::Matrix< T > ivlicheva::operator*=(Matrix< T >& ob, int x)
 {
 	ob.traverse(
-   [x](T& value)
-   {
-     value *= x;
-   });
+    [x](T& value)
+    {
+      value *= x;
+    });
 	return ob;
 }
 

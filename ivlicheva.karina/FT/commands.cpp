@@ -178,7 +178,7 @@ bool ivlicheva::Commands::hconcat()
   Matrix< int > result = std::accumulate(std::next(matrices.begin()), matrices.end(), matrices.at(0),
    [&](const Matrix< int >& first, const Matrix< int >& second) -> Matrix< int >
    {
-     return dohconcat(first, second); 
+     return dohconcat(first, second);
    });
   insert(newMatrixName, result);
   return true;
@@ -203,7 +203,7 @@ bool ivlicheva::Commands::vconcat()
   Matrix< int > result = std::accumulate(std::next(matrices.begin()), matrices.end(), matrices.at(0),
    [&](const Matrix< int >& first, const Matrix< int >& second) -> Matrix< int >
    {
-     return dovconcat(first, second); 
+     return dovconcat(first, second);
    });
   insert(newMatrixName, result);
   return true;
