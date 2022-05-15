@@ -103,7 +103,6 @@ namespace
 
   void replace(bendryshev::CommandMaker::list& dest_list, value_t value, bendryshev::CommandMaker::list& arg_list)
   {
-
     while (std::find(dest_list.begin(), dest_list.end(), value) != dest_list.end())
     {
       auto it = std::find(dest_list.begin(), dest_list.end(), value);
