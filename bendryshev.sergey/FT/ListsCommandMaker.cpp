@@ -42,7 +42,6 @@ namespace
 {
   using cmd_it = bendryshev::CommandMaker::command_list_iterator;
   using pos = bendryshev::CommandMaker::pos;
-
   bool isEqualRange(const pos& pos1, const pos& pos2, const pos& pos3, const pos& pos4)
   {
     return (pos2.index_ - pos1.index_ == pos4.index_ - pos3.index_);
