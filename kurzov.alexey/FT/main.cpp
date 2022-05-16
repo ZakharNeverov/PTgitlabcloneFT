@@ -32,6 +32,7 @@ int main(int argc, char** argv)
      {"complement", std::bind(kurzov::doComplement, _1, std::ref(dicts))},
      {"intersect", std::bind(kurzov::doIntersect, _1, std::ref(dicts))},
      {"load", std::bind(kurzov::doLoad, _1, std::ref(dicts))},
+     {"save", std::bind(kurzov::doSave, _1, std::ref(dicts))},
      {"translate", std::bind(kurzov::doTranslate, _1, std::ref(dicts), std::ref(std::cout))},
    });
 

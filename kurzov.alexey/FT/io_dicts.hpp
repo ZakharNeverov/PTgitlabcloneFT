@@ -15,10 +15,11 @@ namespace kurzov
 
   dict_t readDictFromStream(std::istream&);
   ru_list_t splitStringToTranslation(std::string);
-  void printDict(const dict_t&, std::ostream&, const char* delimeter = ",", bool with_new_line = true);
-  void printRuList(const ru_list_t&, std::ostream&, const char* delimeter = ",", bool with_new_line = true);
+  void outDict(const dict_t&, std::ostream&, const char* delimeter = ",", bool with_new_line = true);
+  void outRuList(const ru_list_t&, std::ostream&, const char* delimeter = ",", bool with_new_line = true);
 
   bool loadNewDict(std::string, std::string, dicts_t&);
+  bool saveDict(std::string, std::string, dicts_t&);
 }
 
 #endif

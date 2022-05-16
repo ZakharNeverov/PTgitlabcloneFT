@@ -32,7 +32,7 @@ kurzov::ru_list_t kurzov::splitStringToTranslation(std::string str)
   return ru_list;
 }
 
-void kurzov::printDict(const dict_t& dict, std::ostream& out, const char* delimeter, bool with_new_line)
+void kurzov::outDict(const dict_t& dict, std::ostream& out, const char* delimeter, bool with_new_line)
 {
   bool is_first = true;
   for (auto&& en_ru: dict)
@@ -43,7 +43,7 @@ void kurzov::printDict(const dict_t& dict, std::ostream& out, const char* delime
     }
     is_first = false;
     out << en_ru.first << ' ';
-    printRuList(en_ru.second, out, delimeter, false);
+    outRuList(en_ru.second, out, delimeter, false);
   }
   if (with_new_line)
   {
@@ -51,7 +51,7 @@ void kurzov::printDict(const dict_t& dict, std::ostream& out, const char* delime
   }
 }
 
-void kurzov::printRuList(const ru_list_t& list, std::ostream& out, const char* delimeter, bool with_new_line)
+void kurzov::outRuList(const ru_list_t& list, std::ostream& out, const char* delimeter, bool with_new_line)
 {
   out << '[';
   bool is_first = true;
@@ -82,6 +82,23 @@ bool kurzov::loadNewDict(std::string dict_name, std::string filename, dicts_t& d
   dicts[dict_name] = kurzov::readDictFromStream(fin);
 
   fin.close();
+
+  return true;
+}
+
+bool kurzov::saveDict(std::string dict_name, std::string filename, dicts_t& dicts)
+{
+  auto dict_iter = dicts.find(dict_name);
+  if (dict_iter == dicts.end())
+  {
+    return false;
+  }
+
+  std::ofstream fout(filename);
+
+  kurzov::outDict(dict_iter->second, fout);
+
+  fout.close();
 
   return true;
 }

@@ -52,7 +52,7 @@ void kurzov::doPrint(const std::string& str, dicts_t& dicts, std::ostream& out)
   }
   else
   {
-    kurzov::printDict(dict_to_print, out);
+    kurzov::outDict(dict_to_print, out);
   }
 }
 
@@ -154,6 +154,22 @@ void kurzov::doLoad(const std::string& str, dicts_t& dicts)
   }
 }
 
+void kurzov::doSave(const std::string& str, dicts_t& dicts)
+{
+  std::vector< std::string > names = getNamesFromString(str);
+  if (names.size() != 2)
+  {
+    throw std::invalid_argument("Bad number of args!");
+  }
+  std::string dict_name = names.at(0);
+  std::string dict_filename = names.at(1);
+
+  if (!saveDict(dict_name, dict_filename, dicts))
+  {
+    throw std::logic_error("Bad dict!");
+  }
+}
+
 void kurzov::doTranslate(const std::string& str, dicts_t& dicts, std::ostream& out)
 {
   std::vector< std::string > names = getNamesFromString(str);
@@ -175,7 +191,7 @@ void kurzov::doTranslate(const std::string& str, dicts_t& dicts, std::ostream& o
     else
     {
       out << english_word << ' ';
-      kurzov::printRuList(translation_iter->second, out);
+      kurzov::outRuList(translation_iter->second, out);
     }
   }
   else
