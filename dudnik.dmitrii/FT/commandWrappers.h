@@ -14,6 +14,7 @@ namespace dudnik
   void insertWrapper(Args&, AllDicts&);
   void clearWrapper(Args&, AllDicts&);
   void addWrapper(Args&, AllDicts&);
+  void saveWrapper(Args&, AllDicts&);
 }
 
 #endif

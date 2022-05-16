@@ -36,7 +36,8 @@ int main(int argc, char** argv)
       {"equal", dudnik::equalWrapper},
       {"insert", dudnik::insertWrapper},
       {"clear", dudnik::clearWrapper},
-      {"add", dudnik::addWrapper}
+      {"add", dudnik::addWrapper},
+      {"save", dudnik::saveWrapper}
     };
     while (!std::cin.eof())
     {
@@ -45,17 +46,6 @@ int main(int argc, char** argv)
         auto words = dudnik::getWords(std::cin, '\n');
         if (words.empty())
         {
-          continue;
-        }
-        if ((words.front() == "save") && (words.size() == 1))
-        {
-          std::ofstream out(argv[1]);
-          if (!out)
-          {
-            throw std::invalid_argument("Unable to open the file");
-          }
-          dudnik::printAll(out, data);
-          out.close();
           continue;
         }
         auto commandIt = commands.find(words.front());

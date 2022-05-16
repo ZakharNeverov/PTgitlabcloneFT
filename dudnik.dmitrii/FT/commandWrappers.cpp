@@ -1,5 +1,6 @@
 #include "commandWrappers.h"
 #include <stdexcept>
+#include <fstream>
 #include <iostream>
 #include <iomanip>
 #include "iofmtguard.h"
@@ -150,6 +151,19 @@ namespace dudnik
     else
     {
       clear(words, dicts);
+    }
+  }
+  void saveWrapper(Args& words, AllDicts& dicts)
+  {
+    if (words.empty())
+    {
+      throw std::invalid_argument(NOT_ENOUGH_ARGS);
+    }
+    for(auto&& word: words)
+    {
+      std::ofstream out(word);
+      printAll(out, dicts);
+      out.close();
     }
   }
 }
