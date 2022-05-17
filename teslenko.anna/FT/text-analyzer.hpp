@@ -8,6 +8,7 @@
 
 namespace teslenko
 {
+  using map = std::map< std::string, std::vector< int > >;
   class TextAnalyzer
   {
   public:
@@ -18,15 +19,15 @@ namespace teslenko
     TextAnalyzer& operator=(const TextAnalyzer& other) = delete;
     TextAnalyzer& operator=(TextAnalyzer&& other) noexcept;
 
-    const std::map< std::string, std::vector< int > >& getDictionary() const;
-    void printDictionary(std::map< std::string, std::vector< int > >& dictionary_, std::ostream& os);
+    const map& getDictionary() const;
+    void printDictionary(map& dictionary_, std::ostream& os);
 
-    std::map< std::string, std::vector< int > > analyze(const std::string& filename);
+    map analyze(const std::string& filename);
     void printAnalysis(std::ostream& os, const std::string& filename);
-    void uniteDictionaries(std::vector< std::map< std::string, std::vector< int > > >& arrayDict, std::ostream& os);
-    void subtractionDictionaries(std::vector< std::map< std::string, std::vector< int > > >& arrayDict, std::ostream& os);
-    void intersectDictionaries(std::vector< std::map< std::string, std::vector< int > > >& arrayDict, std::ostream& os);
-    bool searchWord(std::map< std::string, std::vector< int > >& dictionary_, const std::string& word);
+    void uniteDictionaries(std::vector< map >& arrayDict, std::ostream& os);
+    void subtractionDictionaries(std::vector< map >& arrayDict, std::ostream& os);
+    void intersectDictionaries(std::vector< map >& arrayDict, std::ostream& os);
+    bool searchWord(map& dictionary_, const std::string& word);
 
   private:
     std::map< std::string, std::vector< int > > dictionary_;

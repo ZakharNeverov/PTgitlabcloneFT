@@ -60,14 +60,14 @@ int main()
     {
       std::getline(in, line);
       std::string ch = teslenko::getTheLineElem(line);
-      if (in && (ch != "1") && (ch != "2") && (ch != "3") && (ch != "4") && (ch != "5"))
+      if (in && (ch != "ANALYZE") && (ch != "UNITE") && (ch != "SUBTRACT") && (ch != "INTERSECT") && (ch != "SEARCH"))
       {
         throw std::logic_error("Command not found\n");
       }
-      if (ch == "1" || ch == "5")
+      if (ch == "ANALYZE" || ch == "SEARCH")
       {
         std::string fileDictianoryForAnalysis = teslenko::getTheLineElem(line);
-        if (ch == "1")
+        if (ch == "ANALYZE")
         {
           std::string way = teslenko::getTheLineElem(line);
           teslenko::analyzeText(fileDictianoryForAnalysis, out, way);
@@ -88,7 +88,7 @@ int main()
           }
         }
       }
-      else if (ch == "2" || ch == "3" || ch == "4")
+      else if (ch == "UNITE" || ch == "SUBTRACT" || ch == "INTERSECT")
       {
         teslenko::TextAnalyzer textAnalyzer{ };
         std::vector< std::map< std::string, std::vector< int > > > arrayDictionaries;
@@ -105,15 +105,15 @@ int main()
           dictionary_ = textAnalyzer.analyze(fileWithDictionary);
           arrayDictionaries.push_back(dictionary_);
         }
-        if (ch == "2")
+        if (ch == "UNITE")
         {
           textAnalyzer.uniteDictionaries(arrayDictionaries, out);
         }
-        if (ch == "3")
+        if (ch == "SUBTRACT")
         {
           textAnalyzer.subtractionDictionaries(arrayDictionaries, out);
         }
-        if (ch == "4")
+        if (ch == "INTERSECT")
         {
           textAnalyzer.intersectDictionaries(arrayDictionaries, out);
         }

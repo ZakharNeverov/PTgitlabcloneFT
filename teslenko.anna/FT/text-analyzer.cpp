@@ -8,6 +8,8 @@
 #include <functional>
 #include <vector>
 
+using map = std::map< std::string, std::vector< int > >;
+
 teslenko::TextAnalyzer::TextAnalyzer():
   dictionary_{ }
 { }
@@ -22,12 +24,12 @@ teslenko::TextAnalyzer& teslenko::TextAnalyzer::operator=(TextAnalyzer&& other) 
   return *this;
 }
 
-const std::map< std::string, std::vector< int > >& teslenko::TextAnalyzer::getDictionary() const
+const map& teslenko::TextAnalyzer::getDictionary() const
 {
   return dictionary_;
 }
 
-std::map< std::string, std::vector< int > > teslenko::TextAnalyzer::analyze(const std::string& filename)
+map teslenko::TextAnalyzer::analyze(const std::string& filename)
 {
   auto is = std::ifstream{ filename };
   if (!is)
@@ -75,7 +77,7 @@ void teslenko::TextAnalyzer::printAnalysis(std::ostream& os, const std::string& 
   printDictionary(dictionary_, os);
 }
 
-void teslenko::TextAnalyzer::printDictionary(std::map< std::string, std::vector< int > >& dictionary_, std::ostream& os)
+void teslenko::TextAnalyzer::printDictionary(map& dictionary_, std::ostream& os)
 {
   auto word = std::string{ "Word" };
   auto colwidth = word.length();
@@ -108,7 +110,7 @@ namespace teslenko
 
 namespace tesl = teslenko;
 
-void tesl::TextAnalyzer::uniteDictionaries(std::vector< std::map< std::string, std::vector< int > > >& arrayDict, std::ostream& os)
+void tesl::TextAnalyzer::uniteDictionaries(std::vector< map >& arrayDict, std::ostream& os)
 {
   for (size_t i = 0; i < arrayDict.size() - 1; i++)
   {
@@ -181,7 +183,7 @@ void tesl::TextAnalyzer::uniteDictionaries(std::vector< std::map< std::string, s
   printDictionary(arrayDict[0], os);
 }
 
-void tesl::TextAnalyzer::subtractionDictionaries(std::vector< std::map< std::string, std::vector< int > > >& arrayDict, std::ostream& os)
+void tesl::TextAnalyzer::subtractionDictionaries(std::vector< map >& arrayDict, std::ostream& os)
 {
   std::vector< std::string > tempKeys;
   for (size_t i = 0; i < arrayDict.size() - 1; i++)
@@ -216,7 +218,7 @@ void tesl::TextAnalyzer::subtractionDictionaries(std::vector< std::map< std::str
   printDictionary(arrayDict[0], os);
 }
 
-void tesl::TextAnalyzer::intersectDictionaries(std::vector< std::map< std::string, std::vector< int > > >& arrayDict, std::ostream& os)
+void tesl::TextAnalyzer::intersectDictionaries(std::vector< map >& arrayDict, std::ostream& os)
 {
   std::vector< std::string > tempKeys;
   for (size_t i = 0; i < arrayDict.size() - 1; i++)
@@ -251,7 +253,7 @@ void tesl::TextAnalyzer::intersectDictionaries(std::vector< std::map< std::strin
   printDictionary(arrayDict[0], os);
 }
 
-bool tesl::TextAnalyzer::searchWord(std::map< std::string, std::vector< int > >& dictionary_, const std::string& word)
+bool tesl::TextAnalyzer::searchWord(map& dictionary_, const std::string& word)
 {
   std::map< std::string, std::vector< int > >::const_iterator it = dictionary_.find(word);
   if (it == dictionary_.end())
