@@ -85,13 +85,15 @@ int main()
         rakitin::printAllDatanames(data, std::cout);
         std::cout << "\n";
       }
+      else if (command == "EXIT") {
+        return 0;
+      }
       else {
         std::cout << "Unknown command\n";
       }
     }
     catch (const std::exception& e) {
       std::cout << e.what() << "\n";
-      return 1;
     }
   }
   return 0;
