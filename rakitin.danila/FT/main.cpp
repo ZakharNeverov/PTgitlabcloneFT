@@ -9,9 +9,10 @@
 
 int main()
 {
-  rakitin::dictionaries data;
+  rakitin::dictionaries data();
   rakitin::iofmtguard guard(std::cout);
   std::cout << std::fixed << std::setprecision(1);
+
   while (!std::cin.eof()) {
     try {
       std::cout << "Write command:\n";
