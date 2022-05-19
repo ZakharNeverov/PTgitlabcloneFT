@@ -52,9 +52,9 @@ namespace ivlicheva
   template< typename T >
   Matrix< T > operator*=(Matrix< T >&, int);
   template< typename T >
-	Matrix< T > operator*(const Matrix< T >&, int);
+  Matrix< T > operator*(const Matrix< T >&, int);
   template< typename T >
-	Matrix< T > operator*(int, const Matrix< T >&);
+  Matrix< T > operator*(int, const Matrix< T >&);
   template< typename T >
   std::istream& operator>>(std::istream&, Matrix< T >&);
   template< typename T >
@@ -285,11 +285,12 @@ F ivlicheva::Matrix< T >::traverse(F f) const
 template< typename T >
 ivlicheva::Matrix< T > ivlicheva::operator*=(Matrix< T >& ob, int x)
 {
-	ob.traverse([x](T& value)
-  {
-    value *= x;
-  });
-	return ob;
+  ob.traverse(
+   [x](T& value)
+   {
+     value *= x;
+   });
+  return ob;
 }
 
 template< typename T >
@@ -297,7 +298,7 @@ ivlicheva::Matrix< T > ivlicheva::operator*(const Matrix< T >& ob, int x)
 {
   Matrix< T > tmp(ob);
   tmp *= x;
-	return tmp;
+  return tmp;
 }
 
 template< typename T >
@@ -314,11 +315,11 @@ std::istream& ivlicheva::operator>>(std::istream& in, Matrix< T >& ob)
   {
     return in;
   }
-	size_t rows = 0, columns = 0;
-	in >> rows;
-	in >> columns;
+  size_t rows = 0, columns = 0;
+  in >> rows;
+  in >> columns;
   std::vector< T > vector(rows * columns);
-	for (size_t i = 0; i < rows * columns; ++i)
+  for (size_t i = 0; i < rows * columns; ++i)
   {
     in >> vector[i];
   }
@@ -326,7 +327,7 @@ std::istream& ivlicheva::operator>>(std::istream& in, Matrix< T >& ob)
   {
     ob = Matrix< T >(rows, columns, vector);
   }
-	return in;
+  return in;
 }
 
 template< typename T >
@@ -340,7 +341,7 @@ std::ostream& ivlicheva::operator<<(std::ostream& out, Matrix< T >& ob)
     }
     out << '\n';
   }
-	return out;
+  return out;
 }
 
 #endif
