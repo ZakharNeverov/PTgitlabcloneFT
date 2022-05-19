@@ -8,8 +8,7 @@
 
 #include "dictionary_usings.h"
 
-namespace rakitin
-{
+namespace rakitin {
 
   void add(dictionaries& data, const std::string& dataname, const std::string& path);
   ref_finder findWord(const dictionaries& data, const std::string& dataname, const std::string& word);

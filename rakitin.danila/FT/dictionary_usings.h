@@ -6,8 +6,7 @@
 #include <string>
 #include <vector>
 
-namespace rakitin
-{
+namespace rakitin {
   using word_refs = std::pair< std::string, std::set< int > >;
   using dictionary = std::vector< word_refs >;
   using dictionaries = std::map< std::string, dictionary >;

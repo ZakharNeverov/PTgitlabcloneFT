@@ -2,5 +2,5 @@
 
 bool rakitin::operator<(const word_refs& ref1, const word_refs& ref2)
 {
-	return ref1.first < ref2.first;
+  return ref1.first < ref2.first;
 }

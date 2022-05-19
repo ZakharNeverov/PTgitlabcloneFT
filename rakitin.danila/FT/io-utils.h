@@ -6,7 +6,7 @@
 #include "dictionary_usings.h"
 
 namespace rakitin {
-	dictionary getDictionary(const std::string& path);
+  dictionary getDictionary(const std::string& path);
 }
 
 #endif
