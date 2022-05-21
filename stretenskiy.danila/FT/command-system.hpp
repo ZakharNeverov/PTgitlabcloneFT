@@ -23,7 +23,6 @@ namespace stretenskiy
     void unionDict(std::ostream &, vecDict &, const nameDict &, std::istream &);
     void intersectDict(std::ostream &, vecDict &, const nameDict &, std::istream &);
     void print(std::ostream &, const vecDict &, const nameDict &, std::istream &);
-
   }
 }
 

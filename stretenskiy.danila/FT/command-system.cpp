@@ -24,7 +24,6 @@ namespace stretenskiy
     vecName.push_back(nameD);
     myDict dict;
     vecDict.push_back(dict);
-    out << "Словарь с именем " << nameD << " создан\n";
   }
 
   void function::add(std::ostream &out, vecDict &vecDict, const nameDict &vecName, std::istream &in)
@@ -41,7 +40,7 @@ namespace stretenskiy
       }
       return ;
     }
-    out << "Enter word, please\n";
+    throw std::invalid_argument("Enter the name of the dictionary\n");
   }
 
   void function::removeWord(std::ostream &out, vecDict &vecDict, const nameDict &vecName, std::istream &in)
@@ -58,26 +57,16 @@ namespace stretenskiy
         {
           do
           {
-            if (vecDict[index][word].find(transl) == vecDict[index][word].end())
-            {
-              out << "Translate " << transl << " hasn't for word\n";
-              continue;
-            }
             vecDict[index][word].erase(transl);
           }
           while (checkContinueInputWord(in) && in >> transl);
           return;
         }
       }
-      if (vecDict[index].find(word) == vecDict[index].end())
-      {
-        out << "Word " << word << " hasn't dictionary\n";
-        return;
-      }
       vecDict[index].erase(word);
       return;
     }
-    out << "Enter word, please\n";
+    throw std::invalid_argument("Enter the name of the dictionary\n");
   }
 
   void function::search(std::ostream &out, const vecDict &vecDict, const nameDict &vecName, std::istream &in)
@@ -100,24 +89,13 @@ namespace stretenskiy
         }
         return;
       }
-      auto iter = vecDict[index].find(word);
-      if (iter == vecDict[index].end())
-      {
-        out << "Word " << word << " don't find\n";
-      }
-      else
-      {
-        out << "Word " << word << " success find and this his translate:\n";
-        for (const auto &set_it : iter->second)
-        {
-          out << " - " << set_it << '\n';
-        }
-      }
+      vecDict[index].at(word);
+      out << "Word " << word << " success find and this his translate:";
+      printSet(out, vecDict[index].at(word));
       return;
     }
-    out << "Enter word, please\n";
+    throw std::invalid_argument("Enter the name of the dictionary\n");
   }
-
 
   void function::clearDict(std::ostream &out, vecDict &vecDict, const nameDict &vecName, std::istream &in)
   {
@@ -194,14 +172,12 @@ namespace stretenskiy
       size_t index = findNameDict(in, vecName);
       auto hashT = vecDict[index];
       int count = 1;
-      out << "Словарь с названием: " << vecName[index] << '\n';
+      out << "Словарь: " << vecName[index] << '\n';
       for (auto map_it = hashT.begin(); map_it != hashT.end(); ++map_it, ++count)
       {
-        std::cout << "---------------------\n";
-        std::cout << count << ". " << map_it->first;
-        std::cout << "\nTranslate:\n";
+        std::cout << map_it->first << ":";
         printSet(out, map_it->second);
-        std::cout << "---------------------\n";
+        std::cout << '\n';
       }
     }
   }
@@ -238,7 +214,7 @@ namespace
   {
     for (const auto &i : set)
     {
-      std::cout << " - " << i << '\n';
+      std::cout << ' ' << i;
     }
   }
 }

@@ -37,9 +37,9 @@ int main()
       }
       catch (const std::exception &e)
       {
+        std::cout << "Not find element\n";
         std::cin.clear();
         std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
-        std::cout << "Not find element\n";
       }
     }
   }
