@@ -12,7 +12,7 @@ namespace krylyanok
     name_(dictName),
     wordCounter_(wordCounter)
   {
-    data_ = new std::forward_list<HashStruct>[length_];
+    data_ = new std::forward_list< HashStruct >[length_];
   }
 
   Dictionary::~Dictionary()
@@ -244,7 +244,7 @@ namespace krylyanok
   {
     size_t temphash;
     int length = left.makePrime(left.length_ + right.length_);
-    std::forward_list<Dictionary::HashStruct>* temparr = new std::forward_list<Dictionary::HashStruct>[length];
+    std::forward_list< Dictionary::HashStruct >* temparr = new std::forward_list< Dictionary::HashStruct >[length];
     for (int i = 0; i < left.length_; ++i)
     {
       if (!left.data_[i].empty())

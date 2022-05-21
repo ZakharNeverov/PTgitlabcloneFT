@@ -14,7 +14,7 @@ void krylyanok::Commands::getLoad()
     streamClean();
     return;
   }
-  std::vector<std::string> words;
+  std::vector< std::string > words;
   if (!makeDict(nameFile, words))
   {
     streamClean();

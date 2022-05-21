@@ -47,7 +47,7 @@ namespace krylyanok
         word_("initialization")
       {}
     };
-    std::forward_list<HashStruct>* data_;
+    std::forward_list< HashStruct >* data_;
     int length_;
     std::string name_;
     size_t wordCounter_;

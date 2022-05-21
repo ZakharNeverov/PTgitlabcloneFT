@@ -32,7 +32,7 @@ int main(int argc, char** argv)
     std::string nameDict = "";
     std::string nameFile = "";
     file >> nameDict >> nameFile;
-    std::vector<std::string> words;
+    std::vector< std::string > words;
     if (!krylyanok::makeDict(nameFile, words))
     {
       file.clear();

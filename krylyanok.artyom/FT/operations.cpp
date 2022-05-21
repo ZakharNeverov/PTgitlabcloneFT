@@ -2,7 +2,7 @@
 #include <iostream>
 #include "hash-dictionary.hpp"
 
-bool krylyanok::makeDict(std::string& nameFile, std::vector<std::string>& temp)
+bool krylyanok::makeDict(std::string& nameFile, std::vector< std::string >& temp)
 {
   std::ifstream file(nameFile);
   if (!file.is_open())
@@ -20,7 +20,7 @@ bool krylyanok::makeDict(std::string& nameFile, std::vector<std::string>& temp)
   return 1;
 }
 
-void krylyanok::correctVector(std::vector<std::string>& vec)
+void krylyanok::correctVector(std::vector< std::string >& vec)
 {
   for (int i = 0; i < vec.size(); i++)
   {
