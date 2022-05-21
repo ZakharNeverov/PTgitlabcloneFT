@@ -1,7 +1,7 @@
 #ifndef COMMAND_SYSTEM_HPP
 #define COMMAND_SYSTEM_HPP
 
-#include <iostream>
+#include <ios>
 #include <unordered_map>
 #include <string>
 #include <set>

@@ -1,14 +1,13 @@
 #include "command-system.hpp"
 
+#include <iostream>
 #include <algorithm>
 #include "ioKeys.hpp"
 
 namespace
 {
   size_t getIndexDict(const stretenskiy::function::nameDict &, const std::string &);
-  bool checkContinueInputWord(std::istream &);
   size_t findNameDict(std::istream &, const stretenskiy::function::nameDict &);
-  void printSet(std::ostream &, const std::set< std::string > &);
 }
 
 namespace stretenskiy
@@ -38,7 +37,7 @@ namespace stretenskiy
       {
         vecDict[index][word].insert(transl);
       }
-      return ;
+      return;
     }
     throw std::invalid_argument("Enter the name of the dictionary\n");
   }
@@ -91,7 +90,10 @@ namespace stretenskiy
       }
       vecDict[index].at(word);
       out << "Word " << word << " success find and this his translate:";
-      printSet(out, vecDict[index].at(word));
+      for (const auto &i : vecDict[index].at(word))
+      {
+        std::cout << ' ' << i;
+      }
       return;
     }
     throw std::invalid_argument("Enter the name of the dictionary\n");
@@ -170,15 +172,8 @@ namespace stretenskiy
     while (checkContinueInputWord(in))
     {
       size_t index = findNameDict(in, vecName);
-      auto hashT = vecDict[index];
-      int count = 1;
-      out << "Словарь: " << vecName[index] << '\n';
-      for (auto map_it = hashT.begin(); map_it != hashT.end(); ++map_it, ++count)
-      {
-        std::cout << map_it->first << ":";
-        printSet(out, map_it->second);
-        std::cout << '\n';
-      }
+      out << "Dictionary " << vecName[index] << '\n';
+      out << vecDict[index];
     }
   }
 }
@@ -195,26 +190,11 @@ namespace
     return iter - vecName.begin();
   }
 
-  bool checkContinueInputWord(std::istream &in)
-  {
-    stretenskiy::IoFmtGuard fmtGuard(in);
-    in >> std::noskipws >> stretenskiy::DelimeterIO{' '};
-    return static_cast< bool >(in);
-  }
-
   size_t findNameDict(std::istream &in, const stretenskiy::function::nameDict &vecName)
   {
     std::string nameD;
     in >> nameD;
     size_t index = getIndexDict(vecName, nameD);
     return index;
-  }
-
-  void printSet(std::ostream &out, const std::set< std::string > &set)
-  {
-    for (const auto &i : set)
-    {
-      std::cout << ' ' << i;
-    }
   }
 }

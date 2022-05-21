@@ -1,6 +1,9 @@
 #ifndef IOKEYS_HPP
 #define IOKEYS_HPP
+
 #include <ios>
+#include <set>
+#include "command-system.hpp"
 
 namespace stretenskiy
 {
@@ -21,7 +24,10 @@ namespace stretenskiy
     char exp;
   };
 
+  bool checkContinueInputWord(std::istream &);
   std::istream &operator>>(std::istream &, DelimeterIO &&);
+  std::ostream &operator<<(std::ostream &, const function::myDict &);
+  void readingDict(std::istream &, function::vecDict &, function::nameDict &);
 }
 
 #endif

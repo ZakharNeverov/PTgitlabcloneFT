@@ -1,14 +1,29 @@
 #include <iostream>
+#include <fstream>
 #include <map>
 #include <functional>
 #include "command-system.hpp"
+#include "ioKeys.hpp"
 
-int main()
+int main(int argc, char* argv[])
 {
+  if (argc <= 1)
+  {
+    std::cerr << "Oh my God, I don't see the file\n";
+    return 1;
+  }
+  std::ifstream in(argv[1]);
+  if (!in.is_open())
+  {
+    std::cerr << "I can't open the file, I have paws\n";
+    return 1;
+  }
+  using namespace stretenskiy;
   using namespace stretenskiy::function;
 
-  std::vector< std::string > name;
-  std::vector< myDict > hashT;
+  nameDict name;
+  vecDict hashT;
+  readingDict(in, hashT, name);
 
   using namespace std::placeholders;
   std::map< std::string, std::function< void(std::ostream &) > > commands(
@@ -37,11 +52,19 @@ int main()
       }
       catch (const std::exception &e)
       {
-        std::cout << "Not find element\n";
+        std::cout << e.what() << '\n';
         std::cin.clear();
         std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
       }
     }
   }
+
+  std::ofstream out(argv[1], std::ios::trunc);
+  for (size_t i = 0; i < hashT.size(); ++i)
+  {
+    out << "Dictionary " << name[i] << '\n';
+    out << hashT[i];
+  }
+  out.close();
   return 0;
 }

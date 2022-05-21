@@ -1,4 +1,5 @@
 #include "ioKeys.hpp"
+
 #include <iostream>
 
 namespace stretenskiy
@@ -17,19 +18,67 @@ namespace stretenskiy
     s_.flags(fmt_);
   }
 
-  std::istream &operator>>(std::istream &stream, DelimeterIO &&dest)
+  bool checkContinueInputWord(std::istream &in)
   {
-    std::istream::sentry sentry(stream);
+    stretenskiy::IoFmtGuard fmtGuard(in);
+    in >> std::noskipws >> stretenskiy::DelimeterIO{' '};
+    return static_cast< bool >(in);
+  }
+
+  std::istream &operator>>(std::istream &in, DelimeterIO &&dest)
+  {
+    std::istream::sentry sentry(in);
     if (!sentry)
     {
-      return stream;
+      return in;
     }
     char c = '0';
-    stream >> c;
-    if (stream && (c != dest.exp))
+    in >> c;
+    if (in && (c != dest.exp))
     {
-      stream.setstate(std::ios::failbit);
+      in.setstate(std::ios::failbit);
     }
-    return stream;
+    return in;
+  }
+
+  std::ostream &operator<<(std::ostream &out, const function::myDict &dict)
+  {
+    for (auto map_it = dict.begin(); map_it != dict.end(); ++map_it)
+    {
+      out << map_it->first << ":";
+      for (const auto &i : map_it->second)
+      {
+        out << ' ' << i;
+      }
+      out << '\n';
+    }
+    return out;
+  }
+
+  void readingDict(std::istream &in, function::vecDict &vecDict, function::nameDict &nameDict)
+  {
+    std::string string;
+    while (!in.eof() && in >> string)
+    {
+      if (string == "Dictionary")
+      {
+        std::string nameD;
+        in >> nameD;
+        nameDict.push_back(nameD);
+        function::myDict temp;
+        vecDict.push_back(temp);
+      }
+      else if (string[string.length() - 1] == ':')
+      {
+        string.pop_back();
+        while (checkContinueInputWord(in))
+        {
+          std::string transl;
+          in >> transl;
+          vecDict[vecDict.size() - 1][string].insert(transl);
+        }
+        in.clear();
+      }
+    }
   }
 }
