@@ -138,7 +138,7 @@ double rakitin::similarity(const dictionaries& data, const std::string& dataname
       it2++;
     }
   }
-  return (double)similar / all;
+  return static_cast< double >(similar) / static_cast< double >(all);
 }
 
 void rakitin::deleteDictionary(dictionaries& data, const std::string& dataname1)
