@@ -2,10 +2,10 @@
 
 namespace krylyanok
 {
-	struct Commands
-	{
+  struct Commands
+  {
   public:
-    Commands(std::vector< krylyanok::Dictionary >& dictionaries, std::istream& in, std::ostream& out) :
+    Commands(std::vector< krylyanok::Dictionary >& dictionaries, std::istream& in, std::ostream& out):
       dictionaries_(dictionaries),
       in_(in),
       out_(out)
@@ -22,5 +22,5 @@ namespace krylyanok
     std::ostream& out_;
     void streamClean();
     size_t findElem(std::string& dictName);
-	};
+  };
 }
