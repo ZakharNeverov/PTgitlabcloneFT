@@ -60,6 +60,11 @@ int main(int argc, char* argv[])
   }
 
   std::ofstream out(argv[1], std::ios::trunc);
+  if (!out.is_open())
+  {
+    std::cerr << "I can't open the file, I have paws\n";
+    return 1;
+  }
   for (size_t i = 0; i < hashT.size(); ++i)
   {
     out << "Dictionary " << name[i] << '\n';
