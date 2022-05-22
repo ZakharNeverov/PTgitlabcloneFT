@@ -43,7 +43,7 @@ int main()
         std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
       }
     }
-    catch (...)
+    catch (const std::exception& e)
     {
       yuld::printInvalid(std::cout);
       std::cin.clear();

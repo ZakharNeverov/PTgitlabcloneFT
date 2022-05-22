@@ -19,7 +19,7 @@ namespace yuldashev
     in >> type;
     if (type == "int")
     {
-      Matrix<int> matrix;
+      Matrix< int > matrix;
       if (!setDataToMatrix(in, matrix))
       {
         return false;
@@ -29,7 +29,7 @@ namespace yuldashev
     }
     else if (type == "double")
     {
-      Matrix<double> matrix;
+      Matrix< double > matrix;
       if (!setDataToMatrix(in, matrix))
       {
         return false;
@@ -59,7 +59,7 @@ namespace yuldashev
     }
     if (type == "int")
     {
-      Matrix<int> matrix;
+      Matrix< int > matrix;
       if (!setDataToMatrix(file, matrix))
       {
         return false;
@@ -69,7 +69,7 @@ namespace yuldashev
     }
     else if (type == "double")
     {
-      Matrix<double> matrix;
+      Matrix< double > matrix;
       if (!setDataToMatrix(file, matrix))
       {
         return false;
@@ -90,7 +90,7 @@ namespace yuldashev
       using namespace std::placeholders;
       return doMathOperation< double >(in, chain, std::bind(multiply< double >, _1, _2));
     }
-    catch (...)
+    catch (const std::exception& e)
     {
       return false;
     }
@@ -159,7 +159,7 @@ namespace yuldashev
       using namespace std::placeholders;
       return doMathOperation< double >(in, chain, std::bind(sum< double >, _1, _2));
     }
-    catch (...)
+    catch (const std::exception& e)
     {
       return false;
     }
@@ -171,7 +171,7 @@ namespace yuldashev
       using namespace std::placeholders;
       return doMathOperation< double >(in, chain, std::bind(multiplyByElement< double >, _1, _2));
     }
-    catch (...)
+    catch (const std::exception& e)
     {
       return false;
     }
