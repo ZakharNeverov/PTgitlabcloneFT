@@ -9,5 +9,4 @@ namespace bokov
   std::vector < std::string > getRowOfWords(std::string& str);
   std::string getSubString(std::string& str);
 }
-
 #endif
