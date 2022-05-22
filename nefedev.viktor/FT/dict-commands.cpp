@@ -220,7 +220,7 @@ void nefedev::printAlphabetic(std::istream& in, std::ostream& out, DictionaryArr
     std::getline(in, order);
     order.erase(0, 1);
     if (order == "ASCENDING" || order == "")
-    {  
+    {
       unsigned int wordNumber = 0;
       wordNumber = evaluateWordNumber(dictArray[dictName]);
       nefedev::StreamGuard guard(out);
@@ -258,7 +258,7 @@ void nefedev::printFrequency(std::istream& in, std::ostream& out, DictionaryArra
   }
   else
   {
-    std::vector< WordAndFreq > vect(dictArray[dictName].begin(),dictArray[dictName].end());
+    std::vector< WordAndFreq > vect(dictArray[dictName].begin(), dictArray[dictName].end());
     std::string order;
     std::getline(in, order);
     order.erase(0, 1);
