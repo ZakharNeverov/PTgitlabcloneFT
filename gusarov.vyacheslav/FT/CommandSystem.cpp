@@ -78,7 +78,7 @@ void gusarov::Command::getCodeFano(std::istream& in)
 {
   std::string name;
   in >> nameFileIO{name};
-  std::ifstream fileRead = openFile(name); 
+  std::ifstream fileRead = openFile(name);
   in >> nameFileIO{name};
   std::ofstream fileWrite(name);
 
@@ -162,6 +162,7 @@ void gusarov::Command::compareSize(std::istream& in)
   size_t sizeSecond = second.tellg();
   std::cout << "first file: " << sizeFirst << " bytes\n";
   std::cout << "second file: " << std::ceil(sizeSecond / 8) << " bytes\n";
+  std::cout << "difference: " << sizeFirst - std::ceil(sizeSecond / 8) << " bytes\n";
 }
 
 void gusarov::Command::doCommand(std::string command)
@@ -169,10 +170,11 @@ void gusarov::Command::doCommand(std::string command)
   auto commandIter = commandList.find(command);
   if (commandIter != commandList.end()) {
     commandIter->second();
-  } else{
+  } else {
     throw std::invalid_argument("Unknown command");
   }
   if (std::cin.rdstate() == std::ios::failbit) {
     throw std::invalid_argument("incorrect file format");
   }
 }
+
