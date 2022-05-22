@@ -128,6 +128,12 @@ void nefedev::read(std::istream& in, std::ostream& out, DictionaryArray& dictArr
     }
     out << "Inserted all words from the text\n";
   }
+  else
+  {
+    out << "INVALID ARGUMENT\n";
+    in.clear();
+    std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
+  }
 }
 
 void nefedev::deleteWord(std::istream& in, std::ostream& out, DictionaryArray& dictArray)
@@ -244,6 +250,8 @@ void nefedev::printAlphabetic(std::istream& in, std::ostream& out, DictionaryArr
     else
     {
       out << "INVALID ARGUMENT\n";
+      in.clear();
+      std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
     }
   }
 }
@@ -289,6 +297,8 @@ void nefedev::printFrequency(std::istream& in, std::ostream& out, DictionaryArra
     else
     {
       out << "INVALID ARGUMENT\n";
+      in.clear();
+      std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
     }
   }
 }
