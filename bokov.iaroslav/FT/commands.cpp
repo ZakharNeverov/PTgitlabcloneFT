@@ -289,4 +289,3 @@ void bokov::deleteDict(std::string& str, dicts_list& dicts)
     dicts.erase(dict_name);
   }
 }
-
