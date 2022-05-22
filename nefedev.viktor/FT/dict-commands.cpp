@@ -221,7 +221,7 @@ void nefedev::printAlphabetic(std::istream& in, std::ostream& out, DictionaryArr
   }
   else
   {
-    std::string order = ""; 
+    std::string order = "";
     std::getline(in, order);
     order.erase(0, 1);
     if (order == "ASCENDING" || order == "")
