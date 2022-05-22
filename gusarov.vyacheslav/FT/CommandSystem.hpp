@@ -1,9 +1,7 @@
 #ifndef COMMAND_SYSTEM_HPP
 #define COMMAND_SYSTEM_HPP
 
-#include <iosfwd>
 #include <string>
-#include <vector>
 #include <functional>
 #include <map>
 
