@@ -34,22 +34,18 @@ namespace
     }
     return str;
   }
-
   bool compAscendingFreq(WordAndFreq element1, WordAndFreq element2)
   {
     return element1.second > element2.second;
   }
-
   bool compDescendingFreq(WordAndFreq element1, WordAndFreq element2)
   {
     return element1.second < element2.second;
   }
-
   unsigned int accumulateDictSum(unsigned int sum, WordAndFreq record)
   {
     return sum + record.second;
   }
-
   void insertWord(std::string word, FreqDictionary& dict)
   {
     deleteWrongChars(word);
@@ -65,7 +61,6 @@ namespace
       }
     }
   }
-
   unsigned int evaluateWordNumber(FreqDictionary& dict)
   {
     return std::accumulate(dict.begin(), dict.end(), 0, accumulateDictSum);
