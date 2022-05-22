@@ -83,57 +83,49 @@ void nefedev::insert(std::istream& in, std::ostream& out, DictionaryArray& dictA
   out << "Inserted word \"" << word << "\" to dictionary " << dictName << '\n';
 }
 
-void nefedev::read(std::istream& in, std::ostream& out, DictionaryArray& dictArray)
+void nefedev::readText(std::istream& in, std::ostream& out, DictionaryArray& dictArray)
 {
+  std::string dictName = "";
+  in >> dictName;
+  if (dictArray.find(dictName) == dictArray.end())
+  {
+    FreqDictionary dict;
+    dictArray.insert(std::make_pair(dictName, dict));
+  }
   std::string input = "";
-  in >> input;
-  if (input == "FILE")
+  std::getline(std::cin, input);
+  input.erase(0, 1);
+  std::string word;
+  input += ' ';
+  while (input.length() > 0)
   {
-    std::string dictName = "";
-    in >> dictName;
-    if (dictArray.find(dictName) == dictArray.end())
-    {
-      FreqDictionary dict;
-      dictArray.insert(std::make_pair(dictName, dict));
-    }
-    std::ifstream fin;
-    std::string fileName;
-    in >> fileName;
-    fin.open(fileName);
-    while (!fin.eof())
-    {
-      fin >> input;
-      insertWord(input, dictArray[dictName]);
-    }
-    out << "Inserted all words from file \"" << fileName << "\"\n";
+    word = input.substr(0, input.find(' '));
+    input.erase(0, input.find(' ') + 1);
+    insertWord(word, dictArray[dictName]);
   }
-  else if (input == "TEXT")
+  out << "Inserted all words from the text\n";
+}
+
+void nefedev::readFile(std::istream& in, std::ostream& out, DictionaryArray& dictArray)
+{
+  std::string dictName = "";
+  in >> dictName;
+  if (dictArray.find(dictName) == dictArray.end())
   {
-    std::string dictName = "";
-    in >> dictName;
-    if (dictArray.find(dictName) == dictArray.end())
-    {
-      FreqDictionary dict;
-      dictArray.insert(std::make_pair(dictName, dict));
-    }
-    std::getline(std::cin, input);
-    input.erase(0, 1);
-    std::string word;
-    input += ' ';
-    while (input.length() > 0)
-    {
-      word = input.substr(0, input.find(' '));
-      input.erase(0, input.find(' ') + 1);
-      insertWord(word, dictArray[dictName]);
-    }
-    out << "Inserted all words from the text\n";
+    FreqDictionary dict;
+    dictArray.insert(std::make_pair(dictName, dict));
   }
-  else
+  std::ifstream fin;
+  std::string fileName;
+  std::string input = "";
+  in >> fileName;
+  fin.open(fileName);
+  while (!fin.eof())
   {
-    out << "INVALID ARGUMENT\n";
-    in.clear();
-    std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
+    fin >> input;
+    insertWord(input, dictArray[dictName]);
   }
+  out << "Inserted all words from file \"" << fileName << "\"\n";
 }
 
 void nefedev::deleteWord(std::istream& in, std::ostream& out, DictionaryArray& dictArray)

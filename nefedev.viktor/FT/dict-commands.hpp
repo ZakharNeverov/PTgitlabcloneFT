@@ -13,7 +13,8 @@ using WordAndFreq = std::pair< std::string, unsigned int >;
 namespace nefedev
 {
   void insert(std::istream&, std::ostream&, DictionaryArray&);
-  void read(std::istream&, std::ostream&, DictionaryArray&);
+  void readText(std::istream&, std::ostream&, DictionaryArray&);
+  void readFile(std::istream&, std::ostream&, DictionaryArray&);
   void deleteWord(std::istream&, std::ostream&, DictionaryArray&);
   void deleteAllWords(std::istream&, std::ostream&, DictionaryArray&);
   void wordNumber(std::istream&, std::ostream&, DictionaryArray&);

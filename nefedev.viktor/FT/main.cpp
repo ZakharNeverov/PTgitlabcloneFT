@@ -13,7 +13,8 @@ int main()
   std::map< std::string, std::function< void(void) > > commands(
     {
       {"INSERT", std::bind(nefedev::insert, std::ref(std::cin), std::ref(std::cout), std::ref(dictArray))},
-      {"READ", std::bind(nefedev::read, std::ref(std::cin), std::ref(std::cout), std::ref(dictArray))},
+      {"READTEXT", std::bind(nefedev::readText, std::ref(std::cin), std::ref(std::cout), std::ref(dictArray))},
+      {"READFILE", std::bind(nefedev::readFile, std::ref(std::cin), std::ref(std::cout), std::ref(dictArray))},
       {"DELETE", std::bind(nefedev::deleteWord, std::ref(std::cin), std::ref(std::cout), std::ref(dictArray))},
       {"DELETEALL", std::bind(nefedev::deleteAllWords, std::ref(std::cin), std::ref(std::cout), std::ref(dictArray))},
       {"WORDNUMBER", std::bind(nefedev::wordNumber, std::ref(std::cin), std::ref(std::cout), std::ref(dictArray))},
