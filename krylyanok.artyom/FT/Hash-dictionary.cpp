@@ -106,7 +106,7 @@ namespace krylyanok
 
     if (it->word_ == word)
     {
-      data_[hashIndex].clear();
+      data_[hashIndex].pop_front();
       return true;
     }
 
