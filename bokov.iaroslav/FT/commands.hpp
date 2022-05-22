@@ -16,5 +16,4 @@ namespace bokov
   void searchInDict(std::string&, dicts_list&, std::ostream&);
   void deleteDict(std::string&, dicts_list&);
 }
-
 #endif
