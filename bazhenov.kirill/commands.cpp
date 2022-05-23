@@ -32,12 +32,19 @@ namespace {
   {
     return p.first.substr(0, prf.size()) == prf;
   }
-}
 
-namespace std {
-  ostream& operator<<(ostream& os, const pair< string, int > p)
+  std::ostream& operator<<(std::ostream& os, const pair& p)
   {
     return os << p.first << " " << p.second;
+  }
+
+  template< typename Iterator >
+  std::ostream& printDictionary (Iterator begin, Iterator end, std::ostream& out)
+  {
+    for (auto it = begin; it != end; ++it) {
+      out << *it << "\n";
+    }
+    return out;
   }
 }
 
@@ -58,7 +65,7 @@ void bazhenov::print_t::operator()(bazhenov::dictionaries& storage)
     if (item.empty()) {
       bazhenov::printEmpty(std::cout) << "\n";
     }
-    std::copy(item.begin(), item.end(), std::ostream_iterator< pair >(out_, "\n"));
+    printDictionary(item.begin(), item.end(), out_);
   }
 }
 
@@ -150,7 +157,7 @@ void bazhenov::search_pref_t::operator()(bazhenov::dictionaries& storage)
     if (pairs.empty()) {
       bazhenov::printNoMatches(out_) << "\n";
     }
-    std::copy(pairs.begin(), pairs.end(), std::ostream_iterator< pair >(out_, "\n"));
+    printDictionary(pairs.begin(), pairs.end(), out_);
   } else {
     bazhenov::printNotExist(out_) << "\n";
   }
@@ -179,13 +186,12 @@ void bazhenov::search_t::operator()(bazhenov::dictionaries& storage)
     if (pairs.empty()) {
       bazhenov::printNoMatches(out_) << "\n";
     }
-    std::copy(pairs.begin(), pairs.end(), std::ostream_iterator< pair >(out_, "\n"));
+    printDictionary(pairs.begin(), pairs.end(), out_);
   } else {
     bazhenov::printNotExist(out_) << "\n";
     in_.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
   }
 }
-
 
 bazhenov::add_t::add_t(std::istream& in, std::ostream& out):
   in_(in),
@@ -213,7 +219,6 @@ void bazhenov::add_t::operator()(bazhenov::dictionaries& storage)
   }
 }
 
-
 bazhenov::diff_t::diff_t(std::istream& in, std::ostream& out):
   in_(in),
   out_(out)
@@ -238,7 +243,7 @@ void bazhenov::diff_t::operator()(bazhenov::dictionaries& storage)
     }
     bazhenov::StreamGuard guard(out_);
     out_ << std::showpos;
-    std::copy(diffs.begin(), diffs.end(), std::ostream_iterator< pair >(out_, "\n"));
+    printDictionary(diffs.begin(), diffs.end(), out_);
     out_.clear();
   } else {
     bazhenov::printNotExist(out_) << "\n";
