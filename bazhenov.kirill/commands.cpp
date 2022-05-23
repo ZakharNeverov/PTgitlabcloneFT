@@ -144,10 +144,13 @@ void bazhenov::search_pref_t::operator()(bazhenov::dictionaries& storage)
   in_ >> name >> prf;
   auto it = storage.find(name);
   if (it != storage.end()) {
-    std::vector< pair > pairs;
+    std::map< std::string, int > pairs;
     auto isStarts = std::bind(isStartsWith, _1, prf);
     auto item = it->second;
     std::copy_if(item.begin(), item.end(), std::inserter(pairs, pairs.begin()), isStarts);
+    if (pairs.empty()) {
+      bazhenov::printNoMatches(out_) << "\n";
+    }
     std::copy(pairs.begin(), pairs.end(), std::ostream_iterator< pair >(out_, "\n"));
   } else {
     bazhenov::printNotExist(out_) << "\n";
@@ -165,14 +168,17 @@ void bazhenov::search_t::operator()(bazhenov::dictionaries& storage)
   in_ >> name;
   auto it = storage.find(name);
   if (it != storage.end()) {
-    std::vector< pair > pairs;
+    std::map< std::string, int > pairs;
     std::string word = "";
     while (in_.peek() != '\n') {
       in_ >> word;
       auto item = it->second.find(word);
       if (item != it->second.end()) {
-        pairs.emplace_back(*item);
+        pairs.emplace(*item);
       }
+    }
+    if (pairs.empty()) {
+      bazhenov::printNoMatches(out_) << "\n";
     }
     std::copy(pairs.begin(), pairs.end(), std::ostream_iterator< pair >(out_, "\n"));
   } else {
@@ -222,12 +228,12 @@ void bazhenov::diff_t::operator()(bazhenov::dictionaries& storage)
   auto it2 = storage.find(name2);
 
   if (it1 != storage.end() && it2 != storage.end()) {
-    std::vector< pair > diffs;
+    std::map< std::string , int> diffs;
     auto tmp1 = it1->second.begin();
     while (tmp1 != it1->second.end()) {
       auto equal = it2->second.find(tmp1->first);
       if (equal != it2->second.end()) {
-        diffs.emplace_back(tmp1->first, tmp1->second - equal->second);
+        diffs.emplace(tmp1->first, tmp1->second - equal->second);
       }
       ++tmp1;
     }

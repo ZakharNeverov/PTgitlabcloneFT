@@ -13,5 +13,10 @@ std::ostream& bazhenov::printEmpty(std::ostream& out)
 
 std::ostream& bazhenov::printNotExist(std::ostream& out)
 {
-  return out << "The dictionary with this name doesn't exist!\n";
+  return out << "The dictionary with this name doesn't exist!";
+}
+
+std::ostream& bazhenov::printNoMatches(std::ostream& out)
+{
+  return out << "No matches found!";
 }
