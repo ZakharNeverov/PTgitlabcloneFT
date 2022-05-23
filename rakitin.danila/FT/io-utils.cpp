@@ -26,7 +26,6 @@ rakitin::dictionary rakitin::getDictionary(const std::string& path)
     }
   }
   stream.close();
-  std::sort(result.begin(), result.end());
 
   return result;
 }

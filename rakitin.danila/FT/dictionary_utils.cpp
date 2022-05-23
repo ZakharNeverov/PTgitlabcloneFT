@@ -11,14 +11,13 @@ void rakitin::addWord(dictionary& dictionary, const std::string& word, int line)
   using namespace std::placeholders;
   auto func = std::bind(isRefsForWord, word, _1);
   auto refs = std::find_if(dictionary.begin(), dictionary.end(), func);
-  word_refs ref;
   if (refs != dictionary.end()) {
     refs->second.insert(line);
   }
   else {
-    ref = word_refs(word, std::set< int >());
-    ref.second.insert(line);
-    dictionary.push_back(ref);
+    std::set< int > values;
+    values.insert(line);
+    dictionary.insert({ word, values });
   }
 }
 

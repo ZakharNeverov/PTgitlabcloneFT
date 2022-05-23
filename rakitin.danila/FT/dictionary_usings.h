@@ -7,13 +7,10 @@
 #include <vector>
 
 namespace rakitin {
-  using word_refs = std::pair< std::string, std::set< int > >;
-  using dictionary = std::vector< word_refs >;
+  using dictionary = std::map< std::string, std::set< int > >;
+  using word_refs = dictionary::value_type;
   using dictionaries = std::map< std::string, dictionary >;
   using ref_finder = std::pair< word_refs, bool >;
-
-  bool operator<(const word_refs& ref1, const word_refs& ref2);
-
 }
 
 #endif

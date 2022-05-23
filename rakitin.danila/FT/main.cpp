@@ -1,8 +1,9 @@
-#include <functional>
 #include <iostream>
-#include <iterator>
-#include <map>
 #include <string>
+#include <functional>
+#include <map>
+#include <stdexcept>
+#include <iterator>
 
 #include "dictionary_usings.h"
 #include "dictionary_utils.h"
@@ -14,7 +15,7 @@ int main()
 
   using command = std::function< void(void) >;
 
-  std::map< std::string, command > commands(
+  std::map<std::string, command> commands(
     { {"ADD", std::bind(&rakitin::executeAdd, std::ref(data), std::ref(std::cout), std::ref(std::cin))},
         {"FINDWORD", std::bind(&rakitin::executeFindWord, std::ref(data), std::ref(std::cout), std::ref(std::cin))},
         {"PRINTALL", std::bind(&rakitin::executePrintAll, std::ref(data), std::ref(std::cout), std::ref(std::cin))},
@@ -24,21 +25,27 @@ int main()
         {"SIMILARITY", std::bind(&rakitin::executeSimilarity, std::ref(data), std::ref(std::cout), std::ref(std::cin))},
         {"RENAME", std::bind(&rakitin::executeRename, std::ref(data), std::ref(std::cout), std::ref(std::cin))},
         {"DELETE", std::bind(&rakitin::executeDelete, std::ref(data), std::ref(std::cout), std::ref(std::cin))},
-        {"PRINT_ALL_DATANAMES", std::bind(&rakitin::executePrintAllDatanames, std::ref(data), std::ref(std::cout))} });
+        {"PRINT_ALL_DATANAMES", std::bind(&rakitin::executePrintAllDatanames, std::ref(data), std::ref(std::cout))}
+    });
 
   while (!std::cin.eof()) {
     try {
       std::cout << "Write command:\n";
       std::string command;
       std::cin >> command;
+      if (command.empty()) {
+        continue;
+      }
       auto cmd = commands.find(command);
       if (cmd != commands.end()) {
         cmd->second();
       }
-      else if (command == "EXIT") {
+      else if (command == "EXIT" || std::cin.eof()) {
         return 0;
       }
-      throw std::logic_error("Unknown command");
+      else {
+        throw std::logic_error("Unknown command");
+      }
     }
     catch (const std::exception& e) {
       std::cout << e.what() << "\n";

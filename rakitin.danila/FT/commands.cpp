@@ -65,7 +65,6 @@ void rakitin::merge(dictionaries& data, const std::string& dataname1, const std:
 
   data.erase(dataname2);
   data.erase(dataname1);
-  std::sort(result.begin(), result.end());
   data.insert({ dataname1, result });
 }
 
