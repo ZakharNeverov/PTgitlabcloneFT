@@ -5,13 +5,14 @@
 #include <memory>
 #include <map>
 #include <string>
+
 #include "Function.hpp"
 
 namespace semichev
 {
   struct FunctionIO
   {
-    std::shared_ptr<Function> func;
+    std::shared_ptr< Function > func;
   };
 
   std::istream& operator>>(std::istream& in, FunctionIO& dest);

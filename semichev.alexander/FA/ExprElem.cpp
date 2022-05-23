@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <stdexcept>
-#include <string>
+
 #include "Spreadsheet.hpp"
 
 namespace smcv = semichev;
@@ -16,21 +16,20 @@ double semichev::ExprElem::Operand::getValue() const
   return val_;
 }
 
-semichev::ExprElem::Address::Address(int column, int row) :
-    column_(column),
-    row_(row)
+semichev::ExprElem::Address::Address(int column, int row):
+  column_(column),
+  row_(row)
 {}
 
-double semichev::ExprElem::Address::getValue(Spreadsheet& ws, const std::pair<int, int>& offset) const
+double semichev::ExprElem::Address::getValue(Spreadsheet& ws, const std::pair< int, int >& offset) const
 {
-    return ws.getCurrent()[row_ + offset.first][column_ + offset.second].getValue(ws);
+  return ws.getCurrent()[row_ + offset.first][column_ + offset.second].getValue(ws);
 }
 
-std::pair<int, int> semichev::ExprElem::Address::getCell() const
+std::pair< int, int > semichev::ExprElem::Address::getCell() const
 {
-    return std::pair<int, int>(row_, column_);
+  return std::pair< int, int >(row_, column_);
 }
-
 
 semichev::ExprElem::Operation::Operation(char type, int priority):
   type_(type),
@@ -96,9 +95,9 @@ semichev::ExprElem::ExprElem(const Operand& val):
   operand_(val)
 {}
 
-semichev::ExprElem::ExprElem(const Address& val) :
-    type_(Type::ADDRESS),
-    address_(val)
+semichev::ExprElem::ExprElem(const Address& val):
+  type_(Type::ADDRESS),
+  address_(val)
 {}
 
 semichev::ExprElem::ExprElem(const Parenthesis& val):
@@ -113,20 +112,20 @@ smcv::ExprElem::Type semichev::ExprElem::getType() const
 
 smcv::ExprElem::Operand semichev::ExprElem::getOperand() const
 {
-    if (type_ != Type::OPERAND)
-    {
-        throw std::logic_error("type is not operand");
-    }
-    return operand_;
+  if (type_ != Type::OPERAND)
+  {
+    throw std::logic_error("type is not operand");
+  }
+  return operand_;
 }
 
 smcv::ExprElem::Address semichev::ExprElem::getAddress() const
 {
-    if (type_ != Type::ADDRESS)
-    {
-        throw std::logic_error("type is not operand");
-    }
-    return address_;
+  if (type_ != Type::ADDRESS)
+  {
+    throw std::logic_error("type is not operand");
+  }
+  return address_;
 }
 
 smcv::ExprElem::Operation semichev::ExprElem::getOperation() const
@@ -180,41 +179,18 @@ smcv::ExprElem semichev::toExprElem(const std::string& str)
   }
   else
   {
-      size_t n = str.find(":");
-      if (n != str.npos)
-      {
-          int column = std::stoi(str.substr(0, n));
-          int row = std::stoi(str.substr(n + 1));
-          elem = ExprElem(ExprElem::Address(column, row));
-      }
-      else
-      {
-          elem = ExprElem(ExprElem::Operand(std::stod(str)));
-      }
+    size_t n = str.find(":");
+    if (n != str.npos)
+    {
+      int column = std::stoi(str.substr(0, n));
+      int row = std::stoi(str.substr(n + 1));
+      elem = ExprElem(ExprElem::Address(column, row));
+    }
+    else
+    {
+      elem = ExprElem(ExprElem::Operand(std::stod(str)));
+    }
   }
 
   return elem;
-}
-
-std::string semichev::toString(const ExprElem& elem)
-{
-    std::string str;
-    switch (elem.getType())
-    {
-    case ExprElem::Type::ADDRESS:
-        str = std::to_string(elem.getAddress().getCell().second) + ":" + std::to_string(elem.getAddress().getCell().first);
-        break;
-    case ExprElem::Type::OPERAND:
-        str = std::to_string(elem.getOperand().getValue());
-        break;
-    case ExprElem::Type::OPERATION:
-        str = elem.getOperation().getType();
-        break;
-    case ExprElem::Type::PARENTHESIS:
-        str = elem.getParenthesis().getType();
-        break;
-    default:
-        break;
-    }
-    return str;
 }

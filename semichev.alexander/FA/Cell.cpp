@@ -1,4 +1,5 @@
 #include "Cell.hpp"
+
 #include <stdexcept>
 
 namespace smcv = semichev;
@@ -9,13 +10,13 @@ semichev::Cell::Cell():
   func_(std::make_shared< Expression >(0))
 {}
 
-semichev::Cell::Cell(const std::shared_ptr<Function>& func):
+semichev::Cell::Cell(const std::shared_ptr< Function >& func):
   isLoop_(false),
   offset_(0, 0),
   func_(func)
 {}
 
-std::pair<std::pair<int, int>, smcv::Function&> semichev::Cell::getFunction() const
+std::pair< std::pair< int, int >, smcv::Function& > semichev::Cell::getFunction() const
 {
   return { offset_, *func_ };
 }

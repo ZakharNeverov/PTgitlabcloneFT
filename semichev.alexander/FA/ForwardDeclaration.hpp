@@ -3,7 +3,7 @@
 
 namespace semichev
 {
-	class Spreadsheet;
+  class Spreadsheet;
 }
 
 #endif

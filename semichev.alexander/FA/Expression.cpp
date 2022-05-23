@@ -1,4 +1,5 @@
 #include "Expression.hpp"
+
 #include <iostream>
 #include <string>
 #include <stack>
@@ -14,12 +15,12 @@ namespace
 
   bool isOperand(const smcv::ExprElem& val)
   {
-      return val.getType() == smcv::ExprElem::Type::OPERAND;
+    return val.getType() == smcv::ExprElem::Type::OPERAND;
   }
 
   bool isAddress(const smcv::ExprElem& val)
   {
-      return val.getType() == smcv::ExprElem::Type::ADDRESS;
+    return val.getType() == smcv::ExprElem::Type::ADDRESS;
   }
 
   bool isLeftParenthesis(const smcv::ExprElem& val)
@@ -116,7 +117,7 @@ namespace
     return value;
   }
 
-  double calcPostfixExpr(smcv::Expression::expr_t&& postfix, smcv::Spreadsheet& ws, const std::pair<int, int>& offset)
+  double calcPostfixExpr(smcv::Expression::expr_t&& postfix, smcv::Spreadsheet& ws, const std::pair< int, int >& offset)
   {
     std::stack< smcv::ExprElem > stack;
     stack.push(postfix.front());
@@ -133,9 +134,11 @@ namespace
         }
         char op = postfix.front().getOperation().getType();
         postfix.pop();
-        double rhs = isOperand(stack.top()) ? stack.top().getOperand().getValue() : stack.top().getAddress().getValue(ws, offset);
+        double rhs = isOperand(stack.top()) ? stack.top().getOperand().getValue()
+                                            : stack.top().getAddress().getValue(ws, offset);
         stack.pop();
-        double lhs = isOperand(stack.top()) ? stack.top().getOperand().getValue() : stack.top().getAddress().getValue(ws, offset);
+        double lhs = isOperand(stack.top()) ? stack.top().getOperand().getValue()
+                                            : stack.top().getAddress().getValue(ws, offset);
         stack.top() = smcv::ExprElem(smcv::ExprElem::Operand(calcOperation(op, lhs, rhs)));
       }
       catch (...)
@@ -155,20 +158,18 @@ namespace
   }
 }
 
-semichev::Expression::Expression(double val):
-  exprPostf_(),
-  exprInf_()
+semichev::Expression::Expression(double val): exprPostf_(), exprInf_()
 {
-    exprPostf_.push(ExprElem(ExprElem::Operand(val)));
-    exprInf_.push(ExprElem(ExprElem::Operand(val)));
+  exprPostf_.push(ExprElem(ExprElem::Operand(val)));
+  exprInf_.push(ExprElem(ExprElem::Operand(val)));
 }
 
 semichev::Expression::Expression(const expr_t& expr):
-    exprPostf_(convertToPostfix(expr_t(expr))),
-    exprInf_(expr_t(expr))
+  exprPostf_(convertToPostfix(expr_t(expr))),
+  exprInf_(expr_t(expr))
 {}
 
-double semichev::Expression::operator()(Spreadsheet& ws, const std::pair<int, int>& offset) const
+double semichev::Expression::operator()(Spreadsheet& ws, const std::pair< int, int >& offset) const
 {
   return calcPostfixExpr(expr_t(exprPostf_), ws, offset);
 }
@@ -188,7 +189,7 @@ std::istream& semichev::Expression::read(std::istream& in)
       in.setstate(in.failbit);
     }
   }
-  
+
   if (in)
   {
     *this = Expression(queue);
@@ -197,32 +198,32 @@ std::istream& semichev::Expression::read(std::istream& in)
   return in;
 }
 
-std::ostream& semichev::Expression::print(std::ostream& out, const std::pair<int, int>& offset) const
+std::ostream& semichev::Expression::print(std::ostream& out, const std::pair< int, int >& offset) const
 {
-    out << "=";
-    auto q = exprInf_;
-    while (!q.empty())
+  out << "=";
+  auto q = exprInf_;
+  while (!q.empty())
+  {
+    out << " ";
+    switch (q.front().getType())
     {
-        out << " ";
-        switch (q.front().getType())
-        {
-        case ExprElem::Type::ADDRESS:
-            out << q.front().getAddress().getCell().second + offset.second << ":";
-            out << q.front().getAddress().getCell().first + offset.first;
-            break;
-        case ExprElem::Type::OPERAND:
-            out << q.front().getOperand().getValue();
-            break;
-        case ExprElem::Type::OPERATION:
-            out << q.front().getOperation().getType();
-            break;
-        case ExprElem::Type::PARENTHESIS:
-            out << q.front().getParenthesis().getType();
-            break;
-        default:
-            break;
-        }
-        q.pop();
+    case ExprElem::Type::ADDRESS:
+      out << q.front().getAddress().getCell().second + offset.second << ":";
+      out << q.front().getAddress().getCell().first + offset.first;
+      break;
+    case ExprElem::Type::OPERAND:
+      out << q.front().getOperand().getValue();
+      break;
+    case ExprElem::Type::OPERATION:
+      out << q.front().getOperation().getType();
+      break;
+    case ExprElem::Type::PARENTHESIS:
+      out << q.front().getParenthesis().getType();
+      break;
+    default:
+      break;
     }
-    return out << " !";
+    q.pop();
+  }
+  return out << " !";
 }

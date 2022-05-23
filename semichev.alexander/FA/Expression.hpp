@@ -3,6 +3,7 @@
 
 #include <iosfwd>
 #include <queue>
+
 #include "ExprElem.hpp"
 #include "Function.hpp"
 
@@ -23,9 +24,10 @@ namespace semichev
     Expression& operator=(const Expression&) = default;
     Expression& operator=(Expression&&) = default;
 
-    double operator()(Spreadsheet& ws, const std::pair<int, int>& offset) const;
+    double operator()(Spreadsheet& ws, const std::pair< int, int >& offset) const;
     std::istream& read(std::istream& in);
-    std::ostream& print(std::ostream& out, const std::pair<int, int>& offset) const;
+    std::ostream& print(std::ostream& out, const std::pair< int, int >& offset) const;
+
    private:
     expr_t exprPostf_;
     expr_t exprInf_;

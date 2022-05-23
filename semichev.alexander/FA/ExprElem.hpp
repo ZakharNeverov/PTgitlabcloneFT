@@ -3,6 +3,7 @@
 
 #include <iosfwd>
 #include <string>
+
 #include "ForwardDeclaration.hpp"
 
 namespace semichev
@@ -107,7 +108,6 @@ namespace semichev
     explicit ExprElem(const Address& val);
     explicit ExprElem(const Operation& val);
     explicit ExprElem(const Parenthesis& val);
-    
 
     ExprElem& operator=(const ExprElem& other) = default;
     ExprElem& operator=(ExprElem&& other) noexcept = default;
@@ -130,7 +130,6 @@ namespace semichev
   };
 
   ExprElem toExprElem(const std::string& str);
-  std::string toString(const ExprElem& elem);
 }
 
 #endif

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <limits>
+
 #include "Expression.hpp"
 #include "FunctionIO.hpp"
 #include "Cell.hpp"
@@ -40,7 +41,7 @@ int main(int argc, char* argv[])
     enter();
   }
   in.close();
-  
+
   smcv::CommandSet commands(
     {
       { "sheets", std::make_shared< smcv::Sheets >(ws, std::cout) },
@@ -50,7 +51,7 @@ int main(int argc, char* argv[])
       { "peek", std::make_shared< smcv::Peek >(ws, std::cin, std::cout) },
       { "copy", std::make_shared< smcv::Copy >(ws, std::cin) },
       { "paste", std::make_shared< smcv::Paste >(ws, std::cin) },
-    }, 
+    },
     std::cin);
 
   while (!std::cin.eof())
@@ -63,7 +64,7 @@ int main(int argc, char* argv[])
     }
     commands();
   }
-  
+
   std::ofstream out(argv[2]);
   if (!out.is_open())
   {
@@ -72,7 +73,7 @@ int main(int argc, char* argv[])
   }
 
   smcv::Peek peek(ws, std::cin, out);
-  for (auto&& sheet : ws.getSheets())
+  for (auto&& sheet: ws.getSheets())
   {
     out << "sheet " << sheet.first << '\n';
     peek(sheet.first);
