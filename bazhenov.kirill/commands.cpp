@@ -3,7 +3,6 @@
 #include <functional>
 #include <algorithm>
 #include <numeric>
-#include <vector>
 #include <iterator>
 #include "messages.hpp"
 #include "streamGuard.hpp"
