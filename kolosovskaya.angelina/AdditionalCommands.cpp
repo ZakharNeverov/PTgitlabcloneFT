@@ -2,7 +2,6 @@
 #include <iosfwd>
 #include <vector>
 #include <string>
-#include <fstream>
 #include <algorithm>
 #include <iterator>
 #include <stdexcept>
@@ -163,27 +162,5 @@ namespace kolosovskaya
   {
     auto dict = allDicts.find(dictName);
     return dict != allDicts.end();
-  }
-
-  Dicts getDicts(std::string& str, std::ostream& out)
-  {
-    std::vector< std::string > names = getNamesFromString(str, ' ');
-    kolosovskaya::Dicts allDicts;
-    for (auto& name : names)
-    {
-      std::ifstream fin(name);
-      if (!fin.is_open())
-      {
-        throw std::logic_error("File isn't open!\n");
-      }
-      std::string dictName = getPartOfStr(name, '.');
-      Dict newDict = makeDict(fin, out);
-      if (doesExist(dictName, allDicts))
-      {
-        throw std::logic_error("The dict is existed yet!\n");
-      }
-      allDicts[dictName] = newDict;
-    }
-    return allDicts;
   }
 }

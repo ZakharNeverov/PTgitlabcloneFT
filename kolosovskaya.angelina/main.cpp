@@ -4,25 +4,34 @@
 #include <vector>
 #include <algorithm>
 #include <locale>
+#include <fstream>
 #include <exception>
 #include <functional>
 #include "Commands.h"
 #include "IoOperations.h"
 #include "AdditionalCommands.h"
 
-int main()
+int main(int argc, char** argv)
 {
   std::locale local = std::locale::global(std::locale("ru_RU.utf8"));
-  std::string str = "";
-  std::getline(std::cin, str);
   kolosovskaya::Dicts allDicts;
-  try
+  for (int i = 1; i < argc; ++i)
   {
-    allDicts = kolosovskaya::getDicts(str, std::cout);
-  }
-  catch (const std::exception& e)
-  {
-    std::cout << e.what();
+    std::string fileName = argv[i];
+    std::ifstream fin(fileName);
+    if (!fin.is_open())
+    {
+      std::cerr << "File isn't open!\n";
+      return 1;
+    }
+    std::string dictName = fileName.substr(0, fileName.find_first_of('.'));
+    kolosovskaya::Dict newDict = kolosovskaya::makeDict(fin, std::cout);
+    if (kolosovskaya::doesExist(dictName, allDicts))
+    {
+      kolosovskaya::printExistedDictMessage(std::cout);
+      return 2;
+    }
+    allDicts[dictName] = newDict;
   }
   std::map< std::string, std::function< void() > > commandsDict =
   {

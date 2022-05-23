@@ -8,7 +8,6 @@
 namespace kolosovskaya
 {
   Dict makeDict(std::istream&, std::ostream& out);
-  Dicts getDicts(std::string&, std::ostream& out);
   ruW getRuWords(std::string&);
   std::ostream& printDict(std::ostream&, const std::string&, const Dicts&);
   void printRuWords(std::ostream&, const kolosovskaya::ruW&);
