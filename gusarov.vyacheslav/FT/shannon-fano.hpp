@@ -1,5 +1,5 @@
-#ifndef SHENNON_FANO_HPP
-#define SHENNON_FANO_HPP
+#ifndef SHANNON_FANO_HPP
+#define SHANNON_FANO_HPP
 
 #include <string>
 #include <vector>
@@ -12,19 +12,18 @@ namespace gusarov {
     size_t freq;
     std::string code;
   };
-
   using fanoAlphabet_t = std::vector< CodeFano_t >;
   using dict_t = std::map< char, std::string >;
   using reverseDict_t = std::map< std::string, char >;
 
-  fanoAlphabet_t getFanoAlphobet(std::ifstream& file);
-  void shannon(size_t l, size_t h, fanoAlphabet_t& fanoAlphabet);
-  fanoAlphabet_t getFrequencyForCode(std::ifstream& file);
-  dict_t getDictionary(std::ifstream& fileCode);
-  reverseDict_t getReverseDictionary(std::ifstream& fileCode);
+  dict_t getCode(const std::string&);
+  std::string getEncodedText(const std::string&, dict_t);
+  std::string getDecodedText(const std::string&, dict_t);
+  size_t getSize(const std::string&);
 
-  void doEncode(std::ifstream& in, std::ofstream& out, dict_t fano);
-  void doDecode(std::ifstream& in, std::ofstream& out, reverseDict_t fano);
-  void createCodeFano(std::ifstream& in, std::ofstream& out);
+  fanoAlphabet_t getFanoAlphobet(const std::string&);
+  void shannon(size_t l, size_t h, fanoAlphabet_t&);
+  fanoAlphabet_t getFrequency(const std::string&);
+  reverseDict_t getReverseDictionary(dict_t);
 }
 #endif

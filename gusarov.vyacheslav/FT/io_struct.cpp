@@ -1,8 +1,8 @@
-#include "IOfile.hpp"
+#include "io_struct.hpp"
 #include <stdexcept>
 #include <fstream>
 
-std::ifstream gusarov::openFile(std::string name)
+std::ifstream gusarov::openFile(const std::string& name)
 {
   std::ifstream file(name);
   if (!file.is_open()) {
@@ -28,24 +28,7 @@ std::string gusarov::getSymbol(char ch)
   return out;
 }
 
-char gusarov::getSymbol(std::string str)
-{
-  char ch = 0;
-  if (str == "\\n") {
-    ch = '\n';
-  } else if (str == "\\t") {
-    ch = '\t';
-  } else if (str == "\\s") {
-    ch = ' ';
-  } else if (str.size() > 1) {
-    throw std::invalid_argument("Incorrect code");
-  } else {
-    ch = str[0];
-  }
-  return ch;
-}
-
-std::istream& gusarov::operator>>(std::istream& in, nameFileIO&& dest)
+std::istream& gusarov::operator>>(std::istream& in, fileIO&& dest)
 {
   std::istream::sentry sentry(in);
   if (!sentry) {

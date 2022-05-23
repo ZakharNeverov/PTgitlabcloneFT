@@ -1,180 +1,245 @@
 #include "CommandSystem.hpp"
 #include <iostream>
-#include <string>
 #include <fstream>
 #include <stdexcept>
 #include <vector>
-#include <functional>
 #include <iterator>
 #include <algorithm>
+#include "iofmtguard.hpp"
+#include "DelimiterIO.hpp"
 #include "shannon-fano.hpp"
-#include "IOfile.hpp"
-
-namespace {
-  void createStreamsEncode(std::string input, std::string codeFile, std::string output)
-  {
-    std::ifstream code = gusarov::openFile(codeFile);
-    gusarov::dict_t fano = gusarov::getDictionary(code);
-    code.close();
-    std::ifstream in = gusarov::openFile(input);
-    std::ofstream out(output);
-    gusarov::doEncode(in, out, fano);
-    in.close();
-    out.close();
-  }
-  void createStreamsDecode(std::string input, std::string codeFile, std::string output)
-  {
-    std::ifstream code = gusarov::openFile(codeFile);
-    gusarov::reverseDict_t fano = gusarov::getReverseDictionary(code);
-    code.close();
-    std::ifstream in = gusarov::openFile(input);
-    std::ofstream out(output);
-    gusarov::doDecode(in, out, fano);
-    in.close();
-    out.close();
-  }
-  void add(std::ofstream& out, std::string file)
-  {
-    std::ifstream in(file);
-    using iterFile = std::istreambuf_iterator< char >;
-    std::copy(iterFile(in), iterFile(), std::ostream_iterator< char >(out));
-  }
-}
+#include "io_struct.hpp"
 
 gusarov::Command::Command():
-  commandList({
+  commandList_({
+    {"add", std::bind(&gusarov::Command::add, this, std::ref(std::cin))},
+    {"code", std::bind(&gusarov::Command::code, this, std::ref(std::cin))},
     {"encode", std::bind(&gusarov::Command::encode, this, std::ref(std::cin))},
     {"decode", std::bind(&gusarov::Command::decode, this, std::ref(std::cin))},
-    {"code", std::bind(&gusarov::Command::getCodeFano, this, std::ref(std::cin))},
-    {"frequency", std::bind(&gusarov::Command::printFrequency, this, std::ref(std::cin))},
-    {"add", std::bind(&gusarov::Command::mergeTwoFiles, this, std::ref(std::cin))},
-    {"print", std::bind(&gusarov::Command::print, this, std::ref(std::cin))},
-    {"difference", std::bind(&gusarov::Command::compareSize, this, std::ref(std::cin))}})
+    {"merge", std::bind(&gusarov::Command::merge, this, std::ref(std::cin))},
+    {"frequency", std::bind(&gusarov::Command::frequency, this, std::ref(std::cin), std::ref(std::cout))},
+    {"print", std::bind(&gusarov::Command::print, this, std::ref(std::cin), std::ref(std::cout))},
+    {"compare", std::bind(&gusarov::Command::compare, this, std::ref(std::cin), std::ref(std::cout))}
+  })
 {}
+
+void gusarov::Command::add(std::istream& in)
+{
+  std::string fileName = "";
+  std::string textKey = "";
+  {
+    iofmtguard guard(in);
+    in >> std::noskipws;
+    in >> DelimiterIO{' '};
+    in >> fileIO{fileName};
+    in >> DelimiterIO{' '};
+    in >> textKey;
+    in >> DelimiterIO{'\n'};
+  }
+  if (!in) {
+    return;
+  }
+  std::ifstream file = openFile(fileName);
+  texts_[textKey] = std::string(std::istreambuf_iterator< char >(file), std::istreambuf_iterator< char >());
+  dictionaries_.erase(textKey);
+  file.close();
+}
+
+void gusarov::Command::code(std::istream& in)
+{
+  std::string textKey = "";
+  std::string codeKey = "";
+  {
+    iofmtguard guard(in);
+    in >> std::noskipws;
+    in >> DelimiterIO{' '};
+    in >> textKey;
+    in >> DelimiterIO{' '};
+    in >> codeKey;
+    in >> DelimiterIO{'\n'};
+  }
+  if (!in) {
+    return;
+  }
+  dictionaries_[codeKey] = getCode(texts_.at(textKey));
+  texts_.erase(codeKey);
+}
 
 void gusarov::Command::encode(std::istream& in)
 {
-  std::string input;
-  in >> nameFileIO{input};
-  std::string codeFile;
-  in >> nameFileIO{codeFile};
-  std::string output;
-  in >> nameFileIO{output};
-  createStreamsEncode(input, codeFile, output);
+  std::string textKey1;
+  std::string codeKey;
+  std::string textKey2;
+  {
+    iofmtguard guard(in);
+    in >> std::noskipws;
+    in >> DelimiterIO{' '};
+    in >> textKey1;
+    in >> DelimiterIO{' '};
+    in >> codeKey;
+    in >> DelimiterIO{' '};
+    in >> textKey2;
+    in >> DelimiterIO{'\n'};
+  }
+  if (!in) {
+    return;
+  }
+  texts_[textKey2] = getEncodedText(texts_.at(textKey1), dictionaries_.at(codeKey));
+  dictionaries_.erase(textKey2);
 }
 
 void gusarov::Command::decode(std::istream& in)
 {
-  std::string input;
-  in >> nameFileIO{input};
-  std::string codeFile;
-  in >> nameFileIO{codeFile};
-  std::string output;
-  in >> nameFileIO{output};
-  createStreamsDecode(input, codeFile, output);
+  std::string textKey1 = "";
+  std::string codeKey = "";
+  std::string textKey2 = "";
+  {
+    iofmtguard guard(in);
+    in >> std::noskipws;
+    in >> DelimiterIO{' '};
+    in >> textKey1;
+    in >> DelimiterIO{' '};
+    in >> codeKey;
+    in >> DelimiterIO{' '};
+    in >> textKey2;
+    in >> DelimiterIO{'\n'};
+  }
+  if (!in) {
+    return;
+  }
+  texts_[textKey2] = getDecodedText(texts_.at(textKey1), dictionaries_.at(codeKey));
+  dictionaries_.erase(textKey2);
 }
 
-void gusarov::Command::getCodeFano(std::istream& in)
+void gusarov::Command::frequency(std::istream& in, std::ostream& out)
 {
-  std::string name;
-  in >> nameFileIO{name};
-  std::ifstream fileRead = openFile(name);
-  in >> nameFileIO{name};
-  std::ofstream fileWrite(name);
-
-  createCodeFano(fileRead, fileWrite);
-
-  fileRead.close();
-  fileWrite.close();
-}
-
-void gusarov::Command::printFrequency(std::istream& in)
-{
-  std::string name;
-  in >> nameFileIO{name};
-  std::ifstream fileRead = openFile(name);
-  fanoAlphabet_t fanoAlphabet = getFrequencyForCode(fileRead);
-
-  fanoAlphabet_t::iterator iter = fanoAlphabet.begin();
-  while (iter != fanoAlphabet.end()) {
-    std::cout << getSymbol((*iter).symbol) << " " << (*iter).freq << "\n";
-    iter++;
+  std::string textKey = "";
+  {
+    iofmtguard gusard(in);
+    in >> std::noskipws;
+    in >> DelimiterIO{' '};
+    in >> textKey;
+    in >> DelimiterIO{'\n'};
+  }
+  if (!in) {
+    return;
+  }
+  fanoAlphabet_t fanoAlphabet = getFrequency(texts_.at(textKey));
+  for (auto iter : fanoAlphabet) {
+    out << getSymbol(iter.symbol) << " " << iter.freq << "\n";
   }
 }
 
-void gusarov::Command::mergeTwoFiles(std::istream& in)
+void gusarov::Command::print(std::istream& in, std::ostream& out)
 {
-  std::string fileName1 = "";
-  in >> nameFileIO{fileName1};
-  std::string codeFile1 = "";
-  in >> nameFileIO{codeFile1};
-  std::string fileName2 = "";
-  in >> nameFileIO{fileName2};
-  std::string codeFile2 = "";
-  in >> nameFileIO{codeFile2};
-  std::string codeFile3 = "";
-
-  if (in.peek() != '\n') {
-    in >> nameFileIO{codeFile3};
-    createStreamsDecode(fileName1, codeFile1, codeFile3);
-    std::ofstream out(fileName1, std::ios::trunc);
-    add(out, codeFile3);
-    createStreamsDecode(fileName2, codeFile2, codeFile3);
-    add(out, codeFile3);
-    out.close();
-    codeFile2 = codeFile3;
-  } else {
-    createStreamsDecode(fileName1, codeFile1, codeFile2);
-    std::ofstream out(fileName1, std::ios::trunc);
-    add(out, codeFile2);
-    add(out, fileName2);
-    out.close();
+  std::string key = "";
+  in >> key;
+  {
+    iofmtguard gusard(in);
+    in >> std::noskipws;
+    in >> DelimiterIO{' '};
+    in >> key;
+    in >> DelimiterIO{'\n'};
+  }
+  if (!in) {
+    return;
+  }
+  auto iterText = texts_.find(key);
+  if (iterText != texts_.end()) {
+    out << iterText->second << "\n";
+    return;
   }
 
-  std::ifstream fileRead(fileName1);
-  std::ofstream fileWrite(codeFile2);
-  createCodeFano(fileRead, fileWrite);
-  fileRead.close();
-  fileWrite.close();
+  for (auto iter : dictionaries_.at(key)) {
+    out << getSymbol(iter.first) << " " << iter.second << "\n";
+  }
 }
 
-void gusarov::Command::print(std::istream& in)
+void gusarov::Command::compare(std::istream& in, std::ostream& out)
 {
-  std::string name;
-  in >> nameFileIO{name};
-  std::ifstream file = openFile(name);
-  using iterFile = std::istreambuf_iterator< char >;
-  std::copy(iterFile(file), iterFile(), std::ostream_iterator< char >(std::cout));
-  std::cout << std::endl;
+  std::string textKey1 = "";
+  std::string textKey2 = "";
+  {
+    iofmtguard gusard(in);
+    in >> std::noskipws;
+    in >> DelimiterIO{' '};
+    in >> textKey1;
+    in >> DelimiterIO{' '};
+    in >> textKey2;
+    in >> DelimiterIO{'\n'};
+  }
+  if (!in) {
+    return;
+  }
+  size_t sizeFirst = getSize(texts_.at(textKey1));
+  size_t sizeSecond = getSize(texts_.at(textKey2));
+  out << "The size of the first file " << sizeFirst << " bytes\n";
+  out << "The size of the second file " << sizeSecond << " bytes\n";
+  out << "size difference: " << sizeFirst - sizeSecond << " bytes\n";
 }
 
-void gusarov::Command::compareSize(std::istream& in)
+void gusarov::Command::merge(std::istream& in)
 {
-  std::string name;
-  in >> nameFileIO{name};
-  std::ifstream first = openFile(name);
-  in >> nameFileIO{name};
-  std::ifstream second = openFile(name);
+  std::string textKey1 = "";
+  std::string codeKey1 = "";
+  std::string textKey2 = "";
+  std::string codeKey2 = "";
+  std::string textKey3 = "";
+  std::string codeKey3 = "";
 
-  first.seekg(0, std::ios::end);
-  size_t sizeFirst = first.tellg();
-  second.seekg(0, std::ios::end);
-  size_t sizeSecond = second.tellg();
-  std::cout << "first file: " << sizeFirst << " bytes\n";
-  std::cout << "second file: " << std::ceil(sizeSecond / 8) << " bytes\n";
-  std::cout << "difference: " << sizeFirst - std::ceil(sizeSecond / 8) << " bytes\n";
+  {
+    iofmtguard gusard(in);
+    in >> std::noskipws;
+    in >> DelimiterIO{' '};
+    in >> textKey1;
+    in >> DelimiterIO{' '};
+    in >> codeKey1;
+    in >> DelimiterIO{' '};
+    in >> textKey2;
+    in >> DelimiterIO{' '};
+    in >> textKey2;
+    in >> DelimiterIO{' '};
+    in >> codeKey2;
+    in >> DelimiterIO{' '};
+    in >> textKey3;
+    if (in.peek() == ' ') {
+      in >> DelimiterIO{' '};
+      in >> codeKey3;
+    }
+    in >> DelimiterIO{'\n'};
+  }
+  if (!in) {
+    return;
+  }
+  std::string newText = "";
+
+  newText = getDecodedText(texts_.at(textKey1), dictionaries_.at(codeKey1));
+  newText += getDecodedText(texts_.at(textKey2), dictionaries_.at(codeKey2));
+
+  texts_[textKey3] = newText;
+  dictionaries_.erase(textKey3);
+
+  if (!codeKey3.empty()) {
+
+    dictionaries_[codeKey3] = getCode(texts_.at(textKey3));
+    texts_[textKey3] = getEncodedText(texts_.at(textKey3), dictionaries_.at(codeKey3));
+
+    texts_.erase(codeKey3);
+    dictionaries_.erase(textKey3);
+  }
 }
 
 void gusarov::Command::doCommand(std::string command)
 {
-  auto commandIter = commandList.find(command);
-  if (commandIter != commandList.end()) {
+  auto commandIter = commandList_.find(command);
+  if (commandIter != commandList_.end()) {
     commandIter->second();
   } else {
     throw std::invalid_argument("Unknown command");
   }
   if (std::cin.rdstate() == std::ios::failbit) {
-    throw std::invalid_argument("incorrect file format");
+    std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
+    std::cin.clear();
+    throw std::invalid_argument("incorrect input");
   }
 }
-

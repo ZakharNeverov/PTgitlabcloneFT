@@ -1,11 +1,13 @@
 #include <iostream>
-#include <map>
 #include <limits>
 #include <string>
 #include "CommandSystem.hpp"
+#include "message.hpp"
 
 int main()
 {
+  std::locale::global(std::locale(".utf8"));
+
   gusarov::Command list;
   while (!std::cin.eof()) {
     try {
@@ -14,10 +16,10 @@ int main()
       if (!std::cin.eof()) {
         list.doCommand(commandName);
       }
-    } catch (const std::invalid_argument& err) {
-      std::cin.clear();
-      std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
-      std::cerr << err.what() << '\n';
+    } catch (const std::invalid_argument&) {
+      gusarov::printIncorrectInput(std::cout);
+    } catch (const std::logic_error&) {
+      gusarov::printIncompatibilityOfStructures(std::cout);
     }
   }
 }
