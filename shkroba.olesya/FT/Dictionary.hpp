@@ -21,8 +21,8 @@ namespace shkroba
     search(const std::string &word) const;
 
     bool deleteWord(const std::string &word);
-    void printDictionary(std::ostream &out);
-    size_t size();
+    void printDictionary(std::ostream &out) const;
+    size_t size() const;
     void findWord(char letter, std::ostream& out) const;
     void addWordsFromAnother(const Dictionary &dictionary);
 

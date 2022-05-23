@@ -13,13 +13,13 @@ namespace shkroba
 
   std::ostream& operator<<(std::ostream& out, std::set< std::string >& set);
 
-  void doPrintDictionary(Dictionary& dictionary, std::ostream& out);
-  void doSize(Dictionary& dictionary, std::ostream& out);
-  void doFindWord(Dictionary& dictionary, char letter, std::ostream& out);
-  void doAddWordsFromAnother(Dictionary& source, Dictionary& extra, std::ostream& out);
-  void doCreateFromOneTranslate(Dictionary& dictionary, std::ostream& out);
-  void doCreateFromUniqueWords(Dictionary& source, Dictionary& extra, std::ostream& out);
-  void doCommonDictionary(std::vector< Dictionary > dictionaries, size_t n);
+  void doPrintDictionary(const Dictionary& dictionary, std::ostream& out);
+  void doSize(const Dictionary& dictionary, std::ostream& out);
+  void doFindWord(const Dictionary& dictionary, char letter, std::ostream& out);
+  void doAddWordsFromAnother(Dictionary& source, const Dictionary& extra, std::ostream& out);
+  void doCreateFromOneTranslate(const Dictionary& dictionary, std::ostream& out);
+  void doCreateFromUniqueWords(const Dictionary& source, const Dictionary& extra, std::ostream& out);
+  void doCommonDictionary(const std::vector< Dictionary > &dictionaries, size_t n);
 
   void help(std::ostream& out);
   void createTestDictionaries(Dictionary& d1, Dictionary& d2, Dictionary& d3, Dictionary& d4, Dictionary& d5);
