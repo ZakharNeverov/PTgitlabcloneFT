@@ -12,7 +12,6 @@ namespace bokov
   void intersectDicts(std::string&, dicts_list&);
   void complementDicts(std::string&, dicts_list&);
   void getTop(std::string&, dicts_list&, std::ostream&);
-  void insertInDict(std::string&, dicts_list&);
   void searchInDict(std::string&, dicts_list&, std::ostream&);
   void deleteDict(std::string&, dicts_list&);
 }
