@@ -6,6 +6,7 @@
 void bokov::makeDictionary(const std::string& fileName, dictionary& dict)
 {
   std::ifstream fin(fileName);
+  fin.imbue(std::locale("ru_RU.utf8"));
   if (!fin.is_open())
   {
     throw std::invalid_argument("File not open!");

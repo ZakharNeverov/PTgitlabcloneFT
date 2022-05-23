@@ -232,6 +232,26 @@ void bokov::getTop(std::string& str, dicts_list& dicts, std::ostream& out)
   out << '\n';
 }
 
+void bokov::insertInDict(std::string& str, dicts_list& dicts)
+{
+  auto dict_ER = bokov::getRowOfWords(str);
+  if (dict_ER.size() < 3)
+  {
+    throw std::logic_error("Not enough parameters for insertion command!");
+    return;
+  }
+  auto dict_iter = dicts.find(dict_ER[0]);
+  std::string e_word = dict_ER[1];
+  dict_ER.erase(dict_ER.begin(), dict_ER.begin() + 1);
+  if (dict_iter != dicts.end())
+  {
+    for (auto& translation: dict_ER)
+    {
+      dict_iter->second[e_word].insert(translation);
+    }
+  }
+}
+
 void bokov::searchInDict(std::string& str, dicts_list& dicts, std::ostream& out)
 {
   auto dict_key = bokov::getRowOfWords(str);

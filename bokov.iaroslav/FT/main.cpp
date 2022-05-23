@@ -1,19 +1,19 @@
 #include <iostream>
 #include <fstream>
 #include <functional>
-#include <locale>
 #include "dicts.hpp"
 #include "commands.hpp"
 
 int main(int argc, char** argv)
 {
-  std::locale::global(std::locale("ru_RU.utf8"));
+  std::setlocale(LC_ALL, "Russian");
   if (argc != 2)
   {
     std::cerr << "Bad args!\n";
     return 1;
   }
   std::ifstream fin(argv[1]);
+  fin.imbue(std::locale("ru_RU.utf8"));
   if (!fin.is_open())
   {
     std::cerr << "File not open!\n";
@@ -50,6 +50,7 @@ int main(int argc, char** argv)
     {"intersect", std::bind(&bokov::intersectDicts, _1, std::ref(dicts))},
     {"complement", std::bind(&bokov::complementDicts, _1, std::ref(dicts))},
     {"top", std::bind(&bokov::getTop, _1, std::ref(dicts), std::ref(std::cout))},
+    {"insert", std::bind(&bokov::insertInDict, _1, std::ref(dicts))},
     {"search", std::bind(&bokov::searchInDict, _1, std::ref(dicts), std::ref(std::cout))},
     {"delete", std::bind(&bokov::deleteDict, _1, std::ref(dicts))}
   };
