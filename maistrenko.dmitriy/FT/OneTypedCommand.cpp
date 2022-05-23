@@ -26,7 +26,7 @@ void maistrenko::createDict(std::string& commandLine, std::ostream& out, Dicts& 
 }
 
 void maistrenko::getDict(std::string& commandLine, std::istream& in, std::ostream& out, Dicts& dest)
-{ 
+{
   std::string dictName = "";
   if (!getNextWord(commandLine, ' ', dictName) || !commandLine.empty())
   {
@@ -216,7 +216,7 @@ void maistrenko::unionDictionaries(std::string& commandLine, std::ostream& out, 
     notifyUnexistingDict(out);
     return;
   }
-  
+
   Dict tempDict = maistrenko::unionDicts(dicts.at(dictName1), dicts.at(dictName2));
   dicts.insert({newDictName, tempDict});
 }
