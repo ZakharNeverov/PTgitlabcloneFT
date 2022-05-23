@@ -4,7 +4,6 @@
 #include <iosfwd>
 
 namespace gusarov {
-  void printIncompatibilityOfStructures(std::ostream&);
   void printIncorrectInput(std::ostream&);
 }
 #endif

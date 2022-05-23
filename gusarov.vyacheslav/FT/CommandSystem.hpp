@@ -20,7 +20,7 @@ namespace gusarov {
     void print(std::istream&, std::ostream&);
     void compare(std::istream&, std::ostream&);
     void merge(std::istream&);
-    void doCommand(std::string);
+    void doCommand(const std::string&);
   private:
     std::map< std::string, std::function< void() > > commandList_;
     std::map< std::string, std::string > texts_;

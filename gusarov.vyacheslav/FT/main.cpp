@@ -6,20 +6,16 @@
 
 int main()
 {
-  std::locale::global(std::locale(".utf8"));
-
   gusarov::Command list;
   while (!std::cin.eof()) {
     try {
       std::string commandName = "";
-      std::cin >> commandName;
-      if (!std::cin.eof()) {
+      if (std::cin >> commandName) {
         list.doCommand(commandName);
       }
-    } catch (const std::invalid_argument&) {
+    } catch (const std::exception&) {
       gusarov::printIncorrectInput(std::cout);
-    } catch (const std::logic_error&) {
-      gusarov::printIncompatibilityOfStructures(std::cout);
     }
   }
 }
+

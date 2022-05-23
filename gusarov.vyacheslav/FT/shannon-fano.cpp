@@ -6,7 +6,7 @@
 #include "io_struct.hpp"
 
 namespace {
-  bool isAdded—haracter(gusarov::CodeFano_t current, char ch)
+  bool isAdded–°haracter(gusarov::CodeFano_t current, char ch)
   {
     return current.symbol == ch;
   }
@@ -17,6 +17,14 @@ namespace {
   bool isCode(char ch)
   {
     return ch == '1' || ch == '0';
+  }
+  size_t getFreq(size_t l, size_t h, const gusarov::fanoAlphabet_t& fano)
+  {
+    size_t freq = 0;
+    for (size_t i = l; i <= h - 1; i++) {
+      freq += fano[i].freq;
+    }
+    return freq;
   }
 }
 
@@ -35,12 +43,7 @@ std::string gusarov::getEncodedText(const std::string& text, dict_t dict)
 {
   std::string encodedText = "";
   for (size_t i = 0; i < text.size(); ++i) {
-    auto iter = dict.find(text[i]);
-    if (iter != dict.end()) {
-      encodedText += iter->second;
-    } else {
-      throw std::logic_error("unknown character");
-    }
+    encodedText += dict.at(text[i]);
   }
   return encodedText;
 }
@@ -82,52 +85,36 @@ gusarov::fanoAlphabet_t gusarov::getFanoAlphobet(const std::string& text)
   return fanoAlphabet;
 }
 
-void gusarov::shannon(size_t l, size_t h, gusarov::fanoAlphabet_t& fanoAlphabet)
+void gusarov::shannon(size_t l, size_t h, gusarov::fanoAlphabet_t& fano)
 {
-  size_t pack1 = 0, pack2 = 0, diff1 = 0, diff2 = 0;
-  if ((l + 1) == h || l == h || l > h) {
-    if (l == h || l > h) {
-      return;
-    }
-    fanoAlphabet[h].code += '0';
-    fanoAlphabet[l].code += '1';
+  if ((l + 1) == h) {
+    fano[h].code += '0';
+    fano[l].code += '1';
+    return;
+  } else if (l == h || l > h) {
     return;
   } else {
-    for (size_t i = l; i <= h - 1; i++) {
-      pack1 += fanoAlphabet[i].freq;
-    }
-    pack2 += fanoAlphabet[h].freq;
-    diff1 = pack1 - pack2;
-    if (diff1 < 0) {
-      diff1 *= (-1);
-    }
+    size_t diff1 = std::abs(static_cast< long >(getFreq(l, h, fano) - fano[h].freq));
     size_t j = 2;
     size_t k = 0;
     while (j != h - l + 1) {
       k = h - j;
-      pack1 = pack2 = 0;
-      for (size_t i = l; i <= k; i++) {
-        pack1 += fanoAlphabet[i].freq;
-      }
-      for (size_t i = h; i > k; i--) {
-        pack2 += fanoAlphabet[i].freq;
-      }
-      diff2 = pack1 - pack2;
+      size_t diff2 = getFreq(l, k + 1, fano) - getFreq(k + 1, h, fano);
       if (diff2 >= diff1) {
         break;
       }
       diff1 = diff2;
-      j++;
+      ++j;
     }
-    k++;
-    for (size_t i = l; i <= k; i++) {
-      fanoAlphabet[i].code += '1';
+    ++k;
+    for (size_t i = l; i <= k; ++i) {
+      fano[i].code += '1';
     }
-    for (size_t i = k + 1; i <= h; i++) {
-      fanoAlphabet[i].code += '0';
+    for (size_t i = k + 1; i <= h; ++i) {
+      fano[i].code += '0';
     }
-    shannon(l, k, fanoAlphabet);
-    shannon(k + 1, h, fanoAlphabet);
+    shannon(l, k, fano);
+    shannon(k + 1, h, fano);
   }
 }
 
@@ -135,7 +122,7 @@ gusarov::fanoAlphabet_t gusarov::getFrequency(const std::string& text)
 {
   fanoAlphabet_t fanoAlphabet;
   for (size_t i = 0; i < text.size(); ++i) {
-    auto pred = std::bind(isAdded—haracter, std::placeholders::_1, text[i]);
+    auto pred = std::bind(isAdded–°haracter, std::placeholders::_1, text[i]);
     auto iter = std::find_if(fanoAlphabet.begin(), fanoAlphabet.end(), pred);
     if (iter == fanoAlphabet.end()) {
       fanoAlphabet.push_back({text[i], 1});
@@ -154,3 +141,4 @@ gusarov::reverseDict_t gusarov::getReverseDictionary(dict_t dict)
   }
   return reverseDict;
 }
+

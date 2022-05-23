@@ -20,7 +20,7 @@ gusarov::Command::Command():
     {"frequency", std::bind(&gusarov::Command::frequency, this, std::ref(std::cin), std::ref(std::cout))},
     {"print", std::bind(&gusarov::Command::print, this, std::ref(std::cin), std::ref(std::cout))},
     {"compare", std::bind(&gusarov::Command::compare, this, std::ref(std::cin), std::ref(std::cout))}
-  })
+    })
 {}
 
 void gusarov::Command::add(std::istream& in)
@@ -133,7 +133,6 @@ void gusarov::Command::frequency(std::istream& in, std::ostream& out)
 void gusarov::Command::print(std::istream& in, std::ostream& out)
 {
   std::string key = "";
-  in >> key;
   {
     iofmtguard gusard(in);
     in >> std::noskipws;
@@ -197,8 +196,6 @@ void gusarov::Command::merge(std::istream& in)
     in >> DelimiterIO{' '};
     in >> textKey2;
     in >> DelimiterIO{' '};
-    in >> textKey2;
-    in >> DelimiterIO{' '};
     in >> codeKey2;
     in >> DelimiterIO{' '};
     in >> textKey3;
@@ -211,9 +208,7 @@ void gusarov::Command::merge(std::istream& in)
   if (!in) {
     return;
   }
-  std::string newText = "";
-
-  newText = getDecodedText(texts_.at(textKey1), dictionaries_.at(codeKey1));
+  std::string newText = getDecodedText(texts_.at(textKey1), dictionaries_.at(codeKey1));
   newText += getDecodedText(texts_.at(textKey2), dictionaries_.at(codeKey2));
 
   texts_[textKey3] = newText;
@@ -229,17 +224,13 @@ void gusarov::Command::merge(std::istream& in)
   }
 }
 
-void gusarov::Command::doCommand(std::string command)
+void gusarov::Command::doCommand(const std::string& command)
 {
-  auto commandIter = commandList_.find(command);
-  if (commandIter != commandList_.end()) {
-    commandIter->second();
-  } else {
-    throw std::invalid_argument("Unknown command");
-  }
+  commandList_.at(command)();
   if (std::cin.rdstate() == std::ios::failbit) {
     std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
     std::cin.clear();
     throw std::invalid_argument("incorrect input");
   }
 }
+
