@@ -9,6 +9,9 @@
 
 void rakitin::add(dictionaries& data, const std::string& dataname, const std::string& path)
 {
+  if (data.find(dataname) != data.end()) {
+    throw std::logic_error("Dataname with name " + dataname + " already exists");
+  }
   data.insert({ dataname, rakitin::getDictionary(path) });
 }
 
