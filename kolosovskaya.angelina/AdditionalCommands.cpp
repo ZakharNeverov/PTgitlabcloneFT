@@ -89,7 +89,6 @@ namespace kolosovskaya
   std::vector< std::string > getNamesFromString(std::string str, char delim)
   {
     std::vector< std::string > dictNames;
-   // str.erase(0, 1);
     while (!str.empty())
     {
       dictNames.push_back(getPartOfStr(str, delim));
@@ -131,38 +130,6 @@ namespace kolosovskaya
     }
     return newDict;
   }
-
-  /* kolosovskaya::Dict intersectDicts(const kolosovskaya::Dict& first, const kolosovskaya::Dict& second)
-   {
-     kolosovskaya::Dict newDict;
-     std::set_intersection(first.begin(), first.end(), second.begin(), second.end(), std::inserter(newDict, newDict.end()), cmp);
-     /*std::for_each(newDict.begin(), newDict.end(),
-       [&newDict, &first, &second](kolosovskaya::Dict::value_type& pair)
-       {
-         newDict[pair.second] = complementRuList(first.at(pair.first), second.at(pair.first));
-       });
-     return newDict;
-
-    // auto dictIter = temp.begin();
-    // if (dictIter->second.size() == 1 && temp.size() == 1)
-    // {
-     //  return temp;
-     //}
-     /*std::for_each(new_dict.begin(), new_dict.end(),
-       [&second](kolosovskaya::Dict::value_type& pair)
-       {
-         pair.second = intersectRuList(pair.second, second.at(pair.first));
-       });
-     //eturn new_dict;
-   }
-
-   kolosovskaya::ruW intersectRuList(const kolosovskaya::ruW& first, const kolosovskaya::ruW& second)
-   {
-     kolosovskaya::ruW newSet;
-     std::set_intersection(first.begin(), first.end(), second.begin(), second.end(),
-       std::inserter(newSet, newSet.end()));
-     return newSet;
-   }*/
 
   ruW makeUnionRuWords(const ruW& first, const ruW& second)
   {

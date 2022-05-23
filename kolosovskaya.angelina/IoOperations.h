@@ -13,5 +13,5 @@ namespace kolosovskaya
   std::ostream& printWrongArgsMessage(std::ostream&);
 }
 
-#endif 
+#endif
 

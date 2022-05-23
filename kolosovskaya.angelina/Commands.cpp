@@ -61,41 +61,6 @@ namespace kolosovskaya
     allDicts[newDictName] = newDict;
   }
 
-  /*void doIntersect(Dicts& allDicts, std::istream& in, std::ostream& out)
-  {
-    std::string str = "";
-    std::getline(in, str);
-    std::vector< std::string > dictNames = ::getNamesFromString(str, allDicts, out);
-    if (dictNames.size() < 3)
-    {
-      printWrongArgsMessage(out);
-      return;
-    }
-    auto namesIter = dictNames.begin();
-    std::string newDictName = *namesIter;
-    dictNames.erase(namesIter);
-    if (!doesExist(newDictName, allDicts))
-    {
-      for (auto&& name : dictNames)
-      {
-        if (!doesExist(name, allDicts))
-        {
-          printWrongArgsMessage(out);
-          return;
-        }
-      }
-    }
-    else
-    {
-      printWrongArgsMessage(out);
-      return;
-    }
-    auto first = allDicts.find(*(namesIter++));
-    auto second = allDicts.find(*(namesIter++));
-    Dict newDict = ::intersectDicts(first->second, second->second);
-    allDicts[newDictName] = newDict;
-  }*/
-
   void doUnion(Dicts& allDicts, std::istream& in, std::ostream& out)
   {
     std::string str = "";
