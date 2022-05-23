@@ -19,33 +19,33 @@ namespace shkroba
     Dictionary result;
     bool isCommon;
 
-    std::map< std::string, size_t > translates; // перевод и кол-во раз которое встретилось этого перевода
+    std::map< std::string, size_t > translates;
 
     Dictionary dictionary = *common.begin();
-    for (const auto& pair: dictionary)        // Берём каждое слово в словаре
+    for (const auto& pair: dictionary)
     {
       isCommon = true;
       translates.clear();
-      for (const auto &dictionarySecond: common)        // С текущим словом опять идём по всем словарям
+      for (const auto &dictionarySecond: common)
       {
-        if (dictionarySecond.search(pair.first) == dictionarySecond.end()) // Проверяем его наличие во всех остальных
+        if (dictionarySecond.search(pair.first) == dictionarySecond.end())
         {
-          isCommon = false;                   // Если хотя бы в одном словаре его нет -> слово не уникальное и его не будет добавлять в Result
+          isCommon = false;
           break;
         }
         else
         {
           pairER item = *dictionarySecond.search(
-            pair.first); // находим set в котором все переводы этого слова в данном словаре
-          for (const auto &word: *item.second)   // вставляем все эти слова в наши переводы
+            pair.first);
+          for (const auto &word: *item.second)
           {
             translates[word]++;
           }
         }
       }
-      if (isCommon)         // если во всех нашлось это слово -> isCommon останется true и мы слово добавим в result
+      if (isCommon)
       {
-        std::set<std::string> set; // set в котором будут только общие слова
+        std::set<std::string> set;
         for (const auto &translate: translates)
         {
           if (translate.second == common.size())
@@ -53,7 +53,7 @@ namespace shkroba
             set.insert(translate.first);
           }
         }
-        if (set.empty()) // Тут будем давать написать перевод если не встретилось ни одного общего
+        if (set.empty())
         {
           std::cout << "Write translate for " + pair.first << '\n';
           std::cout << "Write \"Exit\" to escape\n";
