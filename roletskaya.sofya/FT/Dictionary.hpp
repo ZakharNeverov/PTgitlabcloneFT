@@ -12,33 +12,32 @@ namespace roletskaya
   class Dictionary
   {
   private:
-    std::map< std::string, std::list< std::string > > dictionary_;
+    map dictionary_;
 
     bool checkWord(const std::string& string) const;
     bool checkTranslation(const std::string& string) const;
+    bool insertTranslation(std::list< std::string >& list, std::string& line);
 
   public:
     Dictionary();
-    Dictionary(const Dictionary& src) = delete;
+    Dictionary(const Dictionary& src) = default;
     Dictionary(Dictionary&& src) noexcept;
-    Dictionary& operator=(const Dictionary& src) = delete;
+    Dictionary& operator=(const Dictionary& src) = default;
     Dictionary& operator=(Dictionary&& src) noexcept;
+    Dictionary& operator=(map&& src) noexcept;
     ~Dictionary() = default;
 
-    void createDictionary(std::istream& in);
+    bool createDictionary(std::istream& in);
     bool insert(const std::string& string);
     bool findWordByTranslation(const std::string& trnsl, std::ostream& out);
     bool findTranslation(const std::string& word, std::ostream& out);
     bool deleteKey(const std::string& word);
     void print(std::ostream& out) const;
-    void translateText(std::istream& in, std::ostream& out);
+    void translateText(const std::string& string, std::ostream& out);
 
-    friend map merge(std::vector< map >& dictsVector);
-    friend map complement(std::vector< map >& dictsVector);
-    friend bool equals(std::vector< map >& dictsVector);
-
-    friend std::vector< map > getFiles(std::string& files);
-    void inputResult(map dict);
+    friend map merge(std::vector< Dictionary >& dictsVector);
+    friend void complement(std::vector< Dictionary >& dictsVector);
+    friend bool equals(std::vector< Dictionary >& dictsVector);
   };
 }
 #endif

@@ -1,17 +1,13 @@
-#include <stdexcept>
-
 #include "Dictionary.hpp"
+#include <algorithm>
+#include <stdexcept>
 #include "Utilites.hpp"
 
 using map = std::map< std::string, std::list< std::string > >;
 
-roletskaya::Dictionary::Dictionary() :
-  dictionary_{}
-{}
+roletskaya::Dictionary::Dictionary(): dictionary_{} {}
 
-roletskaya::Dictionary::Dictionary(Dictionary&& src) noexcept :
-  dictionary_{std::move(src.dictionary_)}
-{}
+roletskaya::Dictionary::Dictionary(Dictionary&& src) noexcept : dictionary_{std::move(src.dictionary_)} {}
 
 roletskaya::Dictionary& roletskaya::Dictionary::operator=(Dictionary&& src) noexcept
 {
@@ -19,9 +15,15 @@ roletskaya::Dictionary& roletskaya::Dictionary::operator=(Dictionary&& src) noex
   return *this;
 }
 
+roletskaya::Dictionary& roletskaya::Dictionary::operator=(map&& src) noexcept
+{
+  dictionary_ = src;
+  return *this;
+}
+
 bool roletskaya::Dictionary::checkWord(const std::string& string) const
 {
-  for (int i = 0; i < string.length(); i++)
+  for (size_t i = 0; i < string.length(); i++)
   {
     if (string[i] > 'z' || string[i] < 'a')
     {
@@ -33,7 +35,7 @@ bool roletskaya::Dictionary::checkWord(const std::string& string) const
 
 bool roletskaya::Dictionary::checkTranslation(const std::string& string) const
 {
-  for (int i = 0; i < string.length(); i++)
+  for (size_t i = 0; i < string.length(); i++)
   {
     if (string[i] > 'ÿ' || string[i] < 'à')
     {
@@ -43,55 +45,79 @@ bool roletskaya::Dictionary::checkTranslation(const std::string& string) const
   return true;
 }
 
-void roletskaya::Dictionary::createDictionary(std::istream& in)
+bool roletskaya::Dictionary::insertTranslation(std::list< std::string >& list, std::string& line)
+{
+  std::string translation = "";
+  bool flag = true;
+  while (!line.empty())
+  {
+    translation = getElem(line);
+    if (checkTranslation(translation) == false)
+    {
+      flag = false;
+      continue;
+    }
+    list.push_back(translation);
+  }
+  list.sort();
+  return flag;
+}
+
+bool roletskaya::Dictionary::createDictionary(std::istream& in)
 {
   if (!in.good())
   {
     throw std::invalid_argument("Couldn't open the input file.\n");
-    return;
+    return false;
   }
   std::string line = "";
   std::string word = "";
-  int count = 0;
   while (!in.eof())
   {
-    count = 0;
     std::getline(in, line);
     word = getElem(line);
     if (checkWord(word) == false)
     {
       continue;
     }
-    if (line == "")
+    if (line.empty())
     {
       continue;
     }
     auto item = dictionary_.find(word);
     if (item != dictionary_.end())
     {
-      continue;
-    }
-    if (line.size() == 0.0)
-    {
-      continue;
-    }
-    std::string translation = "";
-    std::list< std::string > list;
-    while (line.size() != 0.0)
-    {
-      translation = getElem(line);
-      if (checkTranslation(translation) == false)
+      std::list< std::string > list;
+      if (insertTranslation(list, line) == true)
       {
-        continue;
+        if (item->second == list)
+        {
+          continue;
+        }
+        else
+        {
+          auto listIter = list.begin();
+          while (listIter != list.end())
+          {
+            auto listItem = std::find(item->second.begin(), item->second.end(), *listIter);
+            if (listItem == item->second.end())
+            {
+              item->second.push_back(*listIter);
+            }
+            listIter++;
+          }
+          continue;
+        }
       }
-      list.push_back(translation);
-      count++;
+      continue;
     }
-    if (count > 0)
+    std::list< std::string > list;
+    if ((insertTranslation(list, line) == true) && (!list.empty()))
     {
       dictionary_.emplace(word, list);
     }
   }
+  return true;
 }
 
 bool roletskaya::Dictionary::insert(const std::string& string)
@@ -103,31 +129,47 @@ bool roletskaya::Dictionary::insert(const std::string& string)
     throw std::invalid_argument("Incorrect input.\n");
     return false;
   }
-  auto item = dictionary_.find(word);
-  if (item != dictionary_.end())
-  {
-    throw std::invalid_argument("This word is already in the dictionary.\n");
-    return false;
-  }
-  if (line.size() == 0.0)
+  if (line.empty())
   {
     throw std::invalid_argument("Incorrect input.\n");
     return false;
   }
-  std::string translation = "";
-  std::list< std::string > list;
-  while (line.size() != 0.0)
+  auto item = dictionary_.find(word);
+  if (item != dictionary_.end())
   {
-    translation = getElem(line);
-    if (checkTranslation(translation) == false)
+    std::list< std::string > list;
+    if (insertTranslation(list, line) == true)
     {
-      throw std::invalid_argument("Incorrect input.\n");
-      return false;
+      if (item->second == list)
+      {
+        throw std::invalid_argument("This word is already in the dictionary.\n");
+        return false;
+      }
+      else
+      {
+        auto listIter = list.begin();
+        while (listIter != list.end())
+        {
+          auto listItem = std::find(item->second.begin(), item->second.end(), *listIter);
+          if (listItem == item->second.end())
+          {
+            item->second.push_back(*listIter);
+          }
+          listIter++;
+        }
+        return true;
+      }
     }
-    list.push_back(translation);
+    throw std::invalid_argument("Incorrect input.\n");
+    return false;
   }
-  dictionary_.emplace(word, list);
-  return true;
+  std::list< std::string > list;
+  if ((insertTranslation(list, line) == true) && (!list.empty()))
+  {
+    dictionary_.emplace(word, list);
+    return true;
+  }
+  return false;
 }
 
 bool roletskaya::Dictionary::findWordByTranslation(const std::string& trnsl, std::ostream& out)
@@ -148,7 +190,6 @@ bool roletskaya::Dictionary::findWordByTranslation(const std::string& trnsl, std
       }
     }
   }
-  out << "No such word in the dictionary.\n";
   return false;
 }
 
@@ -168,9 +209,9 @@ bool roletskaya::Dictionary::findTranslation(const std::string& word, std::ostre
       out << *iter << " ";
     }
     out << '\n';
-  } else
+  }
+  else
   {
-    out << "No such word in the dictionary.\n";
     return false;
   }
   return true;
@@ -199,7 +240,7 @@ void roletskaya::Dictionary::print(std::ostream& out) const
     throw std::invalid_argument("Couldn't open the output file.");
     return;
   }
-  if (dictionary_.size() == 0.0)
+  if (dictionary_.empty())
   {
     out << "Dictionary is empty.\n";
     return;
@@ -208,58 +249,39 @@ void roletskaya::Dictionary::print(std::ostream& out) const
   for (auto iter = dictionary_.begin(); iter != dictionary_.end(); iter++)
   {
     out << iter->first << " - ";
-    auto item = dictionary_.find(iter->first);
-    for (auto iter = item->second.begin(); iter != item->second.end(); iter++)
+    for (auto iterList = iter->second.begin(); iterList != iter->second.end(); iterList++)
     {
-      out << *iter << " ";
+      out << *iterList << " ";
     }
     out << '\n';
   }
 }
 
-void roletskaya::Dictionary::translateText(std::istream& in, std::ostream& out)
+void roletskaya::Dictionary::translateText(const std::string& string, std::ostream& out)
 {
-  if (!in.good())
-  {
-    throw std::invalid_argument("Couldn't open the input file.");
-    return;
-  }
-  if (!out.good())
-  {
-    throw std::invalid_argument("Couldn't open the output file.");
-    return;
-  }
-  std::string line = "";
+  std::string line = string;
   std::string word = "";
-  while (!in.eof())
+  while (!line.empty())
   {
-    std::getline(in, line);
-    while (!line.empty())
+    word = getElem(line);
+    if (checkWord(word) == false)
     {
-      word = getElem(line);
-      if (checkWord(word) == false)
+      continue;
+    }
+    auto item = dictionary_.find(word);
+    if (item != dictionary_.end())
+    {
+      out << item->first << " - ";
+      for (auto iterList = item->second.begin(); iterList != item->second.end(); iterList++)
       {
-        continue;
+        out << *iterList << " ";
       }
-      auto item = dictionary_.find(word);
-      if (item != dictionary_.end())
-      {
-        out << item->first << " - ";
-        for (auto iter = item->second.begin(); iter != item->second.end(); iter++)
-        {
-          out << *iter << " ";
-        }
-        out << '\n';
-      } else
-      {
-        out << word << " : there's no such word in the dictionary.\n";
-        continue;
-      }
+      out << '\n';
+    }
+    else
+    {
+      out << word << " : there's no such word in the dictionary.\n";
+      continue;
     }
   }
-}
-
-void roletskaya::Dictionary::inputResult(map dict)
-{
-  dictionary_ = std::move(dict);
 }

@@ -5,5 +5,7 @@
 namespace roletskaya
 {
   std::string getElem(std::string& string);
+  std::string getNameFromFile(std::string& string);
+  bool checkResults(std::string& outFileName, std::string& ResultsFileName);
 }
 #endif

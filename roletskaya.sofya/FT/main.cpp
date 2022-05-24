@@ -1,41 +1,69 @@
-﻿#include <fstream>
+#include <fstream>
 #include <iostream>
 #include <stdexcept>
 #include <string>
-#include <windows.h>
-
+#include <functional>
 #include "Commands.hpp"
 #include "Dictionary.hpp"
 #include "Utilites.hpp"
+#include "WrappersForCommands.hpp"
 
 using map = std::map< std::string, std::list< std::string > >;
+using dictsArray = std::map< std::string, roletskaya::Dictionary >;
 
-int main()
+int main(int argc, char* argv[])
 {
-  SetConsoleCP(1251);
-  SetConsoleOutputCP(1251);
+  if (argc <= 2)
+  {
+    std::cerr << "Too few files.\n";
+    return 1;
+  }
+  std::string commandFileName = argv[1];
+
   std::ifstream in;
-  std::string inFileName = "";
   std::ofstream out;
   std::string outFileName = "";
   std::string checkFile = "";
-  std::cout << "Enter file's name to read commands: ";
-  std::cin >> inFileName;
-  std::cout << "\nEnter file's name to output results: ";
+  std::cout << "Enter file's name to output results: ";
   std::cin >> outFileName;
   std::cout << "\nEnter file's name to compare results: ";
   std::cin >> checkFile;
+
+  dictsArray dicts;
+  using command_t = std::function< void(std::string& line) >;
+  std::map< std::string, command_t > commands({
+    {"insert", std::bind(roletskaya::insert, std::placeholders::_1, std::ref(dicts), std::ref(out))},
+    {"findWordByTranslation", std::bind(roletskaya::findWordByTranslation, std::placeholders::_1, std::ref(dicts), std::ref(out))},
+    {"findTranslation", std::bind(roletskaya::findTranslation,  std::placeholders::_1, std::ref(dicts), std::ref(out))},
+    {"translateText", std::bind(roletskaya::translateText,  std::placeholders::_1, std::ref(dicts), std::ref(out))},
+    {"delete", std::bind(roletskaya::deleteKey,  std::placeholders::_1, std::ref(dicts), std::ref(out))},
+    {"print", std::bind(roletskaya::print,  std::placeholders::_1, std::ref(dicts), std::ref(out))},
+    {"merge", std::bind(roletskaya::doMerge, std::placeholders::_1, std::ref(dicts), std::ref(out))},
+    {"complement", std::bind(roletskaya::doComplement, std::placeholders::_1, std::ref(dicts), std::ref(out))},
+    {"equals", std::bind(roletskaya::ifEquals, std::placeholders::_1, std::ref(dicts), std::ref(out))}
+  });
+
   try
   {
-    in.open(inFileName);
+    for (int i = 2; i < argc; ++i)
+    {
+      std::string fileName = argv[i];
+      std::string dictName = roletskaya::getNameFromFile(fileName);
+      if (roletskaya::pushDictToArray(dictName, fileName, dicts) == false)
+      {
+        return 1;
+      }
+    }
+
+    in.open(commandFileName);
     if (!in)
     {
-      throw std::invalid_argument("Couldn't open the input file.");
+      throw std::invalid_argument("Couldn't open the input file.\n");
     }
     out.open(outFileName);
     if (!out)
     {
-      throw std::invalid_argument("Couldn't open the output file.");
+      throw std::invalid_argument("Couldn't open the output file.\n");
     }
     while (!in.eof())
     {
@@ -45,89 +73,17 @@ int main()
         std::string line = "";
         std::getline(in, line);
         command = roletskaya::getElem(line);
-        if ((command == "findWordByTranslation") || (command == "findTranslation") || (command == "print") ||
-            (command == "translateText") || (command == "insert") || (command == "delete"))
+        if (!command.empty())
         {
-          std::ifstream fin;
-          std::string dictName = roletskaya::getElem(line);
-          fin.open(dictName);
-          roletskaya::Dictionary dictionary;
-          dictionary.createDictionary(fin);
-          fin.close();
-          if (command == "findWordByTranslation")
+          auto command_iter = commands.find(command);
+          if (command_iter == commands.end())
           {
-            dictionary.findWordByTranslation(line, out);
-            continue;
-          } else if (command == "findTranslation")
-          {
-            dictionary.findTranslation(line, out);
-            continue;
-          } else if (command == "print")
-          {
-            dictionary.print(out);
-            out << '\n';
-            continue;
-          } else if (command == "translateText")
-          {
-            std::string fileWithText = "";
-            in >> fileWithText;
-            in.open(fileWithText);
-            dictionary.translateText(in, out);
-            in.close();
-            out << '\n';
-            continue;
-          } else if (command == "insert")
-          {
-            if (dictionary.insert(line) == true)
-            {
-              out << "Word is inserted.\n";
-            }
-            continue;
-          } else if (command == "delete")
-          {
-            if (dictionary.deleteKey(line) == true)
-            {
-              out << "Word is deleted.\n";
-            }
-            continue;
+            throw std::invalid_argument("No such command.\n");
           }
-        } else if ((command == "merge") || (command == "complement") || (command == "equals"))
-        {
-          std::vector< map > vector = roletskaya::getFiles(line);
-          if (vector.size() < 2)
-          {
-            throw std::invalid_argument("Too few dictionaries.\n");
-          }
-          if (command == "merge")
-          {
-            roletskaya::Dictionary newDictionary;
-            newDictionary.inputResult(roletskaya::merge(vector));
-            newDictionary.print(out);
-            out << '\n';
-            continue;
-          } else if (command == "complement")
-          {
-            roletskaya::Dictionary dictionary;
-            dictionary.inputResult(roletskaya::complement(vector));
-            dictionary.print(out);
-            out << '\n';
-            continue;
-          } else if (command == "equals")
-          {
-            if (roletskaya::equals(vector) == true)
-            {
-              out << "Dictionaries are equal.\n";
-            } else
-            {
-              out << "Dictionaries are not equal.\n";
-            }
-            continue;
-          }
-        } else
-        {
-          throw std::invalid_argument("No such command.\n");
-        }
-      } catch (const std::exception& error)
+          command_iter->second(line);
+        }      
+      }
+      catch (const std::exception& error)
       {
         out << error.what();
       }
@@ -136,15 +92,17 @@ int main()
     out.close();
     if (roletskaya::checkResults(outFileName, checkFile) == false)
     {
-      throw std::logic_error("Results are incorrect.\n");
-    } else
+      throw std::logic_error("Results are not correct.\n");
+    }
+    else
     {
       std::cout << "Results are correct.\n";
     }
-  } catch (const std::exception& error)
+  }
+  catch (const std::exception& error)
   {
     std::cerr << error.what() << '\n';
-    return -1;
+    return 1;
   }
   return 0;
 }

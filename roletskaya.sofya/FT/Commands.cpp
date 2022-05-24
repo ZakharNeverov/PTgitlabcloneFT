@@ -1,44 +1,44 @@
 #include "Commands.hpp"
 #include "Utilites.hpp"
 
-std::vector< map > roletskaya::getFiles(std::string& files)
+bool roletskaya::isCorrectDictName(std::string& name, dictsArray& dictsArray)
 {
-  std::vector< map > vector;
-  std::string fileName = "";
-  std::ifstream in;
-  while (!files.empty())
-  {
-    Dictionary dictionary;
-    fileName = getElem(files);
-    in.open(fileName);
-    if (!in)
-    {
-      throw std::invalid_argument("Couldn't open the file.\n");
-    }
-    dictionary.createDictionary(in);
-    in.close();
-    vector.push_back(dictionary.dictionary_);
-  }
-  return vector;
+  return dictsArray.find(name) != dictsArray.end();
 }
 
-map roletskaya::merge(std::vector< map >& dictsVector)
+bool roletskaya::pushDictToArray(std::string& name, std::string fileName, dictsArray& dictsArray)
 {
-  map newDictionary = std::move(dictsVector[0]);
-  for (int i = 1; i < dictsVector.size(); i++)
+  std::ifstream fin;
+  fin.open((fileName));
+  roletskaya::Dictionary dict;
+  if (dict.createDictionary(fin) == true)
   {
-    if (dictsVector[i].size() == 0)
+    dictsArray.emplace(name, dict);
+    fin.close();
+    return true;
+  }
+  fin.close();
+  return false;
+}
+
+map roletskaya::merge(std::vector< Dictionary >& dictsVector)
+{
+  map newDictionary = dictsVector[0].dictionary_;
+  for (size_t i = 1; i < dictsVector.size(); i++)
+  {
+    if (dictsVector[i].dictionary_.empty())
     {
       continue;
     }
-    for (auto iter = dictsVector[i].begin(); iter != dictsVector[i].end(); iter++)
+    for (auto iter = dictsVector[i].dictionary_.begin(); iter != dictsVector[i].dictionary_.end(); iter++)
     {
       auto item = newDictionary.find(iter->first);
       if (item == newDictionary.end())
       {
-        auto item2 = dictsVector[i].find(iter->first);
+        auto item2 = dictsVector[i].dictionary_.find(iter->first);
         newDictionary.emplace(item2->first, item2->second);
-      } else
+      }
+      else
       {
         continue;
       }
@@ -47,130 +47,62 @@ map roletskaya::merge(std::vector< map >& dictsVector)
   return newDictionary;
 }
 
-map roletskaya::complement(std::vector< map >& dictsVector)
+void roletskaya::complement(std::vector< Dictionary >& dictsVector)
 {
-  for (int i = 1; i < dictsVector.size(); i++)
+  for (size_t i = 1; i < dictsVector.size(); i++)
   {
-    if (dictsVector[i].size() == 0)
+    if (dictsVector[i].dictionary_.empty())
     {
       continue;
     }
-    for (auto iter = dictsVector[i].begin(); iter != dictsVector[i].end(); iter++)
+    for (auto iter = dictsVector[i].dictionary_.begin(); iter != dictsVector[i].dictionary_.end(); iter++)
     {
-      auto item = dictsVector[0].find(iter->first);
-      if (item == dictsVector[0].end())
+      auto item = dictsVector[0].dictionary_.find(iter->first);
+      if (item == dictsVector[0].dictionary_.end())
       {
         continue;
-      } else
+      }
+      else
       {
-        if (iter->second.size() == item->second.size())
+        if (iter->second == item->second)
         {
-          dictsVector[0].erase(iter->first);
-        } else
-        {
-          for (auto listIter = iter->second.begin(); listIter != iter->second.end(); listIter++)
-          {
-            for (auto listIter2 = item->second.begin(); listIter2 != item->second.end(); listIter2++)
-            {
-              if (*listIter == *listIter2)
-              {
-                listIter2->erase();
-              }
-            }
-          }
+          dictsVector[0].dictionary_.erase(iter->first);
         }
       }
     }
   }
-  return dictsVector[0];
 }
 
-bool roletskaya::equals(std::vector< map >& dictsVector)
+bool roletskaya::equals(std::vector< Dictionary >& dictsVector)
 {
-  int countList = 0;
   int count = 0;
-  bool flag = false;
-  for (int i = 0; i < dictsVector.size() - 1; i++)
+  for (size_t i = 0; i < dictsVector.size() - 1; i++)
   {
-    if (dictsVector[i].size() != dictsVector[i + 1].size())
+    if (dictsVector[i].dictionary_.size() != dictsVector[i + 1].dictionary_.size())
     {
       return false;
     }
-    for (auto iter = dictsVector[i].begin(); iter != dictsVector[i].end(); iter++)
+    for (auto iter = dictsVector[i + 1].dictionary_.begin(); iter != dictsVector[i + 1].dictionary_.end(); iter++)
     {
-      for (auto iter2 = dictsVector[i + 1].begin(); iter2 != dictsVector[i + 1].end(); iter2++)
+      auto item = dictsVector[i].dictionary_.find(iter->first);
+      if (item == dictsVector[i].dictionary_.end())
       {
-        if (iter->first == iter2->first)
+        return false;
+      }
+      else
+      {
+        count++;
+        if (item->second != iter->second)
         {
-          count++;
-          if (iter->second.size() != iter2->second.size())
-          {
-            return false;
-          }
-          for (auto listIter = iter->second.begin(); listIter != iter->second.end(); listIter++)
-          {
-            for (auto listIter2 = iter2->second.begin(); listIter2 != iter2->second.end(); listIter2++)
-            {
-              if (*listIter == *listIter2)
-              {
-                countList++;
-                break;
-              }
-            }
-          }
-          if (countList != iter->second.size())
-          {
-            return false;
-          } else
-          {
-            countList = 0;
-            break;
-          }
+          return false;
         }
       }
     }
-    if (count != dictsVector[i].size())
+    if (count != dictsVector[i].dictionary_.size())
     {
       return false;
-    } else
-    {
-      count = 0;
-      flag = true;
     }
+    count = 0;
   }
-  return flag;
-}
-
-bool roletskaya::checkResults(std::string& outFileName, std::string& ResultsFileName)
-{
-  std::ifstream in;
-  std::ifstream checkIn;
-  in.open(outFileName);
-  checkIn.open(ResultsFileName);
-  if (!checkIn)
-  {
-    throw std::invalid_argument("Couldn't open the result file.\n");
-  }
-  std::string line1 = "";
-  std::string line2 = "";
-  while (!in.eof() || !checkIn.eof())
-  {
-    std::getline(in, line1);
-    std::getline(checkIn, line2);
-    if (line1 != line2)
-    {
-      in.close();
-      checkIn.close();
-      return false;
-    }
-  }
-  if ((in.eof() && !checkIn.eof()) || (!in.eof() && checkIn.eof()))
-  {
-    in.close();
-    checkIn.close();
-    return false;
-  }
-  in.close();
-  checkIn.close();
   return true;
 }
