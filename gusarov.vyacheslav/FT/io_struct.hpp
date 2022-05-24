@@ -2,7 +2,7 @@
 #define IO_STRUCT_HPP
 
 #include <string>
-#include "CommandSystem.hpp"
+#include <iosfwd>
 
 namespace gusarov {
   struct fileIO
