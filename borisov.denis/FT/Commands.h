@@ -3,7 +3,6 @@
 #include <iosfwd>
 #include <map>
 #include <string>
-#include <stdexcept>
 
 namespace borisov
 {

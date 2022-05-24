@@ -1,6 +1,5 @@
 #include "CommandWrappers.h"
 #include <fstream>
-#include "StringUtils.h"
 
 namespace
 {

@@ -1,11 +1,10 @@
 #include <fstream>
 #include <functional>
 #include <iostream>
-#include <list>
 #include <map>
 #include "CommandWrappers.h"
 #include "ErrorMessages.h"
-#include "StringUtils.h"
+#include "IoProcessing.h"
 
 int main(int argc, char** argv)
 {
@@ -25,52 +24,33 @@ int main(int argc, char** argv)
   }
 
   borisov::AllDicts allDicts;
-  std::string s;
   while (!fileIn.eof())
   {
-    std::getline(fileIn, s);
-    if (!s.empty())
+    try
     {
-      try
+      std::string name;
+      fileIn >> name;
+      bool s = allDicts.insert({name, borisov::Dict()}).second;
+      if (!s)
       {
-        std::list< std::string > l;
-        borisov::utils::split(s, l);
-        std::string name = l.front();
-        l.pop_front();
-        bool s = allDicts.insert({name, borisov::Dict()}).second;
-        if (!s)
-        {
-          throw std::invalid_argument("Invalid file format");
-        }
-        borisov::Dict& dict = allDicts[name];
-        auto iter = l.cbegin();
-        auto iterEnd = l.cend();
-        while (iter != iterEnd)
-        {
-          const borisov::Word& word = *(iter++);
-          if (iter == iterEnd)
-          {
-            throw std::invalid_argument("Invalid file format");
-          }
-          const borisov::Translation& translation = *(iter++);
-          if (iter == iterEnd)
-          {
-            throw std::invalid_argument("Invalid file format");
-          }
-          size_t count = std::stoull(*(iter++));
-          borisov::add(dict, word, translation, count);
-        }
+        throw std::invalid_argument("Invalid file format");
       }
-      catch (const std::invalid_argument& e)
+      borisov::Dict& dict = allDicts[name];
+      borisov::getDict(fileIn, dict);
+      if (fileIn.fail() && !fileIn.eof())
       {
-        borisov::printInvalidFileFormat(std::cerr);
-        return 1;
+        throw std::invalid_argument("Invalid file format");
       }
-      catch (const std::exception& e)
-      {
-        std::cerr << "Error: " << e.what() << '\n';
-        return 2;
-      }
+    }
+    catch (const std::invalid_argument& e)
+    {
+      borisov::printInvalidFileFormat(std::cerr);
+      return 1;
+    }
+    catch (const std::exception& e)
+    {
+      std::cerr << "Error: " << e.what() << '\n';
+      return 2;
     }
   }
   fileIn.close();
@@ -90,32 +70,37 @@ int main(int argc, char** argv)
     {"complement", std::bind(borisov::complementWrapper, std::ref(allDicts), _1)}
   };
 
+  std::string s;
   while (!std::cin.eof() && !(std::cin.peek() && std::cin.eof()))
   {
-    std::getline(std::cin, s);
-    if (!s.empty())
+    try
     {
-      try
+      borisov::ArgList l;
+      borisov::getArgList(std::cin, l);
+      if (std::cin.fail() && !std::cin.eof() || l.size() == 0)
       {
-        borisov::ArgList l;
-        borisov::utils::split(s, l);
-        auto commandIter = commands.find(l.front());
-        if (commandIter == commands.end())
-        {
-          throw std::invalid_argument("Invalid command");
-        }
-        l.pop_front();
-        commandIter->second(l);
+        throw std::invalid_argument("Invalid command");
       }
-      catch (const std::invalid_argument& e)
+      auto commandIter = commands.find(l.front());
+      if (commandIter == commands.end())
       {
-        borisov::printInvalidCommandMessage(std::cout) << '\n';
+        throw std::invalid_argument("Invalid command");
       }
-      catch (const std::exception& e)
+      l.pop_front();
+      commandIter->second(l);
+    }
+    catch (const std::invalid_argument& e)
+    {
+      borisov::printInvalidCommandMessage(std::cout) << '\n';
+      if (std::cin.fail() && !std::cin.eof())
       {
-        std::cerr << "Error: " << e.what() << '\n';
-        return 2;
+        borisov::restoreIStream(std::cin);
       }
+    }
+    catch (const std::exception& e)
+    {
+      std::cerr << "Error: " << e.what() << '\n';
+      return 2;
     }
   }
 }
