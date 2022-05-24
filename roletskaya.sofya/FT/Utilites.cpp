@@ -1,4 +1,4 @@
-#include "Utilites.hpp"
+﻿#include "Utilites.hpp"
 #include <fstream>
 #include <stdexcept>
 
@@ -19,12 +19,12 @@ std::string roletskaya::getNameFromFile(std::string& string)
   return string.substr(0, string.find_first_of('.'));
 }
 
-bool roletskaya::checkResults(std::string& outFileName, std::string& ResultsFileName)
+bool roletskaya::checkResults(std::string& outFileName, std::string& resultsFileName)
 {
   std::ifstream in;
   std::ifstream checkIn;
   in.open(outFileName);
-  checkIn.open(ResultsFileName);
+  checkIn.open(resultsFileName);
   if (!checkIn)
   {
     throw std::invalid_argument("Couldn't open the result file.\n");

@@ -17,7 +17,7 @@ roletskaya::Dictionary& roletskaya::Dictionary::operator=(Dictionary&& src) noex
 
 roletskaya::Dictionary& roletskaya::Dictionary::operator=(map&& src) noexcept
 {
-  dictionary_ = src;
+  dictionary_ = std::move(src);
   return *this;
 }
 
@@ -241,7 +241,7 @@ void roletskaya::Dictionary::print(std::ostream& out) const
 {
   if (!out.good())
   {
-    throw std::invalid_argument("Couldn't open the output file.");
+    throw std::invalid_argument("Couldn't open the output file.\n");
     return;
   }
   if (dictionary_.empty())
