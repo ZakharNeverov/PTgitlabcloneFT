@@ -1,5 +1,5 @@
 #include "AdditionalCommands.h"
-#include <iosfwd>
+#include <iostream>
 #include <vector>
 #include <string>
 #include <algorithm>

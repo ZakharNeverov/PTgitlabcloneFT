@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <locale>
 #include <fstream>
-#include <exception>
+#include <stdexcept>
 #include <functional>
 #include "Commands.h"
 #include "IoOperations.h"
