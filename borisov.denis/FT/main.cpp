@@ -11,14 +11,16 @@ int main(int argc, char** argv)
 {
   if (argc != 2)
   {
-    std::cerr << "Error: Invalid number of arguments\n";
+    std::cerr << "Error: ";
+    borisov::printInvalidNumberOfArguments(std::cerr) << '\n';
     return 1;
   }
 
   std::ifstream fileIn(argv[1]);
   if (!fileIn)
   {
-    std::cerr << "Error: Fail to open file\n";
+    std::cerr << "Error: ";
+    borisov::printFailToOpenFile(std::cerr) << '\n';
     return 1;
   }
 
@@ -35,34 +37,33 @@ int main(int argc, char** argv)
         borisov::utils::split(s, l);
         std::string name = l.front();
         l.pop_front();
-        auto dictIter = allDicts.find(name);
-        if (dictIter != allDicts.end())
+        bool s = allDicts.insert({name, borisov::Dict()}).second;
+        if (!s)
         {
           throw std::invalid_argument("Invalid file format");
         }
-        borisov::Dict dict;
-        allDicts.insert({name, dict});
+        borisov::Dict& dict = allDicts[name];
         auto iter = l.cbegin();
         auto iterEnd = l.cend();
         while (iter != iterEnd)
         {
-          std::string first = *(iter++);
+          const borisov::Word& word = *(iter++);
           if (iter == iterEnd)
           {
             throw std::invalid_argument("Invalid file format");
           }
-          std::string second = *(iter++);
+          const borisov::Translation& translation = *(iter++);
           if (iter == iterEnd)
           {
             throw std::invalid_argument("Invalid file format");
           }
-          std::string third = *(iter++);
-          borisov::addWrapper(allDicts, borisov::ArgList{name, first, second, third});
+          size_t count = std::stoull(*(iter++));
+          borisov::add(dict, word, translation, count);
         }
       }
       catch (const std::invalid_argument& e)
       {
-        borisov::printInvalidFileFormatMessage(std::cerr);
+        borisov::printInvalidFileFormat(std::cerr);
         return 1;
       }
       catch (const std::exception& e)
