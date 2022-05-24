@@ -109,12 +109,11 @@ void borisov::uniteWrapper(AllDicts& allDicts, const ArgList& argList)
   }
   auto argIter = argList.cbegin();
   const std::string& name = *(argIter++);
-  auto dictIter = allDicts.find(name);
-  if (dictIter != allDicts.end())
+  bool s = allDicts.insert({name, Dict()}).second;
+  if (!s)
   {
     throw std::invalid_argument("Invalid dict name");
   }
-  allDicts.insert({name, Dict()});
   Dict& result = getDict(allDicts, name);
   const Dict& dict1 = getDict(allDicts, *(argIter++));
   const Dict& dict2 = getDict(allDicts, *(argIter++));
@@ -129,12 +128,11 @@ void borisov::intersectWrapper(AllDicts& allDicts, const ArgList& argList)
   }
   auto argIter = argList.cbegin();
   const std::string& name = *(argIter++);
-  auto dictIter = allDicts.find(name);
-  if (dictIter != allDicts.end())
+  bool s = allDicts.insert({name, Dict()}).second;
+  if (!s)
   {
     throw std::invalid_argument("Invalid dict name");
   }
-  allDicts.insert({name, Dict()});
   Dict& result = getDict(allDicts, name);
   const Dict& dict1 = getDict(allDicts, *(argIter++));
   const Dict& dict2 = getDict(allDicts, *(argIter++));
@@ -149,12 +147,11 @@ void borisov::complementWrapper(AllDicts& allDicts, const ArgList& argList)
   }
   auto argIter = argList.cbegin();
   const std::string& name = *(argIter++);
-  auto dictIter = allDicts.find(name);
-  if (dictIter != allDicts.end())
+  bool s = allDicts.insert({name, Dict()}).second;
+  if (!s)
   {
     throw std::invalid_argument("Invalid dict name");
   }
-  allDicts.insert({name, Dict()});
   Dict& result = getDict(allDicts, name);
   const Dict& dict1 = getDict(allDicts, *(argIter++));
   const Dict& dict2 = getDict(allDicts, *(argIter++));

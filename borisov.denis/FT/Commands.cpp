@@ -29,12 +29,11 @@ void borisov::add(Dict& dict, const Word& word, const Translation& translation, 
   }
   else
   {
-    auto translationIter = wordIter->second.find(translation);
-    if (translationIter != wordIter->second.cend())
+    bool s = wordIter->second.insert({translation, count}).second;
+    if (!s)
     {
       throw std::invalid_argument("Translation already exists");
     }
-    wordIter->second.insert({translation, count});
   }
 }
 
