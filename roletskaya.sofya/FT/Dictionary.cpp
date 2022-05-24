@@ -1,4 +1,4 @@
-#include "Dictionary.hpp"
+ï»¿#include "Dictionary.hpp"
 #include <algorithm>
 #include <stdexcept>
 #include "Utilites.hpp"
@@ -23,9 +23,11 @@ roletskaya::Dictionary& roletskaya::Dictionary::operator=(map&& src) noexcept
 
 bool roletskaya::Dictionary::checkWord(const std::string& string) const
 {
+  int fisrtLetterInASCII = 97;
+  int lastLetterInASCII = 122;
   for (size_t i = 0; i < string.length(); i++)
   {
-    if (string[i] > 'z' || string[i] < 'a')
+    if ((string[i] > lastLetterInASCII) || (string[i] < fisrtLetterInASCII))
     {
       return false;
     }
@@ -35,9 +37,11 @@ bool roletskaya::Dictionary::checkWord(const std::string& string) const
 
 bool roletskaya::Dictionary::checkTranslation(const std::string& string) const
 {
+  int fisrtLetterInASCII = 224;
+  int lastLetterInASCII = 255;
   for (size_t i = 0; i < string.length(); i++)
   {
-    if (string[i] > 'ÿ' || string[i] < 'à')
+    if ((string[i] > lastLetterInASCII) || (string[i] < fisrtLetterInASCII))
     {
       return false;
     }

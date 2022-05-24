@@ -81,7 +81,7 @@ int main(int argc, char* argv[])
             throw std::invalid_argument("No such command.\n");
           }
           command_iter->second(line);
-        }      
+        }
       }
       catch (const std::exception& error)
       {
