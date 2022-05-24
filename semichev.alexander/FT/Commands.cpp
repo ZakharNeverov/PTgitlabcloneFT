@@ -206,7 +206,7 @@ void semichev::Peek::operator()()
     else
     {
       auto cell = toExprElem(str).getAddress().getCell();
-      out_ << ws_.getCurrent()[cell.first][cell.second].getFunction() << '\n';
+      out_ << ws_.getCurrent().at(cell.first).at(cell.second).getFunction() << '\n';
     }
   }
   catch (...)

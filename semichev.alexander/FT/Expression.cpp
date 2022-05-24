@@ -40,6 +40,10 @@ namespace
 
   smcv::Expression::expr_t convertToPostfix(smcv::Expression::expr_t&& infix)
   {
+    if (infix.empty())
+    {
+      throw std::logic_error("expression is incorrect");
+    }
     smcv::Expression::expr_t postfix;
     std::stack< smcv::ExprElem > stack;
 
@@ -119,6 +123,10 @@ namespace
 
   double calcPostfixExpr(smcv::Expression::expr_t&& postfix, smcv::Spreadsheet& ws, const std::pair< int, int >& offset)
   {
+    if (postfix.empty())
+    {
+      throw std::logic_error("expression is incorrect");
+    }
     std::stack< smcv::ExprElem > stack;
     stack.push(postfix.front());
     postfix.pop();
@@ -127,19 +135,30 @@ namespace
     {
       try
       {
-        while (!isOperation(postfix.front()))
+        while (!postfix.empty() && !isOperation(postfix.front()))
         {
           stack.push(postfix.front());
           postfix.pop();
         }
-        char op = postfix.front().getOperation().getType();
-        postfix.pop();
-        double rhs = isOperand(stack.top()) ? stack.top().getOperand().getValue()
-                                            : stack.top().getAddress().getValue(ws, offset);
-        stack.pop();
-        double lhs = isOperand(stack.top()) ? stack.top().getOperand().getValue()
-                                            : stack.top().getAddress().getValue(ws, offset);
-        stack.top() = smcv::ExprElem(smcv::ExprElem::Operand(calcOperation(op, lhs, rhs)));
+        char op{};
+        double rhs = 0;
+        double lhs = 0;
+
+        if (!postfix.empty())
+        {
+            op = postfix.front().getOperation().getType();
+            postfix.pop();
+            if (!stack.empty())
+            {
+                rhs = isOperand(stack.top()) ? stack.top().getOperand().getValue() : stack.top().getAddress().getValue(ws, offset);
+                stack.pop();
+            }
+            if (!stack.empty())
+            {
+                lhs = isOperand(stack.top()) ? stack.top().getOperand().getValue() : stack.top().getAddress().getValue(ws, offset);
+                stack.top() = smcv::ExprElem(smcv::ExprElem::Operand(calcOperation(op, lhs, rhs)));
+            }
+        }
       }
       catch (...)
       {
