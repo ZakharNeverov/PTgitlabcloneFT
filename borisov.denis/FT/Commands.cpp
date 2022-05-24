@@ -1,4 +1,5 @@
 #include "Commands.h"
+#include <algorithm>
 #include <cassert>
 #include <iomanip>
 #include <ostream>
@@ -12,8 +13,14 @@ namespace
   std::ostream& printTranslation(std::ostream& out, borisov::TranslationList::const_iterator iter, size_t sum, char sep);
   size_t getSumCount(borisov::TranslationList::const_iterator first, borisov::TranslationList::const_iterator last);
   void uniteTL(borisov::TranslationList& first, const borisov::TranslationList& second);
-  void intersectTL(borisov::TranslationList& result, const borisov::TranslationList& first, const borisov::TranslationList& second);
-  void complementTL(borisov::TranslationList& result, const borisov::TranslationList& first, const borisov::TranslationList& second);
+
+  struct TLComp
+  {
+    bool operator()(const std::pair< borisov::Translation, size_t >& first, const std::pair< borisov::Translation, size_t >& second)
+    {
+      return std::less< borisov::Translation >()(first.first, second.first);
+    }
+  };
 }
 
 void borisov::add(Dict& dict, const Word& word, const Translation& translation, size_t count)
@@ -208,7 +215,11 @@ void borisov::intersect(Dict& result, const Dict& first, const Dict& second)
     if (!result.key_comp()(iterFirst->first, iterSecond->first) && !result.key_comp()(iterSecond->first, iterFirst->first))
     {
       TranslationList tl;
-      intersectTL(tl, iterFirst->second, iterSecond->second);
+      std::set_intersection(
+        iterFirst->second.cbegin(), iterFirst->second.cend(),
+        iterSecond->second.cbegin(), iterSecond->second.cend(),
+        std::inserter(tl, tl.begin()), TLComp{}
+      );
       if (!tl.empty())
       {
         result.insert({iterFirst->first, tl});
@@ -238,7 +249,11 @@ void borisov::complement(Dict& result, const Dict& first, const Dict& second)
     if (!result.key_comp()(iterFirst->first, iterSecond->first) && !result.key_comp()(iterSecond->first, iterFirst->first))
     {
       TranslationList tl;
-      complementTL(tl, iterFirst->second, iterSecond->second);
+      std::set_difference(
+        iterFirst->second.cbegin(), iterFirst->second.cend(),
+        iterSecond->second.cbegin(), iterSecond->second.cend(),
+        std::inserter(tl, tl.begin()), TLComp{}
+      );
       if (!tl.empty())
       {
         result.insert({iterFirst->first, tl});
@@ -311,61 +326,6 @@ namespace
     {
       first.insert({iterSecond->first, iterSecond->second});
       ++iterSecond;
-    }
-  }
-
-  void intersectTL(borisov::TranslationList& result, const borisov::TranslationList& first, const borisov::TranslationList& second)
-  {
-    auto iterFirst = first.cbegin();
-    auto iterFirstEnd = first.cend();
-    auto iterSecond = second.cbegin();
-    auto iterSecondEnd = second.cend();
-    while (iterFirst != iterFirstEnd && iterSecond != iterSecondEnd)
-    {
-      if (!result.key_comp()(iterFirst->first, iterSecond->first) && !result.key_comp()(iterSecond->first, iterFirst->first))
-      {
-        result.insert({iterFirst->first, iterFirst->second});
-        ++iterFirst;
-        ++iterSecond;
-      }
-      else if (result.key_comp()(iterFirst->first, iterSecond->first))
-      {
-        ++iterFirst;
-      }
-      else
-      {
-        ++iterSecond;
-      }
-    }
-  }
-
-  void complementTL(borisov::TranslationList& result, const borisov::TranslationList& first, const borisov::TranslationList& second)
-  {
-    auto iterFirst = first.cbegin();
-    auto iterFirstEnd = first.cend();
-    auto iterSecond = second.cbegin();
-    auto iterSecondEnd = second.cend();
-    while (iterFirst != iterFirstEnd && iterSecond != iterSecondEnd)
-    {
-      if (!result.key_comp()(iterFirst->first, iterSecond->first) && !result.key_comp()(iterSecond->first, iterFirst->first))
-      {
-        ++iterFirst;
-        ++iterSecond;
-      }
-      else if (result.key_comp()(iterFirst->first, iterSecond->first))
-      {
-        result.insert({iterFirst->first, iterFirst->second});
-        ++iterFirst;
-      }
-      else
-      {
-        ++iterSecond;
-      }
-    }
-    while (iterFirst != iterFirstEnd)
-    {
-      result.insert({iterFirst->first, iterFirst->second});
-      ++iterFirst;
     }
   }
 }
