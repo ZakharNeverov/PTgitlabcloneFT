@@ -2,6 +2,7 @@
 #include <fstream>
 #include <map>
 #include <functional>
+#include <stdexcept>
 #include "command-system.hpp"
 #include "ioKeys.hpp"
 
@@ -12,6 +13,7 @@ int main(int argc, char* argv[])
     std::cerr << "Oh my God, I don't see the file\n";
     return 1;
   }
+  std::setlocale(LC_ALL, "rus");
   std::ifstream in(argv[1]);
   if (!in.is_open())
   {
@@ -43,31 +45,33 @@ int main(int argc, char* argv[])
     std::cin.clear();
     std::string command;
     std::cin >> command;
-    auto iter = commands.find(command);
-    if (iter != commands.end())
+    if (!command.empty())
     {
-      try
+      auto iter = commands.find(command);
+      if (iter != commands.end())
       {
-        iter->second(std::cout);
+        try
+        {
+          iter->second(std::cout);
+        }
+        catch (const std::exception &e)
+        {
+          std::cout << e.what() << '\n';
+          std::cin.clear();
+        }
       }
-      catch (const std::exception &e)
+      else
       {
-        std::cout << e.what() << '\n';
-        std::cin.clear();
+        std::cout << "The necessary command was not found!!!\n";
         std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
       }
     }
   }
 
   std::ofstream out(argv[1], std::ios::trunc);
-  if (!out.is_open())
-  {
-    std::cerr << "I can't open the file, I have paws\n";
-    return 1;
-  }
   for (size_t i = 0; i < hashT.size(); ++i)
   {
-    out << "Dictionary " << name[i] << '\n';
+    out << "DICTIONARY " << name[i] << '\n';
     out << hashT[i];
   }
   out.close();

@@ -2,7 +2,6 @@
 #define IOKEYS_HPP
 
 #include <ios>
-#include <set>
 #include "command-system.hpp"
 
 namespace stretenskiy

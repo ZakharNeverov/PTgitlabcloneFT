@@ -60,7 +60,7 @@ namespace stretenskiy
     std::string string;
     while (!in.eof() && in >> string)
     {
-      if (string == "Dictionary")
+      if (string == "DICTIONARY")
       {
         std::string nameD;
         in >> nameD;
