@@ -1,261 +1,293 @@
 #include "commands.hpp"
 #include <iostream>
 #include <stdexcept>
-#include "support-operations.hpp"
-#include "print-messages.hpp"
-void pyankov::create(pyankov::matrices_t& matrices, std::istream& in)
+#include <functional>
+bool pyankov::isContainingName(const pyankov::chain_t& chain, const std::string& name)
 {
-  std::string type = "";
+  return chain.first.count(name) || chain.second.count(name);
+}
+bool pyankov::compareMatricesByName(const pyankov::chain_t& chain, const std::string& left, const std::string& right)
+{
+  if (!(pyankov::isContainingName(chain, left) && pyankov::isContainingName(chain, right)))
+  {
+    throw std::invalid_argument("Can not find matrices with these names!");
+  }
+  if (chain.first.count(left) && chain.first.count(right))
+  {
+    return chain.first.find(left)->second == chain.first.find(right)->second;
+  }
+  else if (chain.first.count(left) && chain.second.count(right))
+  {
+    return chain.first.find(left)->second == chain.second.find(right)->second;
+  }
+  else if (chain.second.count(left) && chain.first.count(right))
+  {
+    return chain.second.find(left)->second == chain.first.find(right)->second;
+  }
+  else
+  {
+    return chain.second.find(left)->second == chain.second.find(right)->second;
+  }
+}
+void pyankov::doCreateIntMatrix(pyankov::chain_t& chain, std::istream& in)
+{
   std::string name = "";
   size_t rows = 0;
   size_t columns = 0;
-  in >> type >> name >> rows >> columns;
-  if (!in || !(type == "int" || type == "double"))
+  in >> name >> rows >> columns;
+  if (!in)
   {
-    in.setstate(std::ios::failbit);
-    throw std::invalid_argument("Incorrect matrix parameters!");
+    throw std::invalid_argument("Incorrect create parameters!");
   }
-  pyankov::Matrix< double > matrix(rows, columns, type);
+  pyankov::Matrix< int > matrix(rows, columns);
   if (in.peek() != '\n')
   {
     in >> matrix;
   }
-  if (in.peek() != '\n')
+  if (in.peek() != '\n' || pyankov::isContainingName(chain, name))
   {
-    in.setstate(std::ios::failbit);
-    throw std::invalid_argument("Incorrect input matrix!");
+    throw std::invalid_argument("Incorrect create parameters!");
   }
-  if (matrices.count(name))
-  {
-    in.setstate(std::ios::failbit);
-    throw std::invalid_argument("Matrix already exist!");
-  }
-  matrices.insert({name, matrix});
+  chain.first.insert({name, matrix});
 }
-void pyankov::multiply(pyankov::matrices_t& matrices, std::istream& in)
-{
-  std::string mainName = "";
-  in >> mainName;
-  std::vector< std::string > names;
-  std::string type = "int";
-  while (in.peek() != '\n')
-  {
-    std::string name = "";
-    in >> name;
-    if (!in || matrices.count(name) == 0)
-    {
-      in.setstate(std::ios::failbit);
-      throw std::invalid_argument("Incorrect add command parameters!");
-    }
-    if (matrices.find(name)->second.getType() == "double")
-    {
-      type = "double";
-    }
-    names.push_back(name);
-  }
-  if (names.size() < 2)
-  {
-    in.setstate(std::ios::failbit);
-    throw std::invalid_argument("Incorrect add command parameters!");
-  }
-  auto addMatrix = matrices.find(names.at(0))->second;
-  pyankov::Matrix< double > mainMatrix(addMatrix.getRows(), addMatrix.getColumns(), type);
-  mainMatrix.setZeroMatrix();
-  mainMatrix += addMatrix;
-  for (size_t i = 1; i < names.size(); i++)
-  {
-    addMatrix = matrices.find(names.at(i))->second;
-    mainMatrix *= addMatrix;
-  }
-  if (matrices.count(mainName))
-  {
-    auto oldMatrix = matrices.find(mainName)->second;
-    oldMatrix = mainMatrix;
-    matrices.find(mainName)->second = oldMatrix;
-  }
-  else
-  {
-    matrices.insert({mainName, mainMatrix});
-  }
-}
-void pyankov::add(pyankov::matrices_t& matrices, std::istream& in)
-{
-  std::string mainName = "";
-  in >> mainName;
-  std::vector< std::string > names;
-  std::string type = "int";
-  while (in.peek() != '\n')
-  {
-    std::string name = "";
-    in >> name;
-    if (!in || matrices.count(name) == 0)
-    {
-      in.setstate(std::ios::failbit);
-      throw std::invalid_argument("Incorrect add command parameters!");
-    }
-    if (matrices.find(name)->second.getType() == "double")
-    {
-      type = "double";
-    }
-    names.push_back(name);
-  }
-  if (names.size() < 2)
-  {
-    in.setstate(std::ios::failbit);
-    throw std::invalid_argument("Incorrect add command parameters!");
-  }
-  auto addMatrix = matrices.find(names.at(0))->second;
-  pyankov::Matrix< double > mainMatrix(addMatrix.getRows(), addMatrix.getColumns(), type);
-  mainMatrix.setZeroMatrix();
-  mainMatrix += addMatrix;
-  for (size_t i = 1; i < names.size(); i++)
-  {
-    addMatrix = matrices.find(names.at(i))->second;
-    mainMatrix += addMatrix;
-  }
-  if (matrices.count(mainName))
-  {
-    auto oldMatrix = matrices.find(mainName)->second;
-    oldMatrix = mainMatrix;
-    matrices.find(mainName)->second = oldMatrix;
-  }
-  else
-  {
-    matrices.insert({mainName, mainMatrix});
-  }
-}
-void pyankov::sub(pyankov::matrices_t& matrices, std::istream& in)
-{
-  std::string mainName = "";
-  in >> mainName;
-  std::vector< std::string > names;
-  std::string type = "int";
-  while (in.peek() != '\n')
-  {
-    std::string name = "";
-    in >> name;
-    if (!in || matrices.count(name) == 0)
-    {
-      in.setstate(std::ios::failbit);
-      throw std::invalid_argument("Incorrect add command parameters!");
-    }
-    if (matrices.find(name)->second.getType() == "double")
-    {
-      type = "double";
-    }
-    names.push_back(name);
-  }
-  if (names.size() < 2)
-  {
-    in.setstate(std::ios::failbit);
-    throw std::invalid_argument("Incorrect add command parameters!");
-  }
-  auto addMatrix = matrices.find(names.at(0))->second;
-  pyankov::Matrix< double > mainMatrix(addMatrix.getRows(), addMatrix.getColumns(), type);
-  mainMatrix.setZeroMatrix();
-  mainMatrix += addMatrix;
-  for (size_t i = 1; i < names.size(); i++)
-  {
-    addMatrix = matrices.find(names.at(i))->second;
-    mainMatrix -= addMatrix;
-  }
-  if (matrices.count(mainName))
-  {
-    auto oldMatrix = matrices.find(mainName)->second;
-    oldMatrix = mainMatrix;
-    matrices.find(mainName)->second = oldMatrix;
-  }
-  else
-  {
-    matrices.insert({mainName, mainMatrix});
-  }
-}
-void pyankov::concat(pyankov::matrices_t& matrices, std::istream& in)
-{
-  std::string direction = "";
-  std::string resultName = "";
-  std::string leftName = "";
-  std::string rightName = "";
-  in >> direction >> resultName >> leftName >> rightName;
-  if (!in || in.peek() != '\n' || matrices.count(leftName) == 0 || matrices.count(rightName) == 0)
-  {
-    in.setstate(std::ios::failbit);
-    throw std::invalid_argument("Incorrect concat parameters!");
-  }
-  auto leftMatrix = matrices.find(leftName)->second;
-  auto rightMatrix = matrices.find(rightName)->second;
-  try
-  {
-    if (direction == "toright")
-    {
-      pyankov::concatToRight(matrices, leftMatrix, rightMatrix, resultName);
-    }
-    else if (direction == "toleft")
-    {
-      pyankov::concatToRight(matrices, rightMatrix, leftMatrix, resultName);
-    }
-    else if (direction == "totop")
-    {
-      pyankov::concatToBot(matrices, rightMatrix, leftMatrix, resultName);
-    }
-    else if (direction == "tobot")
-    {
-      pyankov::concatToBot(matrices, leftMatrix, rightMatrix, resultName);
-    }
-    else
-    {
-      in.setstate(std::ios::failbit);
-      throw std::invalid_argument("Incorrect direction!");
-    }
-  }
-  catch (const std::exception& ex)
-  {
-    in.setstate(std::ios::failbit);
-    throw std::invalid_argument("Incorrect concat arguments!");
-  }
-}
-void pyankov::print(const pyankov::matrices_t& matrices, std::istream& in, std::ostream& out)
+void pyankov::doCreateDoubleMatrix(pyankov::chain_t& chain, std::istream& in)
 {
   std::string name = "";
-  in >> name;
-  if (!in || in.peek() != '\n' || matrices.count(name) == 0)
+  size_t rows = 0;
+  size_t columns = 0;
+  in >> name >> rows >> columns;
+  if (!in)
   {
-    in.setstate(std::ios::failbit);
-    throw std::invalid_argument("Incorrect print argument!");
+    throw std::invalid_argument("Incorrect create parameters!");
   }
-  out << matrices.find(name)->second;
+  pyankov::Matrix< double > matrix(rows, columns);
+  if (in.peek() != '\n')
+  {
+    in >> matrix;
+  }
+  if (in.peek() != '\n' || pyankov::isContainingName(chain, name))
+  {
+    throw std::invalid_argument("Incorrect create parameters!");
+  }
+  chain.second.insert({name, matrix});
 }
-void pyankov::equals(const pyankov::matrices_t& matrices, std::istream& in, std::ostream& out)
+void pyankov::concatToRight(pyankov::chain_t& chain, const std::string& left, const std::string& right, const std::string& result)
 {
-  std::string prevName = "";
-  in >> prevName;
-  if (!in || in.peek() == '\n' || matrices.count(prevName) == 0)
+  if (!pyankov::isContainingName(chain, left) || !pyankov::isContainingName(chain, right))
   {
-    in.setstate(std::ios::failbit);
-    throw std::invalid_argument("Incorrect matrix name!");
+    throw std::invalid_argument("Can not concat these matrices!");
   }
-  bool isEqual = true;
-  while (in.peek() != '\n')
+  bool isDoubleRes = chain.second.count(left) || chain.second.count(right);
+  if (isDoubleRes)
   {
-    std::string currName = "";
-    in >> currName;
-    if (!in || matrices.count(currName) == 0)
-    {
-      in.setstate(std::ios::failbit);
-      throw std::invalid_argument("Incorrect matrix name!");
-    }
-    if (!(matrices.find(prevName)->second == matrices.find(currName)->second))
-    {
-      isEqual = false;
-    }
-    prevName = currName;
-  }
-  if (isEqual)
-  {
-    pyankov::printTrue(out);
+    pyankov::concatToRightDouble(chain, left, right, result);
   }
   else
   {
-    pyankov::printFalse(out);
+    pyankov::concatToRightInt(chain, left, right, result);
+  }
+}
+void pyankov::concatToBot(pyankov::chain_t& chain, const std::string& left, const std::string& right, const std::string& result)
+{
+  if (!pyankov::isContainingName(chain, left) || !pyankov::isContainingName(chain, right))
+  {
+    throw std::invalid_argument("Can not concat these matrices!");
+  }
+  bool isDoubleRes = chain.second.count(left) || chain.second.count(right);
+  if (isDoubleRes)
+  {
+    pyankov::concatToBotDouble(chain, left, right, result);
+  }
+  else
+  {
+    pyankov::concatToBotInt(chain, left, right, result);
+  }
+}
+void pyankov::concatToRightInt(pyankov::chain_t& chain, const std::string& left, const std::string& right, const std::string& result)
+{
+  if (!chain.first.count(left) || !chain.first.count(right))
+  {
+    throw std::invalid_argument("It is not int matrices!");
+  }
+  pyankov::Matrix< int > leftMatrix = chain.first.find(left)->second;
+  pyankov::Matrix< int > rightMatrix = chain.first.find(right)->second;
+  if (leftMatrix.getRows() != rightMatrix.getRows())
+  {
+    throw std::logic_error("Can not concat these matrices!");
+  }
+  std::vector< int > vector;
+  for (size_t i = 0; i < leftMatrix.getRows(); i++)
+  {
+    for (size_t j = 0; j < leftMatrix.getColumns(); j++)
+    {
+      vector.push_back(leftMatrix.getElement(i, j));
+    }
+    for (size_t j = 0; j < rightMatrix.getColumns(); j++)
+    {
+      vector.push_back(rightMatrix.getElement(i, j));
+    }
+  }
+  pyankov::Matrix< int > resultMatrix(leftMatrix.getRows(), leftMatrix.getColumns() + rightMatrix.getColumns(), vector);
+  if (chain.first.count(result) && !chain.second.count(result))
+  {
+    chain.first.find(result)->second = resultMatrix;
+  }
+  else if (!pyankov::isContainingName(chain, result))
+  {
+    chain.first.insert({result, resultMatrix});
+  }
+  else
+  {
+    throw std::logic_error("Incorrect concat arguments!");
+  }
+}
+void pyankov::concatToBotInt(pyankov::chain_t& chain, const std::string& left, const std::string& right, const std::string& result)
+{
+  if (!chain.first.count(left) || !chain.first.count(right))
+  {
+    throw std::invalid_argument("It is not int matrices!");
+  }
+  pyankov::Matrix< int > leftMatrix = chain.first.find(left)->second;
+  pyankov::Matrix< int > rightMatrix = chain.first.find(right)->second;
+  if (leftMatrix.getColumns() != rightMatrix.getColumns())
+  {
+    throw std::logic_error("Can not concat these matrices!");
+  }
+  std::vector< int > vector;
+  for (size_t i = 0; i < leftMatrix.getRows(); i++)
+  {
+    for (size_t j = 0; j < leftMatrix.getColumns(); j++)
+    {
+      vector.push_back(leftMatrix.getElement(i, j));
+    }
+  }
+  for (size_t i = 0; i < rightMatrix.getRows(); i++)
+  {
+    for (size_t j = 0; j < rightMatrix.getColumns(); j++)
+    {
+      vector.push_back(rightMatrix.getElement(i, j));
+    }
+  }
+  pyankov::Matrix< int > resultMatrix(leftMatrix.getRows() + leftMatrix.getRows(), leftMatrix.getColumns(), vector);
+  if (chain.first.count(result) && !chain.second.count(result))
+  {
+    chain.first.find(result)->second = resultMatrix;
+  }
+  else if (!pyankov::isContainingName(chain, result))
+  {
+    chain.first.insert({result, resultMatrix});
+  }
+  else
+  {
+    throw std::logic_error("Incorrect concat arguments!");
+  }
+}
+void pyankov::concatToRightDouble(pyankov::chain_t& chain, const std::string& left, const std::string& right, const std::string& result)
+{
+  bool isLeftInt = chain.first.count(left) != 0;
+  bool isRightInt = chain.first.count(right) != 0;
+  std::vector< double > vector;
+  pyankov::Matrix< double > leftMatrix(1, 1);
+  pyankov::Matrix< double > rightMatrix(1, 1);
+  if (isLeftInt && !isRightInt)
+  {
+    pyankov::Matrix< int > leftInt = chain.first.find(left)->second;
+    leftMatrix = leftInt.convertToDouble();
+    rightMatrix = chain.second.find(right)->second;
+  }
+  else if (!isLeftInt && isRightInt)
+  {
+    leftMatrix = chain.second.find(left)->second;
+    pyankov::Matrix< int > rightInt = chain.first.find(right)->second;
+    rightMatrix = rightInt.convertToDouble();
+  }
+  else
+  {
+    leftMatrix = chain.second.find(left)->second;
+    rightMatrix = chain.second.find(right)->second;
+  }
+  if (leftMatrix.getRows() != rightMatrix.getRows())
+  {
+    throw std::logic_error("Can not concat there matrices!");
+  }
+  for (size_t i = 0; i < leftMatrix.getRows(); i++)
+  {
+    for (size_t j = 0; j < leftMatrix.getColumns(); j++)
+    {
+      vector.push_back(leftMatrix.getElement(i, j));
+    }
+    for (size_t j = 0; j < rightMatrix.getColumns(); j++)
+    {
+      vector.push_back(rightMatrix.getElement(i, j));
+    }
+  }
+  pyankov::Matrix< double > resultMatrix(leftMatrix.getRows(), leftMatrix.getColumns() + rightMatrix.getColumns(), vector);
+  if (chain.second.count(result) && !chain.first.count(result))
+  {
+    chain.second.find(result)->second = resultMatrix;
+  }
+  else if (!pyankov::isContainingName(chain, result))
+  {
+    chain.second.insert({result, resultMatrix});
+  }
+  else
+  {
+    throw std::logic_error("Incorrect concat arguments!");
+  }
+}
+void pyankov::concatToBotDouble(pyankov::chain_t& chain, const std::string& left, const std::string& right, const std::string& result)
+{
+  bool isLeftInt = chain.first.count(left) != 0;
+  bool isRightInt = chain.first.count(right) != 0;
+  std::vector< double > vector;
+  pyankov::Matrix< double > leftMatrix(1, 1);
+  pyankov::Matrix< double > rightMatrix(1, 1);
+  if (isLeftInt && !isRightInt)
+  {
+    pyankov::Matrix< int > leftInt = chain.first.find(left)->second;
+    leftMatrix = leftInt.convertToDouble();
+    rightMatrix = chain.second.find(right)->second;
+  }
+  else if (!isLeftInt && isRightInt)
+  {
+    leftMatrix = chain.second.find(left)->second;
+    pyankov::Matrix< int > rightInt = chain.first.find(right)->second;
+    rightMatrix = rightInt.convertToDouble();
+  }
+  else
+  {
+    leftMatrix = chain.second.find(left)->second;
+    rightMatrix = chain.second.find(right)->second;
+  }
+  if (leftMatrix.getColumns() != rightMatrix.getColumns())
+  {
+    throw std::logic_error("Can not concat these matrices!");
+  }
+  for (size_t i = 0; i < leftMatrix.getRows(); i++)
+  {
+    for (size_t j = 0; j < leftMatrix.getColumns(); j++)
+    {
+      vector.push_back(leftMatrix.getElement(i, j));
+    }
+  }
+  for (size_t i = 0; i < rightMatrix.getRows(); i++)
+  {
+    for (size_t j = 0; j < rightMatrix.getColumns(); j++)
+    {
+      vector.push_back(rightMatrix.getElement(i, j));
+    }
+  }
+  pyankov::Matrix< double > resultMatrix(leftMatrix.getRows() + rightMatrix.getRows(), leftMatrix.getColumns(), vector);
+  if (chain.second.count(result) && !chain.first.count(result))
+  {
+    chain.second.find(result)->second = resultMatrix;
+  }
+  else if (!pyankov::isContainingName(chain, result))
+  {
+    chain.second.insert({result, resultMatrix});
+  }
+  else
+  {
+    throw std::logic_error("Incorrect concat arguments!");
   }
 }
