@@ -35,7 +35,7 @@ namespace pyankov
     if (std::is_same< T, double >::value)
     {
       std::cout << "Input precision for double matrix: ";
-      std::cin >> precision; 
+      std::cin >> precision;
     }
     Matrix< T >::setStaticValues(minValue, maxValue, precision);
   }
