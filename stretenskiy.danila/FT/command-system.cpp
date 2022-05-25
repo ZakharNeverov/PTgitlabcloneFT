@@ -105,11 +105,7 @@ namespace stretenskiy
             }
             return;
           }
-          out << "Word " << word << " success find and this his translate:";
-          for (const auto &i : iter->second)
-          {
-            std::cout << ' ' << i;
-          }
+          out << "Word " << word << " success find\n";
           return;
         }
         else
