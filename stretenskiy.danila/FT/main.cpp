@@ -42,7 +42,6 @@ int main(int argc, char* argv[])
 
   while (!std::cin.eof())
   {
-    std::cin.clear();
     std::string command;
     std::cin >> command;
     if (!command.empty())
@@ -58,6 +57,7 @@ int main(int argc, char* argv[])
         {
           std::cout << e.what() << '\n';
           std::cin.clear();
+          std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
         }
       }
       else

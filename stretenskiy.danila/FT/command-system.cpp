@@ -28,17 +28,20 @@ namespace stretenskiy
   void function::add(std::ostream &out, vecDict &vecDict, const nameDict &vecName, std::istream &in)
   {
     size_t index = findNameDict(in, vecName);
-    std::string word;
-    in >> word;
-    if (!word.empty())
+    if (checkContinueInputWord(in))
     {
-      while (checkContinueInputWord(in))
+      std::string word;
+      in >> word;
+      if (!word.empty())
       {
-        std::string transl;
-        in >> transl;
-        vecDict[index][word].insert(transl);
+        while (checkContinueInputWord(in))
+        {
+          std::string transl;
+          in >> transl;
+          vecDict[index][word].insert(transl);
+        }
+        return;
       }
-      return;
     }
     throw std::logic_error("Enter the word");
   }
@@ -46,26 +49,33 @@ namespace stretenskiy
   void function::removeWord(std::ostream &out, vecDict &vecDict, const nameDict &vecName, std::istream &in)
   {
     size_t index = findNameDict(in, vecName);
-    std::string word;
-    in >> word;
-    if (!word.empty())
+    if (checkContinueInputWord(in))
     {
-      if (checkContinueInputWord(in))
+      std::string word;
+      in >> word;
+      if (!word.empty())
       {
-        std::string transl;
-        in >> transl;
-        if (!transl.empty())
+        if (vecDict[index].find(word) == vecDict[index].end())
         {
-          do
-          {
-            vecDict[index][word].erase(transl);
-          }
-          while (checkContinueInputWord(in) && in >> transl);
-          return;
+          throw std::logic_error("The right word was not found in the dictionary");
         }
+        if (checkContinueInputWord(in))
+        {
+          std::string transl;
+          in >> transl;
+          if (!transl.empty())
+          {
+            do
+            {
+              vecDict[index][word].erase(transl);
+            }
+            while (checkContinueInputWord(in) && in >> transl);
+            return;
+          }
+        }
+        vecDict[index].erase(word);
+        return;
       }
-      vecDict[index].erase(word);
-      return;
     }
     throw std::logic_error("Enter the word");
   }
@@ -73,36 +83,39 @@ namespace stretenskiy
   void function::search(std::ostream &out, const vecDict &vecDict, const nameDict &vecName, std::istream &in)
   {
     size_t index = findNameDict(in, vecName);
-    std::string word;
-    in >> word;
-    if (!word.empty())
+    if (checkContinueInputWord(in))
     {
-      auto iter = vecDict[index].find(word);
-      if (iter != vecDict[index].end())
+      std::string word;
+      in >> word;
+      if (!word.empty())
       {
-        std::string transl;
-        if (checkContinueInputWord(in) && in >> transl)
+        auto iter = vecDict[index].find(word);
+        if (iter != vecDict[index].end())
         {
-          if (iter->second.find(transl) != iter->second.end())
+          std::string transl;
+          if (checkContinueInputWord(in) && in >> transl)
           {
-            out << "Translate " << transl << " success find\n";
+            if (iter->second.find(transl) != iter->second.end())
+            {
+              out << "Translate " << transl << " success find\n";
+            }
+            else
+            {
+              out << "Translate " << transl << " don't find\n";
+            }
+            return;
           }
-          else
+          out << "Word " << word << " success find and this his translate:";
+          for (const auto &i : iter->second)
           {
-            out << "Translate " << transl << " don't find\n";
+            std::cout << ' ' << i;
           }
           return;
         }
-        out << "Word " << word << " success find and this his translate:";
-        for (const auto &i : iter->first)
+        else
         {
-          std::cout << ' ' << i;
+          throw std::logic_error("The right word was not found in the dictionary");
         }
-        return;
-      }
-      else
-      {
-        throw std::logic_error("The right word was not found in the dictionary");
       }
     }
     throw std::logic_error("Enter the word");
