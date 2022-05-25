@@ -1,22 +1,33 @@
 #include "Commands.h"
 #include <algorithm>
 #include <cassert>
+#include <functional>
 #include <iomanip>
+#include <numeric>
 #include <ostream>
 #include <stdexcept>
 #include <utility>
 #include "ErrorMessages.h"
 #include "IoFmtGuard.h"
+#include "IoProcessing.h"
 
 namespace
 {
-  std::ostream& printTranslation(std::ostream& out, borisov::TranslationList::const_iterator iter, size_t sum, char sep);
-  size_t getSumCount(borisov::TranslationList::const_iterator first, borisov::TranslationList::const_iterator last);
+  std::ostream& printTranslation(std::ostream& out, const borisov::TranslationPair& p, size_t sum, char sep);
+  std::ostream& printSepTranslation(std::ostream& out, const borisov::TranslationPair& p, size_t sum, char sep, char freqSep);
+  std::ostream& printSepWord(std::ostream& out, const std::pair< borisov::Word, borisov::TranslationList >& p, char sep);
+  size_t sumCounter(size_t init, const borisov::TranslationPair& p);
   void uniteTL(borisov::TranslationList& first, const borisov::TranslationList& second);
+  bool freqComp(const borisov::TranslationPair& first, const borisov::TranslationPair& second);
+
+  template< typename C, typename K >
+  bool isLessKeys(const C& c, const K& first, const K& second);
+  template< typename C, typename K >
+  bool isEqualKeys(const C& c, const K& first, const K& second);
 
   struct TLComp
   {
-    bool operator()(const std::pair< borisov::Translation, size_t >& first, const std::pair< borisov::Translation, size_t >& second)
+    bool operator()(const borisov::TranslationPair& first, const borisov::TranslationPair& second)
     {
       return std::less< borisov::Translation >()(first.first, second.first);
     }
@@ -109,10 +120,11 @@ std::ostream& borisov::words(std::ostream& out, const Dict& dict, char sep)
   {
     out << (wordIter++)->first;
   }
-  while (wordIter != wordIterEnd)
-  {
-    out << sep << (wordIter++)->first;
-  }
+  using namespace std::placeholders;
+  std::for_each(
+    wordIter, wordIterEnd,
+    std::bind(printSepWord, std::ref(out), _1, sep)
+  );
   return out;
 }
 
@@ -130,13 +142,17 @@ std::ostream& borisov::info(std::ostream& out, const Dict& dict, const Word& wor
     printMessageEmpty(out);
     return out;
   }
-  size_t sumCount = getSumCount(translationIter, translationIterEnd);
-  printTranslation(out, translationIter++, sumCount, freqSep);
-  while (translationIter != translationIterEnd)
-  {
-    out << sep;
-    printTranslation(out, translationIter++, sumCount, freqSep);
-  }
+  using namespace std::placeholders;
+  size_t sumCount = std::accumulate(
+    translationIter, translationIterEnd,
+    0ull, sumCounter
+  );
+  assert(sumCount != 0);
+  printTranslation(out, *(translationIter++), sumCount, freqSep);
+  std::for_each(
+    translationIter, translationIterEnd,
+    std::bind(printSepTranslation, std::ref(out), _1, sumCount, sep, freqSep)
+  );
   return out;
 }
 
@@ -147,39 +163,18 @@ std::ostream& borisov::translate(std::ostream& out, const Dict& dict, const Word
   {
     throw std::invalid_argument("No such word");
   }
-  auto translationIter = wordIter->second.cbegin();
-  auto translationIterEnd = wordIter->second.cend();
-  assert(translationIter != translationIterEnd);
-  auto maxFreqTranslationIter = translationIter;
-  while (translationIter != translationIterEnd)
-  {
-    if (translationIter->second > maxFreqTranslationIter->second)
-    {
-      maxFreqTranslationIter = translationIter;
-    }
-    ++translationIter;
-  }
+  auto maxFreqTranslationIter = std::max_element(
+    wordIter->second.cbegin(), wordIter->second.cend(),
+    freqComp
+  );
   out << maxFreqTranslationIter->first;
   return out;
 }
 
 std::ostream& borisov::save(std::ostream& out, const std::string& name, const Dict& dict)
 {
-  out << name;
-  auto wordIter = dict.cbegin();
-  auto wordIterEnd = dict.cend();
-  while (wordIter != wordIterEnd)
-  {
-    auto translationIter = wordIter->second.cbegin();
-    auto translationIterEnd = wordIter->second.cend();
-    while (translationIter != translationIterEnd)
-    {
-      out << ' ' << wordIter->first << ' ' << translationIter->first << ' ' << translationIter->second;
-      ++translationIter;
-    }
-    ++wordIter;
-  }
-  out << '\n';
+  out << name << ' ';
+  printDict(out, dict) << '\n';
   return out;
 }
 
@@ -212,7 +207,7 @@ void borisov::intersect(Dict& result, const Dict& first, const Dict& second)
   auto iterSecondEnd = second.cend();
   while (iterFirst != iterFirstEnd && iterSecond != iterSecondEnd)
   {
-    if (!result.key_comp()(iterFirst->first, iterSecond->first) && !result.key_comp()(iterSecond->first, iterFirst->first))
+    if (isEqualKeys(result, iterFirst->first, iterSecond->first))
     {
       TranslationList tl;
       std::set_intersection(
@@ -227,7 +222,7 @@ void borisov::intersect(Dict& result, const Dict& first, const Dict& second)
       ++iterFirst;
       ++iterSecond;
     }
-    else if (result.key_comp()(iterFirst->first, iterSecond->first))
+    else if (isLessKeys(result, iterFirst->first, iterSecond->first))
     {
       ++iterFirst;
     }
@@ -246,7 +241,7 @@ void borisov::complement(Dict& result, const Dict& first, const Dict& second)
   auto iterSecondEnd = second.cend();
   while (iterFirst != iterFirstEnd && iterSecond != iterSecondEnd)
   {
-    if (!result.key_comp()(iterFirst->first, iterSecond->first) && !result.key_comp()(iterSecond->first, iterFirst->first))
+    if (isEqualKeys(result, iterFirst->first, iterSecond->first))
     {
       TranslationList tl;
       std::set_difference(
@@ -261,7 +256,7 @@ void borisov::complement(Dict& result, const Dict& first, const Dict& second)
       ++iterFirst;
       ++iterSecond;
     }
-    else if (result.key_comp()(iterFirst->first, iterSecond->first))
+    else if (isLessKeys(result, iterFirst->first, iterSecond->first))
     {
       result.insert({iterFirst->first, iterFirst->second});
       ++iterFirst;
@@ -280,22 +275,29 @@ void borisov::complement(Dict& result, const Dict& first, const Dict& second)
 
 namespace
 {
-  std::ostream& printTranslation(std::ostream& out, borisov::TranslationList::const_iterator iter, size_t sum, char sep)
+  std::ostream& printTranslation(std::ostream& out, const borisov::TranslationPair& p, size_t sum, char sep)
   {
-    assert(sum != 0);
     borisov::IoFmtGuard guard(out);
-    out << iter->first << sep << std::fixed << std::setprecision(2) << (iter->second * 1.0) / sum;
+    out << p.first << sep << std::fixed << std::setprecision(2) << (p.second * 1.0) / sum;
     return out;
   }
 
-  size_t getSumCount(borisov::TranslationList::const_iterator first, borisov::TranslationList::const_iterator last)
+  std::ostream& printSepTranslation(std::ostream& out, const borisov::TranslationPair& p, size_t sum, char sep, char freqSep)
   {
-    size_t result = 0;
-    while (first != last)
-    {
-      result += (first++)->second;
-    }
-    return result;
+    out << sep;
+    printTranslation(out, p, sum, freqSep);
+    return out;
+  }
+
+  std::ostream& printSepWord(std::ostream& out, const std::pair< borisov::Word, borisov::TranslationList >& p, char sep)
+  {
+    out << sep << p.first;
+    return out;
+  }
+
+  size_t sumCounter(size_t init, const borisov::TranslationPair& p)
+  {
+    return init + p.second;
   }
 
   void uniteTL(borisov::TranslationList& first, const borisov::TranslationList& second)
@@ -306,13 +308,13 @@ namespace
     auto iterSecondEnd = second.cend();
     while (iterFirst != iterFirstEnd && iterSecond != iterSecondEnd)
     {
-      if (!first.key_comp()(iterFirst->first, iterSecond->first) && !first.key_comp()(iterSecond->first, iterFirst->first))
+      if (isEqualKeys(first, iterFirst->first, iterSecond->first))
       {
         iterFirst->second += iterSecond->second;
         ++iterFirst;
         ++iterSecond;
       }
-      else if (first.key_comp()(iterFirst->first, iterSecond->first))
+      else if (isLessKeys(first, iterFirst->first, iterSecond->first))
       {
         ++iterFirst;
       }
@@ -327,5 +329,22 @@ namespace
       first.insert({iterSecond->first, iterSecond->second});
       ++iterSecond;
     }
+  }
+
+  bool freqComp(const borisov::TranslationPair& first, const borisov::TranslationPair& second)
+  {
+    return first.second < second.second;
+  }
+
+  template< typename C, typename K >
+  bool isLessKeys(const C& c, const K& first, const K& second)
+  {
+    return c.key_comp()(first, second);
+  }
+
+  template< typename C, typename K >
+  bool isEqualKeys(const C& c, const K& first, const K& second)
+  {
+    return !isLessKeys(c, first, second) && !isLessKeys(c, second, first);
   }
 }

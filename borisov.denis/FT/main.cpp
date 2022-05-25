@@ -44,7 +44,8 @@ int main(int argc, char** argv)
     }
     catch (const std::invalid_argument& e)
     {
-      borisov::printInvalidFileFormat(std::cerr);
+      std::cerr << "Error: ";
+      borisov::printInvalidFileFormat(std::cerr) << '\n';
       return 1;
     }
     catch (const std::exception& e)
@@ -77,7 +78,7 @@ int main(int argc, char** argv)
     {
       borisov::ArgList l;
       borisov::getArgList(std::cin, l);
-      if (std::cin.fail() && !std::cin.eof() || l.size() == 0)
+      if ((std::cin.fail() && !std::cin.eof()) || l.size() == 0)
       {
         throw std::invalid_argument("Invalid command");
       }

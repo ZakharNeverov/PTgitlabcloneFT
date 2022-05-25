@@ -8,6 +8,7 @@ namespace borisov
 {
   using Word = std::string;
   using Translation = std::string;
+  using TranslationPair = std::pair< Translation, size_t >;
   using TranslationList = std::map< Translation, size_t >;
   using Dict = std::map< Word, TranslationList >;
 
