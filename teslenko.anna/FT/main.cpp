@@ -121,7 +121,6 @@ int main()
     std::cerr << ex.what() << '\n';
     return 1;
   }
-
   using namespace std::placeholders;
   std::map< std::string, std::function< void(std::string& line) > > commands({
     {"ANALYZE", std::bind(teslenko::analyzeText, _1, std::ref(out))},
@@ -130,7 +129,6 @@ int main()
     {"INTERSECT", std::bind(teslenko::intersect, _1, std::ref(out))},
     {"SEARCH", std::bind(teslenko::search, _1, std::ref(out))},
   });
-
   std::string line = "";
   while (!in.eof())
   {
@@ -162,7 +160,6 @@ int main()
   }
   in.close();
   out.close();
-
   in.open(outFileName);
   std::ifstream f;
   std::string expectedResFile = "";
