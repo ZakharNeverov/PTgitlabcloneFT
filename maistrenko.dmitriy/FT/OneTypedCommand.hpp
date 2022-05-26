@@ -16,6 +16,8 @@ namespace maistrenko
   void unionDictionaries(std::string&, std::ostream&, Dicts&);
   void intersectDictionaries(std::string&, std::ostream&, Dicts&);
   void substractDictionaries(std::string&, std::ostream&, Dicts&);
+  void loadDict(std::string&, std::ostream&, Dicts&);
+  void saveDict(std::string&, std::ostream&, const Dicts&);
 }
 
 #endif

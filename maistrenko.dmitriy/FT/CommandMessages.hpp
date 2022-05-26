@@ -11,6 +11,8 @@ namespace maistrenko
   void notifyUnexistingWord(std::ostream&);
   void notifyUnexistingCommand(std::ostream&);
   void notifyUnexistingTranslation(std::ostream&);
+  void notifyUnexistingFile(std::ostream&);
+  void notifyInvalidFile(std::ostream&);
 }
 
 #endif

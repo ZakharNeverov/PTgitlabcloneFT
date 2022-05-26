@@ -30,3 +30,13 @@ void maistrenko::notifyUnexistingTranslation(std::ostream& out)
 {
   out << "<WORD DOES NOT HAVE SUCH TRANSLATION>\n";
 }
+
+void maistrenko::notifyUnexistingFile(std::ostream& out)
+{
+  out << "<FILE-SOURCE DOES NOT EXIST>\n";
+}
+
+void maistrenko::notifyInvalidFile(std::ostream& out)
+{
+  out << "<DESTINATION FILE IS INVALID>\n";
+}

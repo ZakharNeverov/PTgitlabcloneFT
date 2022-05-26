@@ -280,3 +280,57 @@ void maistrenko::substractDictionaries(std::string& commandLine, std::ostream& o
   Dict tempDict = maistrenko::substractDicts(dicts.at(dictName1), dicts.at(dictName2));
   dicts.insert({newDictName, tempDict});
 }
+
+void maistrenko::loadDict(std::string& commandLine, std::ostream& out, Dicts& dicts)
+{
+  std::string newDictName = "";
+  bool isCommandValid = getNextWord(commandLine, ' ', newDictName);
+
+  std::string fileName = "";
+  isCommandValid = getNextWord(commandLine, ' ', fileName) && isCommandValid;
+
+  if (!isCommandValid || !commandLine.empty())
+  {
+    notifyInvalidArguments(out);
+    return;
+  }
+  if (dicts.find(newDictName) != dicts.end())
+  {
+    notifyExistingDict(out);
+    return;
+  }
+
+  Dict newDict = Dict();
+  if (loadFromFile(fileName, newDict))
+  {
+    dicts.insert({newDictName, newDict});
+  }
+  else
+  {
+    notifyUnexistingFile(out);
+  }
+}
+
+void maistrenko::saveDict(std::string& commandLine, std::ostream& out, const Dicts& dicts)
+{
+  std::string outDictName = "";
+  bool isCommandValid = getNextWord(commandLine, ' ', outDictName);
+
+  std::string fileName = "";
+  isCommandValid = getNextWord(commandLine, ' ', fileName) && isCommandValid;
+
+  if (!isCommandValid || !commandLine.empty())
+  {
+    notifyInvalidArguments(out);
+    return;
+  }
+  if (dicts.find(outDictName) == dicts.end())
+  {
+    notifyUnexistingDict(out);
+    return;
+  }
+  if (!saveInFile(fileName, dicts.at(outDictName)))
+  {
+    notifyInvalidFile(out);
+  }
+}

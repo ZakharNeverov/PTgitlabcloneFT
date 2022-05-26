@@ -20,7 +20,9 @@ int main()
     {"SUBSTRACT", std::bind(maistrenko::substractDictionaries, std::ref(cmd), std::ref(std::cout), std::ref(dicts))},
     {"DELETE_DICT", std::bind(maistrenko::deleteDict, std::ref(cmd), std::ref(std::cout), std::ref(dicts))},
     {"DELETE_WORD", std::bind(maistrenko::deleteWord, std::ref(cmd), std::ref(std::cout), std::ref(dicts))},
-    {"DELETE_TRANS", std::bind(maistrenko::deleteTranslation, std::ref(cmd), std::ref(std::cout), std::ref(dicts))}
+    {"DELETE_TRANS", std::bind(maistrenko::deleteTranslation, std::ref(cmd), std::ref(std::cout), std::ref(dicts))},
+    {"LOAD", std::bind(maistrenko::loadDict, std::ref(cmd), std::ref(std::cout), std::ref(dicts))},
+    {"SAVE", std::bind(maistrenko::saveDict, std::ref(cmd), std::ref(std::cout), std::ref(dicts))},
   };
 
 

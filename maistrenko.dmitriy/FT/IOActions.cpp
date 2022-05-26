@@ -82,7 +82,7 @@ void maistrenko::outputTranslations(const Dict& dict, const EngW& engWord, std::
   {
     if (wasFirstGiven)
     {
-      out << ", ";
+      out << "|";
     }
     out << word;
     wasFirstGiven = true;
@@ -97,4 +97,30 @@ void maistrenko::outputDict(const Dict& dict, std::ostream& out)
     out << words.first << " - ";
     outputTranslations(dict, words.first, out);
   }
+}
+
+bool maistrenko::loadFromFile(const std::string& fileName, Dict& dest)
+{
+  std::ifstream fin(fileName);
+  bool isFinGood = fin.good();
+  if (isFinGood)
+  {
+    getDictFromStream(fin, dest);
+  }
+  fin.close();
+
+  return isFinGood;
+}
+
+bool maistrenko::saveInFile(const std::string& fileName, const Dict& from)
+{
+  std::ofstream fout(fileName);
+  bool isFoutGood = fout.good();
+  if (isFoutGood)
+  {
+    outputDict(from, fout);
+  }
+  fout.close();
+
+  return isFoutGood;
 }
