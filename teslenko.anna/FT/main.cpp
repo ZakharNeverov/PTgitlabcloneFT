@@ -141,12 +141,7 @@ int main()
         auto commandIter = commands.find(command);
         if (commandIter == commands.end())
         {
-          std::cerr << "No command\n";
-          if (!std::cin)
-          {
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
-          }
+          throw std::logic_error("No command\n");
         }
         commandIter->second(line);
         out << "\n";
