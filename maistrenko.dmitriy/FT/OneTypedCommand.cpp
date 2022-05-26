@@ -2,8 +2,6 @@
 #include "IOActions.hpp"
 #include "CommandMessages.hpp"
 #include "DictionaryActions.hpp"
-#include <algorithm>
-#include <iterator>
 
 void maistrenko::createDict(std::string& commandLine, std::ostream& out, Dicts& dest)
 {
