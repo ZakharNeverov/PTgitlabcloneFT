@@ -20,9 +20,14 @@ namespace {
   const std::string FOUND_ERROR = "Can't find this dictionary";
   const std::string REGEX = "([a-zA-Z]+([-'][a-zA-Z]+)?)+";
 
-  std::string outputSpaces(size_t size)
+  std::string printSpaces(size_t size)
   {
     return std::string(size, ' ');
+  }
+
+  std::ostream& printNamesOfColumns(size_t amountOfSpaces, std::ostream& out)
+  {
+    return out << COLUMN_NAME_1 << printSpaces(amountOfSpaces) << COLUMN_NAME_2;
   }
 }
 
@@ -151,10 +156,10 @@ void emelyanov::Command::doRead(CommandArgs& args)
   const std::regex regex(REGEX);
   std::smatch word;
   for (size_t lineIndex = 1; !inputFile.eof(); ++lineIndex) {
-    std::string data = " ";
+    std::string data;
     std::getline(inputFile, data);
     const size_t indent = 5;
-    outputFile << lineIndex << outputSpaces(indent) << data << "\n";
+    outputFile << lineIndex << printSpaces(indent) << data << "\n";
     while (std::regex_search(data, word, regex)) {
       std::transform(word.str().begin(), word.str().end(), word.str().begin(), ::tolower);
       if (dataSet.find(word.str()) != dataSet.end()) {
@@ -175,19 +180,20 @@ void emelyanov::Command::doPrintDictionary(CommandArgs& args)
 {
   std::string dataSetName = args.front();
   args.pop_front();
-  auto it = dataSets_.find(dataSetName);
-  if (it != dataSets_.end()) {
-    throw std::logic_error(FOUND_ERROR);
+  auto currentDict = dataSets_.at(dataSetName);
+  if (currentDict.empty()) {
+    printEmpty(out_) << '\n';
+    return;
   }
   size_t maxWordWidth = 5;
-  for (auto&& el: it->second) {
+  for (auto&& el: currentDict) {
     maxWordWidth = std::max(el.first.length(), maxWordWidth);
   }
   const size_t indent = 5;
-  out_ << COLUMN_NAME_1 << outputSpaces(maxWordWidth) << COLUMN_NAME_2 << "\n";
-  for (auto&& el: it->second) {
+  printNamesOfColumns(maxWordWidth, out_) << '\n';
+  for (auto&& el: currentDict) {
     const size_t currentWidth = maxWordWidth - el.first.length() + indent;
-    out_ << el.first << outputSpaces(currentWidth);
+    out_ << el.first << printSpaces(currentWidth);
     using namespace std::placeholders;
     auto begin = el.second.begin();
     auto end = el.second.end();
@@ -202,22 +208,19 @@ void emelyanov::Command::printWordFromOneDict(CommandArgs& args)
   args.pop_front();
   std::string word = args.front();
   args.pop_front();
-  auto it = dataSets_.find(dataSetName);
-  if (it != dataSets_.end()) {
-    throw std::logic_error(FOUND_ERROR);
-  }
-  if (it->second.empty()) {
+  auto currentDict = dataSets_.at(dataSetName);
+  if (currentDict.empty()) {
     printEmpty(out_) << '\n';
     return;
   }
-  size_t wordWidth = word.length();
+  size_t maxWordWidth = word.length();
   const size_t indent = 5;
-  out_ << COLUMN_NAME_1 << outputSpaces(wordWidth) << COLUMN_NAME_2 << '\n';
-  out_ << word << outputSpaces(indent);
-  auto currentIt = it->second.find(word);
+  printNamesOfColumns(maxWordWidth, out_) << '\n';
+  out_ << word << printSpaces(indent);
+  auto setWithValues = currentDict.at(word);
   using namespace std::placeholders;
-  auto begin = currentIt->second.begin();
-  auto end = currentIt->second.end();
+  auto begin = setWithValues.begin();
+  auto end = setWithValues.end();
   std::copy(begin, std::prev(end), std::ostream_iterator< size_t >(out_, " "));
   out_ << *end << '\n';
 }
@@ -226,10 +229,10 @@ void emelyanov::Command::printWordFromAllDicts(CommandArgs& args)
 {
   std::string word = args.front();
   args.pop_front();
-  size_t wordWidth = word.length();
+  size_t maxWordWidth = word.length();
   const size_t indent = 5;
-  out_ << COLUMN_NAME_1 << outputSpaces(wordWidth) << COLUMN_NAME_2 << "\n";
-  out_ << word << outputSpaces(indent);
+  printNamesOfColumns(maxWordWidth, out_) << '\n';
+  out_ << word << printSpaces(indent);
   for (auto it = dataSets_.begin(); it != dataSets_.end(); ++it) {
     if (it->second.empty()) {
       continue;
@@ -330,7 +333,7 @@ void emelyanov::Command::doRenameDict(CommandArgs& args)
     printEmpty(out_);
     return;
   }
-  dataSets_.insert(std::make_pair(oldDataSetName, it1->second));
+  dataSets_.insert(std::make_pair(newDataSetName, it1->second));
   dataSets_.erase(oldDataSetName);
 }
 
@@ -346,8 +349,8 @@ void emelyanov::Command::doContains(CommandArgs& args)
   std::string dataSetName = args.front();
   args.pop_front();
   if (dataSets_.find(dataSetName) != dataSets_.end()) {
-    out_ << "<TRUE>";
+    printTrue(out_);
   } else {
-    out_ << "<FALSE>";
+    printFalse(out_);
   }
 }

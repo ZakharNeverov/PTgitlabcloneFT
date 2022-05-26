@@ -24,6 +24,12 @@ namespace emelyanov {
 
     void operator()(CommandArgs& args);
 
+  private:
+    AllDataSets& dataSets_;
+    std::istream& in_;
+    std::ostream& out_;
+    Commands mapOfCommands_;
+
     void read(CommandArgs& args);
     void printDictionary(CommandArgs& args);
     void printWord(CommandArgs& args);
@@ -33,12 +39,6 @@ namespace emelyanov {
     void renameDict(CommandArgs& args);
     void deleteDict(CommandArgs& args);
     void contains(CommandArgs& args);
-
-  private:
-    AllDataSets& dataSets_;
-    std::istream& in_;
-    std::ostream& out_;
-    Commands mapOfCommands_;
 
     void doRead(CommandArgs& args);
     void doPrintDictionary(CommandArgs& args);
