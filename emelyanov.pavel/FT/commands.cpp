@@ -15,7 +15,7 @@ namespace {
   const std::string FILE_IS_NOT_OPENED = "Input file can't be opened";
   const std::string UNEXPECTED_COMMAND_ERROR = "Unexpected command";
   const std::string COLUMN_NAME_1 = "Word";
-  const std::string COLUMN_NAME_2 = "Line numbers";
+  const std::string COLUMN_NAME_2 = "Lines";
   const std::string ARGUMENT_ERROR = "Amount of arguments isn't corrected";
   const std::string FOUND_ERROR = "Can't find this dictionary";
   const std::string REGEX = "([a-zA-Z]+([-'][a-zA-Z]+)?)+";
@@ -154,22 +154,23 @@ void emelyanov::Command::doRead(CommandArgs& args)
     throw std::logic_error(FILE_IS_NOT_OPENED);
   }
   const std::regex regex(REGEX);
-  std::smatch word;
+  std::smatch smatch;
   for (size_t lineIndex = 1; !inputFile.eof(); ++lineIndex) {
     std::string data;
     std::getline(inputFile, data);
     const size_t indent = 5;
     outputFile << lineIndex << printSpaces(indent) << data << "\n";
-    while (std::regex_search(data, word, regex)) {
-      std::transform(word.str().begin(), word.str().end(), word.str().begin(), ::tolower);
-      if (dataSet.find(word.str()) != dataSet.end()) {
-        dataSet[word.str()].insert(lineIndex);
+    while (std::regex_search(data, smatch, regex)) {
+      std::string word = smatch.str();
+      std::transform(word.begin(), word.end(), word.begin(), ::tolower);
+      if (dataSet.find(word) != dataSet.end()) {
+        dataSet[word].insert(lineIndex);
       } else {
         std::set< size_t > set;
         set.insert(lineIndex);
-        dataSet.insert(std::make_pair(word.str(), set));
+        dataSet.insert(std::make_pair(word, set));
       }
-      data = word.suffix().str();
+      data = smatch.suffix().str();
     }
   }
   inputFile.close();
@@ -198,7 +199,7 @@ void emelyanov::Command::doPrintDictionary(CommandArgs& args)
     auto begin = el.second.begin();
     auto end = el.second.end();
     std::copy(begin, std::prev(end), std::ostream_iterator< size_t >(out_, " "));
-    out_ << *end << '\n';
+    out_ << *std::prev(end) << '\n';
   }
 }
 
@@ -222,7 +223,7 @@ void emelyanov::Command::printWordFromOneDict(CommandArgs& args)
   auto begin = setWithValues.begin();
   auto end = setWithValues.end();
   std::copy(begin, std::prev(end), std::ostream_iterator< size_t >(out_, " "));
-  out_ << *end << '\n';
+  out_ << *std::prev(end) << '\n';
 }
 
 void emelyanov::Command::printWordFromAllDicts(CommandArgs& args)
@@ -244,8 +245,7 @@ void emelyanov::Command::printWordFromAllDicts(CommandArgs& args)
     using namespace std::placeholders;
     auto begin = currentIt->second.begin();
     auto end = currentIt->second.end();
-    std::copy(begin, std::prev(end), std::ostream_iterator< size_t >(out_, " "));
-    out_ << *end << '\n';
+    std::copy(begin, end, std::ostream_iterator< size_t >(out_, " "));
   }
 }
 
