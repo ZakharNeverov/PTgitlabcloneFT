@@ -17,6 +17,7 @@ namespace {
   const std::string COLUMN_NAME_1 = "Word";
   const std::string COLUMN_NAME_2 = "Lines";
   const std::string ARGUMENT_ERROR = "Amount of arguments isn't corrected";
+  const std::string DELETE_ERROR = "Name doesn't exist in global dictionary";
   const std::string FOUND_ERROR = "Can't find this dictionary";
   const std::string REGEX = "([a-zA-Z]+([-'][a-zA-Z]+)?)+";
 
@@ -341,6 +342,9 @@ void emelyanov::Command::doDeleteDict(CommandArgs& args)
 {
   std::string dataSetName = args.front();
   args.pop_front();
+  if (dataSets_.find(dataSetName) == dataSets_.end()) {
+    throw std::logic_error(DELETE_ERROR);
+  }
   dataSets_.erase(dataSetName);
 }
 
@@ -349,8 +353,8 @@ void emelyanov::Command::doContains(CommandArgs& args)
   std::string dataSetName = args.front();
   args.pop_front();
   if (dataSets_.find(dataSetName) != dataSets_.end()) {
-    printTrue(out_);
+    printTrue(out_) << '\n';
   } else {
-    printFalse(out_);
+    printFalse(out_) << '\n';
   }
 }
