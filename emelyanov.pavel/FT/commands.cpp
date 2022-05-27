@@ -252,7 +252,7 @@ void emelyanov::Command::printWordFromAllDicts(CommandArgs& args)
   auto begin = newNumbers.begin();
   auto end = newNumbers.end();
   std::copy(begin, std::prev(end), std::ostream_iterator< size_t >(out_, " "));
-  out_ << *std::prev(end);
+  out_ << *std::prev(end) << '\n';
 }
 
 void emelyanov::Command::doComplementDict(CommandArgs& args)
