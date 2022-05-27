@@ -234,7 +234,9 @@ void emelyanov::Command::printWordFromAllDicts(CommandArgs& args)
   size_t maxWordWidth = word.length();
   const size_t indent = 5;
   printNamesOfColumns(maxWordWidth, out_) << '\n';
-  out_ << word << printSpaces(indent);
+  out_ << word << printSpaces(indent - 1);
+  std::set< size_t > newNumbers;
+  using namespace std::placeholders;
   for (auto it = dataSets_.begin(); it != dataSets_.end(); ++it) {
     if (it->second.empty()) {
       continue;
@@ -243,11 +245,14 @@ void emelyanov::Command::printWordFromAllDicts(CommandArgs& args)
     if (currentIt == it->second.end()) {
       continue;
     }
-    using namespace std::placeholders;
     auto begin = currentIt->second.begin();
     auto end = currentIt->second.end();
-    std::copy(begin, end, std::ostream_iterator< size_t >(out_, " "));
+    std::copy(begin, end, std::inserter(newNumbers, newNumbers.begin()));
   }
+  auto begin = newNumbers.begin();
+  auto end = newNumbers.end();
+  std::copy(begin, std::prev(end), std::ostream_iterator< size_t >(out_, " "));
+  out_ << *std::prev(end);
 }
 
 void emelyanov::Command::doComplementDict(CommandArgs& args)
