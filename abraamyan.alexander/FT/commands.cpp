@@ -11,44 +11,29 @@
 namespace
 {
   using namespace abraamyan;
-  using arrIterator = std::vector< std::unique_ptr< abraamyan::Table > >::iterator;
+  using arrIterator = tableArray::iterator;
 
-  arrIterator getIteratorByName(std::string tableName);
-
-  arrIterator getIterator(const std::string &tableName);
-
-  void areArgumentsCorrect(arrIterator it1, arrIterator it2, std::string &newTableName);
-
+  arrIterator getIteratorByName(tableArray &arr, std::string tableName);
+  arrIterator getIterator(tableArray &arr, const std::string &tableName);
+  void areArgumentsCorrect(tableArray &arr, arrIterator it1, arrIterator it2, std::string &newTableName);
   void readArg(std::string &arg);
-
   void readTwoArgs(std::string &arg1, std::string &arg2);
-
   void readThreeArgs(std::string &arg1, std::string &arg2, std::string &arg3);
-
   bool isBeginingExtraSymbol(char c);
-
   bool isEndingExtraSymbol(char c);
-
   bool isWord(std::string &str);
-
   bool removeExtraSymbols(std::string &str);
+  void deleteTable(tableArray &arr, std::string &tableName);
+  bool printTable(tableArray &arr, std::ostream &out, std::string &tableName);
+  bool isCreatable(tableArray &arr, std::string &tableName);
+  bool createNewTable(tableArray &arr, std::string &tableName);
 
-  void deleteTable(std::string &tableName);
-
-  bool printTable(std::ostream &out, std::string &tableName);
-
-  void listTables();
-
-  bool isCreatable(std::string &tableName);
-
-  bool createNewTable(std::string &tableName);
-
-  arrIterator getIteratorByName(std::string tableName)
+  arrIterator getIteratorByName(tableArray &arr, std::string tableName)
   {
     size_t i = 0;
     for (arrIterator first = arr.begin(); first != arr.end(); first++)
     {
-      if ((*first)->getName() == tableName)
+      if (first->getName() == tableName)
       {
         return first;
       }
@@ -56,7 +41,7 @@ namespace
     return arr.end();
   }
 
-  arrIterator getIterator(const std::string &tableName)
+  arrIterator getIterator(tableArray &arr, const std::string &tableName)
   {
     try
     {
@@ -70,13 +55,13 @@ namespace
     }
     catch (const std::invalid_argument &e)
     {
-      return getIteratorByName(tableName);
+      return getIteratorByName(arr, tableName);
     }
   }
 
-  void areArgumentsCorrect(arrIterator it1, arrIterator it2, std::string &newTableName)
+  void areArgumentsCorrect(tableArray &arr, arrIterator it1, arrIterator it2, std::string &newTableName)
   {
-    if (it1 == arr.end() || it2 == arr.end() || it1 == it2 || !isCreatable(newTableName))
+    if (it1 == arr.end() || it2 == arr.end() || it1 == it2 || !isCreatable(arr, newTableName))
     {
       throw std::logic_error("");
     }
@@ -161,9 +146,9 @@ namespace
     return str.length();
   }
 
-  void deleteTable(std::string &tableName)
+  void deleteTable(tableArray &arr, std::string &tableName)
   {
-    arrIterator it = getIterator(tableName);
+    arrIterator it = getIterator(arr, tableName);
     if (it == arr.end())
     {
       throw std::logic_error("");
@@ -171,32 +156,18 @@ namespace
     arr.erase(it);
   }
 
-  bool printTable(std::ostream &out, std::string &tableName)
+  bool printTable(tableArray &arr, std::ostream &out, std::string &tableName)
   {
-    arrIterator it = getIterator(tableName);
+    arrIterator it = getIterator(arr, tableName);
     if (it == arr.end())
     {
       throw std::logic_error("");
     }
-    (*it)->printTable(out);
+    it->printTable(out);
     return true;
   }
 
-  void listTables()
-  {
-    if (arr.size() == 0)
-    {
-      std::cout << "Empty!\n";
-      return;
-    }
-    for (size_t i = 0; i < arr.size(); i++)
-    {
-      std::cout << i + 1 << ".  " << arr[i]->getName() << '\n';
-    }
-    return;
-  }
-
-  bool isCreatable(std::string &tableName)
+  bool isCreatable(tableArray &arr, std::string &tableName)
   {
     try
     {
@@ -205,7 +176,7 @@ namespace
     }
     catch (const std::invalid_argument &e)
     {
-      if (getIterator(tableName) != arr.end())
+      if (getIterator(arr, tableName) != arr.end())
       {
         return false;
       }
@@ -213,11 +184,11 @@ namespace
     }
   }
 
-  bool createNewTable(std::string &tableName)
+  bool createNewTable(tableArray &arr, std::string &tableName)
   {
-    if (isCreatable(tableName))
+    if (isCreatable(arr, tableName))
     {
-      arr.push_back(std::make_unique< Table >(tableName));
+      arr.push_back(Table(tableName));
       return true;
     }
     return false;
@@ -227,186 +198,194 @@ namespace
 
 namespace abraamyan
 {
-  void performCommand()
+  void createCommand(tableArray &arr)
   {
-    std::string command;
-    std::cin >> CommandIO{ command };
-    if (!std::cin)
-    {
-      return;
-    }
-    if (command == "create")
-    {
-      std::string tableName;
-      readArg(tableName);
-      if (!createNewTable(tableName))
-      {
-        throw std::logic_error("");
-      }
-    }
-    else if (command == "delete")
-    {
-      std::string tableName;
-      readArg(tableName);
-      deleteTable(tableName);
-    }
-    else if (command == "print")
-    {
-      std::string tableName;
-      readArg(tableName);
-      printTable(std::cout, tableName);
-    }
-    else if (command == "printToFile")
-    {
-      std::string fileName;
-      std::string tableName;
-      readTwoArgs(fileName, tableName);
-      arrIterator it = getIterator(tableName);
-      if (it == arr.end())
-      {
-        throw std::logic_error("");
-      }
-      std::ofstream out(fileName);
-      if (!out.is_open())
-      {
-        throw std::logic_error("");
-      }
-      (*it)->printTable(out);
-      out.close();
-    }
-    else if (command == "readFile")
-    {
-      std::string fileName;
-      std::string tableName;
-      readTwoArgs(fileName, tableName);
-      bool isTableExists = getIterator(tableName) != arr.end();
-      if (!isTableExists && !createNewTable(tableName))
-      {
-        throw std::logic_error("");
-      }
-      std::ifstream inputFile(fileName);
-      if (!inputFile.is_open())
-      {
-        throw std::logic_error("");
-      }
-      size_t lineNum = 1ul;
-      while (!inputFile.eof())
-      {
-        while (!inputFile.eof() && std::isspace(inputFile.peek()) && inputFile.peek() != '\n')
-        {
-          inputFile.ignore(1);
-        }
-        if (inputFile.eof() || inputFile.peek() == '\n')
-        {
-          lineNum++;
-          inputFile.ignore(1);
-          continue;
-        }
-        std::string word;
-        inputFile >> word;
-        if (!inputFile)
-        {
-          std::cout << "Fatal error occurred reading file!\n";
-          return;
-        }
-        if (removeExtraSymbols(word) && isWord(word))
-        {
-          (*(getIterator(tableName)))->insert(word, lineNum);
-        }
-      }
-      inputFile.close();
-    }
-    else if (command == "union")
-    {
-      std::string tableName1;
-      std::string tableName2;
-      std::string newTableName;
-      readThreeArgs(tableName1, tableName2, newTableName);
-      arrIterator it1 = getIterator(tableName1);
-      arrIterator it2 = getIterator(tableName2);
-      areArgumentsCorrect(it1, it2, newTableName);
-      arr.push_back(std::make_unique< Table >((*it1)->unite(**(it2), newTableName)));
-    }
-    else if (command == "intersection")
-    {
-      std::string tableName1;
-      std::string tableName2;
-      std::string newTableName;
-      readThreeArgs(tableName1, tableName2, newTableName);
-      arrIterator it1 = getIterator(tableName1);
-      arrIterator it2 = getIterator(tableName2);
-      areArgumentsCorrect(it1, it2, newTableName);
-      arr.push_back(std::make_unique< Table >((*it1)->intersect(**(it2), newTableName)));
-    }
-    else if (command == "list")
-    {
-      listTables();
-    }
-    else if (command == "search")
-    {
-      std::string word;
-      std::string tableName;
-      readTwoArgs(word, tableName);
-      arrIterator it = getIterator(tableName);
-      if (it == arr.end())
-      {
-        throw std::logic_error("");
-      }
-      std::cout << ((*it)->find(word)) ? "Found!\n" : "Wasnt found\n";
-    }
-    else if (command == "searchEverywhere")
-    {
-      std::string word;
-      readArg(word);
-      for (size_t i = 0; i < arr.size(); i++)
-      {
-        if (arr[i]->find(word))
-        {
-          std::cout << "Found!\n";
-          return;
-        }
-      }
-      std::cout << "Wasnt found!\n";
-    }
-    else if (command == "count")
-    {
-      std::string word;
-      std::string tableName;
-      readTwoArgs(word, tableName);
-      arrIterator it = getIterator(tableName);
-      if (it == arr.end())
-      {
-        throw std::logic_error("");
-      }
-      std::cout << (*it)->count(word) << '\n';
-    }
-    else if (command == "countEverywhere")
-    {
-      std::string word;
-      readArg(word);
-      size_t count = 0;
-      for (auto &it : arr)
-      {
-        count += it->count(word);
-      }
-      std::cout << count << '\n';
-    }
-    else if (command == "copyTable")
-    {
-      std::string tableName;
-      std::string tableName2;
-      readTwoArgs(tableName, tableName2);
-      arrIterator it = getIterator(tableName);
-      if (it == arr.end() || !isCreatable(tableName2))
-      {
-        throw std::logic_error("");
-      }
-      arr.push_back(std::make_unique< Table >(Table(**it)));
-      arr[arr.size() - 1]->setName(tableName2);
-    }
-    else
+    std::string tableName;
+    readArg(tableName);
+    if (!createNewTable(arr, tableName))
     {
       throw std::logic_error("");
     }
+  }
+
+  void deleteCommand(tableArray &arr)
+  {
+    std::string tableName;
+    readArg(tableName);
+    deleteTable(arr, tableName);
+  }
+
+  void printCommand(tableArray &arr)
+  {
+    std::string tableName;
+    readArg(tableName);
+    printTable(arr, std::cout, tableName);
+  }
+
+  void printToFileCommand(tableArray &arr)
+  {
+    std::string fileName;
+    std::string tableName;
+    readTwoArgs(fileName, tableName);
+    arrIterator it = getIterator(arr, tableName);
+    if (it == arr.end())
+    {
+      throw std::logic_error("");
+    }
+    std::ofstream out(fileName);
+    if (!out.is_open())
+    {
+      throw std::logic_error("");
+    }
+    it->printTable(out);
+    out.close();
+  }
+
+  void readFileCommand(tableArray &arr)
+  {
+    std::string fileName;
+    std::string tableName;
+    readTwoArgs(fileName, tableName);
+    bool isTableExists = getIterator(arr, tableName) != arr.end();
+    if (!isTableExists && !createNewTable(arr, tableName))
+    {
+      throw std::logic_error("");
+    }
+    std::ifstream inputFile(fileName);
+    if (!inputFile.is_open())
+    {
+      throw std::logic_error("");
+    }
+    size_t lineNum = 1ul;
+    while (!inputFile.eof())
+    {
+      while (!inputFile.eof() && std::isspace(inputFile.peek()) && inputFile.peek() != '\n')
+      {
+        inputFile.ignore(1);
+      }
+      if (inputFile.eof() || inputFile.peek() == '\n')
+      {
+        lineNum++;
+        inputFile.ignore(1);
+        continue;
+      }
+      std::string word;
+      inputFile >> word;
+      if (!inputFile)
+      {
+        std::cout << "Fatal error occurred reading file!\n";
+        return;
+      }
+      if (removeExtraSymbols(word) && isWord(word))
+      {
+        getIterator(arr, tableName)->insert(word, lineNum);
+      }
+    }
+    inputFile.close();
+  }
+
+  void unionCommand(tableArray &arr)
+  {
+    std::string tableName1;
+    std::string tableName2;
+    std::string newTableName;
+    readThreeArgs(tableName1, tableName2, newTableName);
+    arrIterator it1 = getIterator(arr, tableName1);
+    arrIterator it2 = getIterator(arr, tableName2);
+    areArgumentsCorrect(arr, it1, it2, newTableName);
+    arr.push_back(Table (it1->unite(*it2, newTableName)));
+  }
+
+  void intersectionCommand(tableArray &arr)
+  {
+    std::string tableName1;
+    std::string tableName2;
+    std::string newTableName;
+    readThreeArgs(tableName1, tableName2, newTableName);
+    arrIterator it1 = getIterator(arr, tableName1);
+    arrIterator it2 = getIterator(arr, tableName2);
+    areArgumentsCorrect(arr, it1, it2, newTableName);
+    arr.push_back(Table(it1->intersect(*it2, newTableName)));
+  }
+
+  void searchCommand(tableArray &arr)
+  {
+    std::string word;
+    std::string tableName;
+    readTwoArgs(word, tableName);
+    arrIterator it = getIterator(arr, tableName);
+    if (it == arr.end())
+    {
+      throw std::logic_error("");
+    }
+    std::cout << (it->find(word)) ? "Found!\n" : "Wasnt found\n";
+  }
+
+  void searchEverywhereCommand(tableArray &arr)
+  {
+    std::string word;
+    readArg(word);
+    for (size_t i = 0; i < arr.size(); i++)
+    {
+      if (arr[i].find(word))
+      {
+        std::cout << "Found!\n";
+        return;
+      }
+    }
+    std::cout << "Wasnt found!\n";
+  }
+
+  void countCommand(tableArray &arr)
+  {
+    std::string word;
+    std::string tableName;
+    readTwoArgs(word, tableName);
+    arrIterator it = getIterator(arr, tableName);
+    if (it == arr.end())
+    {
+      throw std::logic_error("");
+    }
+    std::cout << it->count(word) << '\n';
+  }
+
+  void countEverywhereCommand(tableArray &arr)
+  {
+    std::string word;
+    readArg(word);
+    size_t count = 0;
+    for (auto &it : arr)
+    {
+      count += it.count(word);
+    }
+    std::cout << count << '\n';
+  }
+
+  void copyCommand(tableArray &arr)
+  {
+    std::string tableName;
+    std::string tableName2;
+    readTwoArgs(tableName, tableName2);
+    arrIterator it = getIterator(arr, tableName);
+    if (it == arr.end() || !isCreatable(arr, tableName2))
+    {
+      throw std::logic_error("");
+    }
+    arr.push_back(Table(*it));
+    arr[arr.size() - 1].setName(tableName2);
+  }
+
+  void listCommand(tableArray &arr)
+  {
+    if (arr.empty())
+    {
+      std::cout << "Empty!\n";
+      return;
+    }
+    for (size_t i = 0; i < arr.size(); i++)
+    {
+      std::cout << i + 1 << ".  " << arr[i].getName() << '\n';
+    }
+    return;
   }
 }

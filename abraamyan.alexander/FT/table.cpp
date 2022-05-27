@@ -20,6 +20,18 @@ namespace abraamyan
     map_(std::move(table.map_))
   { }
 
+  Table &Table::operator=(const Table &table)
+  {
+    name_ = table.name_;
+    map_ = table.map_;
+    return *this;
+  }
+
+  bool Table::operator==(const Table &table) const
+  {
+    return (name_ == table.name_) && (map_ == table.map_);
+  }
+
   bool Table::insert(const std::string key, const size_t lineNum)
   {
     auto it = map_.find(key);

@@ -14,6 +14,8 @@ namespace abraamyan
     Table(std::string name);
     Table(const Table &table);
     Table(Table &&table);
+    Table &operator=(const Table &table);
+    bool operator==(const Table &table) const;
     bool insert(const std::string key, const size_t lineNum);
     bool find(const std::string key) const;
     size_t count(const std::string key) const;
