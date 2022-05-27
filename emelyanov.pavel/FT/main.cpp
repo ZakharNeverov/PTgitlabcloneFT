@@ -17,14 +17,16 @@ namespace {
 
 int main(int argc, char* argv[])
 {
-  if (argc != 2) {
+  std::ofstream outputFile;
+  if (argc > 2) {
     std::cerr << ARGUMENT_ERROR << '\n';
     return 1;
-  }
-  std::ofstream outputFile(argv[1]);
-  if (!outputFile.is_open()) {
-    std::cerr << FILE_IS_NOT_OPENED << '\n';
-    return 1;
+  } else if (argc == 2) {
+    outputFile.open(argv[1]);
+    if (!outputFile.is_open()) {
+      std::cerr << FILE_IS_NOT_OPENED << '\n';
+      return 1;
+    }
   }
   std::ostream& out = (argc == 2) ? outputFile : std::cout;
   AllDataSets allDataSets;
