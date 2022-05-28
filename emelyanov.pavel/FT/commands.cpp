@@ -16,6 +16,7 @@ namespace {
   const std::string UNEXPECTED_COMMAND_ERROR = "Unexpected command";
   const std::string COLUMN_NAME_1 = "Word";
   const std::string COLUMN_NAME_2 = "Lines";
+  const std::string LINES_ERROR = "No lines";
   const std::string ARGUMENT_ERROR = "Amount of arguments isn't corrected";
   const std::string DELETE_ERROR = "Name doesn't exist in global dictionary";
   const std::string FOUND_ERROR = "Can't find this dictionary";
@@ -152,6 +153,7 @@ void emelyanov::Command::doRead(CommandArgs& args)
   args.pop_front();
   std::ofstream outputFile(outputFileName);
   if (!outputFile.is_open()) {
+    inputFile.close();
     throw std::logic_error(FILE_IS_NOT_OPENED);
   }
   const std::regex regex(REGEX);
@@ -174,8 +176,9 @@ void emelyanov::Command::doRead(CommandArgs& args)
       data = smatch.suffix().str();
     }
   }
-  inputFile.close();
   dataSets_.insert(std::make_pair(dataSetName, dataSet));
+  inputFile.close();
+  outputFile.close();
 }
 
 void emelyanov::Command::doPrintDictionary(CommandArgs& args)
@@ -231,10 +234,6 @@ void emelyanov::Command::printWordFromAllDicts(CommandArgs& args)
 {
   std::string word = args.front();
   args.pop_front();
-  size_t maxWordWidth = word.length();
-  const size_t indent = 5;
-  printNamesOfColumns(maxWordWidth, out_) << '\n';
-  out_ << word << printSpaces(indent - 1);
   std::set< size_t > newNumbers;
   using namespace std::placeholders;
   for (auto it = dataSets_.begin(); it != dataSets_.end(); ++it) {
@@ -249,6 +248,13 @@ void emelyanov::Command::printWordFromAllDicts(CommandArgs& args)
     auto end = currentIt->second.end();
     std::copy(begin, end, std::inserter(newNumbers, newNumbers.begin()));
   }
+  if (newNumbers.empty()) {
+    throw std::logic_error(LINES_ERROR);
+  }
+  size_t maxWordWidth = word.length();
+  const size_t indent = 5;
+  printNamesOfColumns(maxWordWidth, out_) << '\n';
+  out_ << word << printSpaces(indent);
   auto begin = newNumbers.begin();
   auto end = newNumbers.end();
   std::copy(begin, std::prev(end), std::ostream_iterator< size_t >(out_, " "));
@@ -267,7 +273,7 @@ void emelyanov::Command::doComplementDict(CommandArgs& args)
   auto it1 = dataSets_.find(dataSetName1);
   auto it2 = dataSets_.find(dataSetName2);
   if (it1 == dataSets_.end() || it2 == dataSets_.end()) {
-    printEmpty(out_);
+    printEmpty(out_) << '\n';
     return;
   }
   for (auto&& data: it1->second) {
@@ -290,7 +296,7 @@ void emelyanov::Command::doIntersectDict(CommandArgs& args)
   auto it1 = dataSets_.find(dataSetName1);
   auto it2 = dataSets_.find(dataSetName2);
   if (it1 == dataSets_.end() || it2 == dataSets_.end()) {
-    printEmpty(out_);
+    printEmpty(out_) << '\n';
     return;
   }
   for (auto&& data: it1->second) {
@@ -313,7 +319,7 @@ void emelyanov::Command::doUnionDict(CommandArgs& args)
   auto it1 = dataSets_.find(dataSetName1);
   auto it2 = dataSets_.find(dataSetName2);
   if (it1 == dataSets_.end() || it2 == dataSets_.end()) {
-    printEmpty(out_);
+    printEmpty(out_) << '\n';
     return;
   }
   for (auto&& data: it1->second) {
@@ -336,7 +342,7 @@ void emelyanov::Command::doRenameDict(CommandArgs& args)
   auto it1 = dataSets_.find(oldDataSetName);
   auto it2 = dataSets_.find(newDataSetName);
   if (it1 == dataSets_.end() || it2 != dataSets_.end()) {
-    printEmpty(out_);
+    printEmpty(out_) << '\n';
     return;
   }
   dataSets_.insert(std::make_pair(newDataSetName, it1->second));
