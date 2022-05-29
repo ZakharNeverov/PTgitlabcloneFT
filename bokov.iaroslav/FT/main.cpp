@@ -56,28 +56,19 @@ int main(int argc, char** argv)
   };
   while (!std::cin.eof())
   {
-    std::cin.clear();
     std::string commandName;
     std::cin >> commandName;
     if (!commandName.empty())
     {
+      auto commandFunc = commands.find(commandName);
       try
       {
-        auto commandFunc = commands.find(commandName);
         if (commandFunc == commands.end())
         {
           throw std::invalid_argument("Incorrect command taken!");
         }
         std::string command;
         std::getline(std::cin, command);
-        while (command.front() == ' ')
-        {
-          command.erase(0, 1);
-        }
-        while (command.back() == ' ')
-        {
-          command.pop_back();
-        }
         commandFunc->second(command);
       }
       catch (std::exception& err)
