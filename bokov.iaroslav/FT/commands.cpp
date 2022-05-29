@@ -1,8 +1,8 @@
 #include "commands.hpp"
-#include "strings-parse.hpp"
 #include <stdexcept>
 #include <fstream>
 #include <algorithm>
+#include "strings-parse.hpp"
 
 namespace bokov
 {
@@ -10,7 +10,7 @@ namespace bokov
   {
     bool flag = true;
     out << '[';
-    for (auto& transl : translations)
+    for (auto& transl: translations)
     {
       if (!flag)
       {
@@ -42,27 +42,27 @@ namespace bokov
       out << '\n';
     }
     size_t max = 0;
+    std::string word = "";
     auto nextIter = ++dict.begin();
     for (auto iter = dict.begin(); iter != --dict.end(); ++iter)
     {
       if (iter->second.size() < nextIter->second.size())
       {
         max = nextIter->second.size();
+        word = nextIter->first;
       }
       ++nextIter;
     }
-    out << max << '\n';
+    out << word << ' ' << max << '\n';
   }
 }
 
 void bokov::printDict(std::string& str, dicts_list& dicts, std::ostream& out)
 {
-  setlocale(LC_ALL, "rus");
   auto names = bokov::getRowOfWords(str);
   if (names.empty())
   {
     throw std::logic_error("No parameters in printing command!");
-    return;
   }
   bool flag = true;
   for (auto& name: names)
@@ -77,6 +77,10 @@ void bokov::printDict(std::string& str, dicts_list& dicts, std::ostream& out)
       flag = false;
       printOneDict(dict_iter->second, out);
     }
+    else
+    {
+      out << "No dictionary with name " << name << "found!\n";
+    }
   }
   out << '\n';
 }
@@ -87,7 +91,6 @@ void bokov::loadDict(std::string& str, dicts_list& dicts)
   if (dict_file_pair.empty())
   {
     throw std::logic_error("No parameters in loading command!");
-    return;
   }
   std::string name = dict_file_pair[1];
   bokov::makeDictionary(name, dicts[dict_file_pair[0]]);
@@ -99,7 +102,6 @@ void bokov::removeElement(std::string& str, dicts_list& dicts)
   if (remove_pair.size() < 2)
   {
     throw std::logic_error("Not enough parameters in remove command!");
-    return;
   }
   auto dict_iter = dicts.find(remove_pair[0]);
   if (dict_iter != dicts.end())
@@ -115,7 +117,6 @@ void bokov::mergeDicts(std::string& str, dicts_list& dicts)
   if (list.empty())
   {
     throw std::logic_error("No dictionaries to merge!");
-    return;
   }
   dictionary buffer;
   for (auto& dict_name: list)
@@ -142,7 +143,6 @@ void bokov::intersectDicts(std::string& str, dicts_list& dicts)
   if (params.size() < 2)
   {
     throw std::logic_error("Not enough parameters!");
-    return;
   }
   dictionary dictBuf;
   auto iter1 = dicts.find(params[1]);
@@ -179,7 +179,6 @@ void bokov::complementDicts(std::string& str, dicts_list& dicts)
   if (params.size() < 2)
   {
     throw std::logic_error("Not enough parameters!");
-    return;
   }
   dictionary dictBuf;
   auto iter1 = dicts.find(params[1]);
@@ -187,7 +186,6 @@ void bokov::complementDicts(std::string& str, dicts_list& dicts)
   if (iter1 == iter2)
   {
     throw std::logic_error("Difference is null");
-    return;
   }
   if (iter1 != dicts.end() && iter2 != dicts.end())
   {
@@ -229,6 +227,10 @@ void bokov::getTop(std::string& str, dicts_list& dicts, std::ostream& out)
   {
     bokov::printMax(dict_iter->second, out);
   }
+  else
+  {
+    throw std::invalid_argument("Incorrect name for dictionary!");
+  }
   out << '\n';
 }
 
@@ -238,7 +240,6 @@ void bokov::insertInDict(std::string& str, dicts_list& dicts)
   if (dict_ER.size() < 3)
   {
     throw std::logic_error("Not enough parameters for insertion command!");
-    return;
   }
   auto dict_iter = dicts.find(dict_ER[0]);
   std::string e_word = dict_ER[1];
@@ -258,7 +259,6 @@ void bokov::searchInDict(std::string& str, dicts_list& dicts, std::ostream& out)
   if (dict_key.size() != 2)
   {
     throw std::logic_error("Incorrect count of parameters");
-    return;
   }
   auto dict_iter = dicts.find(dict_key[0]);
   if (dict_iter != dicts.end())
@@ -273,6 +273,10 @@ void bokov::searchInDict(std::string& str, dicts_list& dicts, std::ostream& out)
       throw std::invalid_argument("Not such word found!");
     }
   }
+  else
+  {
+    throw std::invalid_argument("Not such dictionary found!");
+  }
   out << '\n';
 }
 
@@ -282,11 +286,9 @@ void bokov::deleteDict(std::string& str, dicts_list& dicts)
   if (list.empty())
   {
     throw std::logic_error("No dictionaries to delete!");
-    return;
   }
   for (auto& dict_name: list)
   {
     dicts.erase(dict_name);
   }
 }
-

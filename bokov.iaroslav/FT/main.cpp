@@ -1,19 +1,19 @@
-﻿#include <iostream>
+#include <iostream>
 #include <fstream>
 #include <functional>
-#include <locale>
 #include "dicts.hpp"
 #include "commands.hpp"
 
 int main(int argc, char** argv)
 {
-  std::locale local = std::locale::global(std::locale("ru_RU.utf8"));
+  std::setlocale(LC_ALL, "Russian");
   if (argc != 2)
   {
     std::cerr << "Bad args!\n";
     return 1;
   }
   std::ifstream fin(argv[1]);
+  fin.imbue(std::locale("ru_RU.utf8"));
   if (!fin.is_open())
   {
     std::cerr << "File not open!\n";
@@ -53,31 +53,22 @@ int main(int argc, char** argv)
     {"insert", std::bind(&bokov::insertInDict, _1, std::ref(dicts))},
     {"search", std::bind(&bokov::searchInDict, _1, std::ref(dicts), std::ref(std::cout))},
     {"delete", std::bind(&bokov::deleteDict, _1, std::ref(dicts))}
-      };
+  };
   while (!std::cin.eof())
   {
-    std::cin.clear();
     std::string commandName;
     std::cin >> commandName;
     if (!commandName.empty())
     {
+      auto commandFunc = commands.find(commandName);
       try
       {
-        auto commandFunc = commands.find(commandName);
         if (commandFunc == commands.end())
         {
           throw std::invalid_argument("Incorrect command taken!");
         }
         std::string command;
         std::getline(std::cin, command);
-        while (command.front() == ' ')
-        {
-          command.erase(0, 1);
-        }
-        while (command.back() == ' ')
-        {
-          command.pop_back();
-        }
         commandFunc->second(command);
       }
       catch (std::exception& err)
