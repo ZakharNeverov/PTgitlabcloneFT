@@ -42,16 +42,18 @@ namespace bokov
       out << '\n';
     }
     size_t max = 0;
+    std::string word = "";
     auto nextIter = ++dict.begin();
     for (auto iter = dict.begin(); iter != --dict.end(); ++iter)
     {
       if (iter->second.size() < nextIter->second.size())
       {
         max = nextIter->second.size();
+        word = nextIter->first;
       }
       ++nextIter;
     }
-    out << max << '\n';
+    out << word << ' ' << max << '\n';
   }
 }
 
@@ -74,6 +76,10 @@ void bokov::printDict(std::string& str, dicts_list& dicts, std::ostream& out)
       }
       flag = false;
       printOneDict(dict_iter->second, out);
+    }
+    else
+    {
+      out << "No dictionary with name " << name << "found!\n";
     }
   }
   out << '\n';
@@ -221,6 +227,10 @@ void bokov::getTop(std::string& str, dicts_list& dicts, std::ostream& out)
   {
     bokov::printMax(dict_iter->second, out);
   }
+  else
+  {
+    throw std::invalid_argument("Incorrect name for dictionary!");
+  }
   out << '\n';
 }
 
@@ -262,6 +272,10 @@ void bokov::searchInDict(std::string& str, dicts_list& dicts, std::ostream& out)
     {
       throw std::invalid_argument("Not such word found!");
     }
+  }
+  else
+  {
+    throw std::invalid_argument("Not such dictionary found!");
   }
   out << '\n';
 }
