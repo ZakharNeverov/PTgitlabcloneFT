@@ -14,8 +14,8 @@ namespace maistrenko
   void outputTranslations(const Dict&, const EngW&, std::ostream&);
   void outputDict(const Dict&, std::ostream&);
 
-  bool loadFromFile(const std::string&, Dict&);
-  bool saveInFile(const std::string&, const Dict&);
+  void loadFromFile(const std::string&, Dict&);
+  void saveInFile(const std::string&, const Dict&);
 }
 
 #endif

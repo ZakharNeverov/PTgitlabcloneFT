@@ -1,64 +1,91 @@
 #include "DictionaryActions.hpp"
 #include <ostream>
 #include <algorithm>
+#include "CommandThrowers.hpp"
 
 namespace
 {
   using DictElem = std::pair< maistrenko::EngW, maistrenko::RusS >;
-  struct Adder
-  {
-    maistrenko::Dict& toDict;
-    void operator()(const DictElem& pair)
-    {
-      if (toDict.find(pair.first) != toDict.end())
-      {
-        maistrenko::RusS totalSet = maistrenko::RusS();
-        auto toBeg = toDict.at(pair.first).begin();
-        auto toEnd = toDict.at(pair.first).end();
-        auto pairFBeg = pair.second.begin();
-        auto pairFEnd = pair.second.end();
 
-        std::set_union(toBeg, toEnd, pairFBeg, pairFEnd, std::inserter(totalSet, totalSet.end()));
-        toDict.at(pair.first) = totalSet;
-      }
-      else
+  bool isThereMutual(const maistrenko::RusS& first, const maistrenko::RusS& second)
+  {
+    maistrenko::RusS intersections = maistrenko::RusS();
+
+    auto first1 = first.begin();
+    auto last1 = first.end();
+    auto first2 = second.begin();
+    auto last2 = second.end();
+    std::set_intersection(first1, last1, first2, last2, std::inserter(intersections, intersections.begin()));
+
+    return !intersections.empty();
+  }
+
+  struct KeyIntersector
+  {
+    const maistrenko::Dict& toIntersect;
+    bool operator()(const DictElem& pair)
+    {
+      return toIntersect.find(pair.first) != toIntersect.end();
+    }
+  };
+
+  struct KeyWithMutualIntersector
+  {
+    const maistrenko::Dict& toIntersect;
+    bool operator()(const DictElem& pair)
+    {
+      bool total = toIntersect.find(pair.first) != toIntersect.end();
+      if (total)
       {
-        toDict.insert(pair);
+        total = total && isThereMutual(pair.second, toIntersect.at(pair.first));
       }
+      return total;
+    }
+  };
+
+  struct Unioner
+  {
+    const maistrenko::Dict& toUnion;
+    DictElem operator()(const DictElem& pair)
+    {
+      maistrenko::RusS totalSet = maistrenko::RusS();
+      maistrenko::RusS prevSet = toUnion.at(pair.first);
+
+      auto first1 = prevSet.begin();
+      auto last1 = prevSet.end();
+      auto first2 = pair.second.begin();
+      auto last2 = pair.second.end();
+
+      std::set_union(first1, last1, first2, last2, std::inserter(totalSet, totalSet.end()));
+
+      return {pair.first, totalSet};
     }
   };
 
   struct Intersector
   {
     const maistrenko::Dict& toIntersect;
-    maistrenko::Dict& toPutIn;
-    void operator()(const DictElem& pair)
+    DictElem operator()(const DictElem& pair)
     {
-      if (toIntersect.find(pair.first) != toIntersect.end())
-      {
-        maistrenko::EngW key = pair.first;
-        maistrenko::RusS value = maistrenko::RusS();
-        maistrenko::RusS rusSetInter = toIntersect.at(pair.first);
-        maistrenko::RusS newSet = maistrenko::RusS();
+      maistrenko::RusS totalSet = maistrenko::RusS();
+      maistrenko::RusS prevSet = toIntersect.at(pair.first);
 
-        auto pairRusBeg = pair.second.begin();
-        auto pairRusEnd = pair.second.end();
-        std::set_intersection(pairRusBeg, pairRusEnd, rusSetInter.begin(), rusSetInter.end(), std::inserter(newSet, newSet.end()));
-        toPutIn.insert({pair.first, newSet});
-      }
+      auto first1 = prevSet.begin();
+      auto last1 = prevSet.end();
+      auto first2 = pair.second.begin();
+      auto last2 = pair.second.end();
+
+      std::set_intersection(first1, last1, first2, last2, std::inserter(totalSet, totalSet.end()));
+
+      return {pair.first, totalSet};
     }
   };
 
-  struct Substractor
+  struct SubstractComp
   {
-    const maistrenko::Dict& minuend;
-    maistrenko::Dict& toDict;
-    void operator()(const DictElem& pair)
+    bool operator()(const DictElem& pair1, const DictElem& pair2)
     {
-      if (minuend.find(pair.first) == minuend.end())
-      {
-        toDict.insert(pair);
-      }
+      return pair1.first < pair2.first;
     }
   };
 }
@@ -84,18 +111,21 @@ void maistrenko::addWord(Dict& dict, const std::pair< EngW, RusS >& dictElem)
   }
 }
 
-bool maistrenko::removeWord(Dict& dict, const EngW& engWord)
+void maistrenko::removeWord(Dict& dict, const EngW& engWord)
 {
   if (dict.find(engWord) != dict.end())
   {
     dict.erase(engWord);
-    return true;
   }
-  return false;
+  else
+  {
+    raiseUnexistingWord();
+  }
 }
 
-bool maistrenko::removeTranslate(Dict& dict, const EngW& engWord, const RusW& rusWord)
+void maistrenko::removeTranslate(Dict& dict, const EngW& engWord, const RusW& rusWord)
 {
+  bool isRemoved = false;
   if (dict.find(engWord) != dict.end())
   {
     RusS& rusSet = dict.at(engWord);
@@ -109,29 +139,46 @@ bool maistrenko::removeTranslate(Dict& dict, const EngW& engWord, const RusW& ru
       {
         rusSet.erase(rusWord);
       }
-      return true;
+      isRemoved = true;
     }
   }
-  return false;
+  if (!isRemoved)
+  {
+    raiseUnexistingTranslation();
+  }
 }
 
 maistrenko::Dict maistrenko::unionDicts(const Dict& dict1, const Dict& dict2)
 {
-  Dict newDict = dict1;
-  std::for_each(dict2.begin(), dict2.end(), Adder{newDict});
+  Dict keyInters = Dict();
+  std::copy_if(dict2.begin(), dict2.end(), std::inserter(keyInters, keyInters.end()), KeyIntersector{ dict1 });
+  Dict newDict = Dict();
+  std::transform(keyInters.begin(), keyInters.end(), std::inserter(newDict, newDict.end()), Unioner{ dict1 });
+  std::set_union(dict1.begin(), dict1.end(), dict2.begin(), dict2.end(), std::inserter(newDict, newDict.end()));
+
   return newDict;
 }
 
 maistrenko::Dict maistrenko::intersectDicts(const Dict& dict1, const Dict& dict2)
 {
+  Dict keyInters = Dict();
+  auto toKeyInters = keyInters.end();
+  std::copy_if(dict2.begin(), dict2.end(), std::inserter(keyInters, toKeyInters), KeyWithMutualIntersector{ dict1 });
   Dict newDict = Dict();
-  std::for_each(dict1.begin(), dict1.end(), Intersector{dict2, newDict});
+  std::transform(keyInters.begin(), keyInters.end(), std::inserter(newDict, newDict.end()), Intersector{ dict1 });
+
   return newDict;
 }
 
 maistrenko::Dict maistrenko::substractDicts(const Dict& dict1, const Dict& dict2)
 {
   Dict newDict = Dict();
-  std::for_each(dict1.begin(), dict1.end(), Substractor{dict2, newDict});
+
+  auto first1 = dict1.begin();
+  auto last1 = dict1.end();
+  auto first2 = dict2.begin();
+  auto last2 = dict2.end();
+  std::set_difference(first1, last1, first2, last2, std::inserter(newDict, newDict.end()), SubstractComp{});
+
   return newDict;
 }

@@ -1,6 +1,6 @@
 #include "OneTypedCommand.hpp"
 #include "IOActions.hpp"
-#include "CommandMessages.hpp"
+#include "CommandThrowers.hpp"
 #include "DictionaryActions.hpp"
 
 void maistrenko::createDict(std::string& commandLine, std::ostream& out, Dicts& dest)
@@ -14,12 +14,12 @@ void maistrenko::createDict(std::string& commandLine, std::ostream& out, Dicts& 
     }
     else
     {
-      notifyExistingDict(out);
+      raiseExistingDict();
     }
   }
   else
   {
-    notifyInvalidArguments(out);
+    raiseInvalidArguments();
   }
 }
 
@@ -28,13 +28,11 @@ void maistrenko::getDict(std::string& commandLine, std::istream& in, std::ostrea
   std::string dictName = "";
   if (!getNextWord(commandLine, ' ', dictName) || !commandLine.empty())
   {
-    notifyInvalidArguments(out);
-    return;
+    raiseInvalidArguments();
   }
   if (dest.find(dictName) != dest.end())
   {
-    notifyExistingDict(out);
-    return;
+    raiseExistingDict();
   }
 
   Dict tempDict = Dict();
@@ -52,19 +50,16 @@ void maistrenko::getTranslations(std::string& commandLine, std::ostream& out, co
 
   if (!isCommandValid || !commandLine.empty())
   {
-    notifyInvalidArguments(out);
-    return;
+    raiseInvalidArguments();
   }
   if (dicts.find(dictName) == dicts.end())
   {
-    notifyUnexistingDict(out);
-    return;
+    raiseUnexistingDict();
   }
   Dict currentDict = dicts.at(dictName);
   if (currentDict.find(engWord) == currentDict.end())
   {
-    notifyUnexistingWord(out);
-    return;
+    raiseUnexistingWord();
   }
 
   outputTranslations(currentDict, engWord, out);
@@ -75,13 +70,11 @@ void maistrenko::outputExactDict(std::string& commandLine, std::ostream& out, co
   std::string dictName = "";
   if (!getNextWord(commandLine, ' ', dictName) || !commandLine.empty())
   {
-    notifyInvalidArguments(out);
-    return;
+    raiseInvalidArguments();
   }
   if (dicts.find(dictName) == dicts.end())
   {
-    notifyUnexistingDict(out);
-    return;
+    raiseUnexistingDict();
   }
   outputDict(dicts.at(dictName), out);
 }
@@ -91,13 +84,11 @@ void maistrenko::addNewWord(std::string& commandLine, std::ostream& out, Dicts& 
   std::string dictName = "";
   if (!getNextWord(commandLine, ' ', dictName))
   {
-    notifyInvalidArguments(out);
-    return;
+    raiseInvalidArguments();
   }
   if (dicts.find(dictName) == dicts.end())
   {
-    notifyUnexistingDict(out);
-    return;
+    raiseUnexistingDict();
   }
 
   std::pair< EngW, RusS > dictElem = std::pair< EngW, RusS >();
@@ -107,7 +98,7 @@ void maistrenko::addNewWord(std::string& commandLine, std::ostream& out, Dicts& 
   }
   else
   {
-    notifyInvalidArguments(out);
+    raiseInvalidArguments();
   }
 }
 
@@ -118,7 +109,7 @@ void maistrenko::deleteDict(std::string& commandLine, std::ostream& out, Dicts& 
   {
     if (dicts.find(dictName) == dicts.end())
     {
-      notifyUnexistingDict(out);
+      raiseUnexistingDict();
     }
     else
     {
@@ -127,7 +118,7 @@ void maistrenko::deleteDict(std::string& commandLine, std::ostream& out, Dicts& 
   }
   else
   {
-    notifyInvalidArguments(out);
+    raiseInvalidArguments();
   }
 }
 
@@ -141,18 +132,13 @@ void maistrenko::deleteWord(std::string& commandLine, std::ostream& out, Dicts& 
 
   if (!isCommandValid || !commandLine.empty())
   {
-    notifyInvalidArguments(out);
-    return;
+    raiseInvalidArguments();
   }
   if (dicts.find(dictName) == dicts.end())
   {
-    notifyUnexistingDict(out);
-    return;
+    raiseUnexistingDict();
   }
-  if (!maistrenko::removeWord(dicts.at(dictName), engWord))
-  {
-    notifyUnexistingWord(out);
-  }
+  maistrenko::removeWord(dicts.at(dictName), engWord);
 }
 
 void maistrenko::deleteTranslation(std::string& commandLine, std::ostream& out, Dicts& dicts)
@@ -168,25 +154,19 @@ void maistrenko::deleteTranslation(std::string& commandLine, std::ostream& out, 
 
   if (!isInputGood || !commandLine.empty())
   {
-    notifyInvalidArguments(out);
-    return;
+    raiseInvalidArguments();
   }
   if (dicts.find(dictName) == dicts.end())
   {
-    notifyUnexistingDict(out);
-    return;
+    raiseUnexistingDict();
   }
 
   Dict& currentDict = dicts.at(dictName);
   if (currentDict.find(engWord) == currentDict.end())
   {
-    notifyUnexistingWord(out);
-    return;
+    raiseUnexistingWord();
   }
-  if (!maistrenko::removeTranslate(currentDict, engWord, rusWord))
-  {
-    notifyUnexistingTranslation(out);
-  }
+  maistrenko::removeTranslate(currentDict, engWord, rusWord);
 }
 
 void maistrenko::unionDictionaries(std::string& commandLine, std::ostream& out, Dicts& dicts)
@@ -201,18 +181,15 @@ void maistrenko::unionDictionaries(std::string& commandLine, std::ostream& out, 
 
   if (!isCommandValid || !commandLine.empty())
   {
-    notifyInvalidArguments(out);
-    return;
+    raiseInvalidArguments();
   }
   if (dicts.find(newDictName) != dicts.end())
   {
-    notifyExistingDict(out);
-    return;
+    raiseExistingDict();
   }
   if (dicts.find(dictName1) == dicts.end() || dicts.find(dictName2) == dicts.end())
   {
-    notifyUnexistingDict(out);
-    return;
+    raiseUnexistingDict();
   }
 
   Dict tempDict = maistrenko::unionDicts(dicts.at(dictName1), dicts.at(dictName2));
@@ -231,18 +208,15 @@ void maistrenko::intersectDictionaries(std::string& commandLine, std::ostream& o
 
   if (!isCommandValid || !commandLine.empty())
   {
-    notifyInvalidArguments(out);
-    return;
+    raiseInvalidArguments();
   }
   if (dicts.find(newDictName) != dicts.end())
   {
-    notifyExistingDict(out);
-    return;
+    raiseExistingDict();
   }
   if (dicts.find(dictName1) == dicts.end() || dicts.find(dictName2) == dicts.end())
   {
-    notifyUnexistingDict(out);
-    return;
+    raiseUnexistingDict();
   }
 
   Dict tempDict = maistrenko::intersectDicts(dicts.at(dictName1), dicts.at(dictName2));
@@ -261,18 +235,15 @@ void maistrenko::substractDictionaries(std::string& commandLine, std::ostream& o
 
   if (!isCommandValid || !commandLine.empty())
   {
-    notifyInvalidArguments(out);
-    return;
+    raiseInvalidArguments();
   }
   if (dicts.find(newDictName) != dicts.end())
   {
-    notifyExistingDict(out);
-    return;
+    raiseExistingDict();
   }
   if (dicts.find(dictName1) == dicts.end() || dicts.find(dictName2) == dicts.end())
   {
-    notifyUnexistingDict(out);
-    return;
+    raiseUnexistingDict();
   }
 
   Dict tempDict = maistrenko::substractDicts(dicts.at(dictName1), dicts.at(dictName2));
@@ -289,24 +260,16 @@ void maistrenko::loadDict(std::string& commandLine, std::ostream& out, Dicts& di
 
   if (!isCommandValid || !commandLine.empty())
   {
-    notifyInvalidArguments(out);
-    return;
+    raiseInvalidArguments();
   }
   if (dicts.find(newDictName) != dicts.end())
   {
-    notifyExistingDict(out);
-    return;
+    raiseExistingDict();
   }
 
   Dict newDict = Dict();
-  if (loadFromFile(fileName, newDict))
-  {
-    dicts.insert({newDictName, newDict});
-  }
-  else
-  {
-    notifyUnexistingFile(out);
-  }
+  loadFromFile(fileName, newDict);
+  dicts.insert({newDictName, newDict});
 }
 
 void maistrenko::saveDict(std::string& commandLine, std::ostream& out, const Dicts& dicts)
@@ -319,16 +282,11 @@ void maistrenko::saveDict(std::string& commandLine, std::ostream& out, const Dic
 
   if (!isCommandValid || !commandLine.empty())
   {
-    notifyInvalidArguments(out);
-    return;
+    raiseInvalidArguments();
   }
   if (dicts.find(outDictName) == dicts.end())
   {
-    notifyUnexistingDict(out);
-    return;
+    raiseUnexistingDict();
   }
-  if (!saveInFile(fileName, dicts.at(outDictName)))
-  {
-    notifyInvalidFile(out);
-  }
+  saveInFile(fileName, dicts.at(outDictName));
 }

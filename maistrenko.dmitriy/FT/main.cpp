@@ -2,7 +2,6 @@
 #include <functional>
 #include "IOActions.hpp"
 #include "OneTypedCommand.hpp"
-#include "CommandMessages.hpp"
 
 int main()
 {
@@ -41,7 +40,11 @@ int main()
         }
         catch (const std::out_of_range&)
         {
-          maistrenko::notifyUnexistingCommand(std::cout);
+          std::cout << "<COMMAND DOES NOT EXIST>\n";
+        }
+        catch (const std::invalid_argument& e)
+        {
+          std::cout << e.what();
         }
       }
     }

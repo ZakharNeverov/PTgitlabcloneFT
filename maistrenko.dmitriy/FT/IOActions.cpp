@@ -1,6 +1,7 @@
 #include "IOActions.hpp"
 #include <fstream>
 #include <algorithm>
+#include "CommandThrowers.hpp"
 
 bool maistrenko::getWordFromStream(std::istream& in, std::pair< EngW, RusS >& dest)
 {
@@ -99,7 +100,7 @@ void maistrenko::outputDict(const Dict& dict, std::ostream& out)
   }
 }
 
-bool maistrenko::loadFromFile(const std::string& fileName, Dict& dest)
+void maistrenko::loadFromFile(const std::string& fileName, Dict& dest)
 {
   std::ifstream fin(fileName);
   bool isFinGood = fin.good();
@@ -109,10 +110,13 @@ bool maistrenko::loadFromFile(const std::string& fileName, Dict& dest)
   }
   fin.close();
 
-  return isFinGood;
+  if (!isFinGood)
+  {
+    raiseUnexistingFile();
+  }
 }
 
-bool maistrenko::saveInFile(const std::string& fileName, const Dict& from)
+void maistrenko::saveInFile(const std::string& fileName, const Dict& from)
 {
   std::ofstream fout(fileName);
   bool isFoutGood = fout.good();
@@ -122,5 +126,8 @@ bool maistrenko::saveInFile(const std::string& fileName, const Dict& from)
   }
   fout.close();
 
-  return isFoutGood;
+  if (!isFoutGood)
+  {
+    raiseInvalidFile();
+  }
 }
