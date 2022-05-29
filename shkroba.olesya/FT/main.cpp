@@ -6,7 +6,6 @@
 
 int main()
 {
-  system("chcp 65001");
   shkroba::Dictionary d1;
   shkroba::Dictionary d2;
   shkroba::Dictionary d3;
