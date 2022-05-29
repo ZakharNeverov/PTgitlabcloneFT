@@ -16,11 +16,11 @@ namespace krylyanok
     void getSearch();
     void getMerge();
     void getDelete();
+
   private:
     std::vector< krylyanok::Dictionary >& dictionaries_;
     std::istream& in_;
     std::ostream& out_;
-    void streamClean();
     size_t findElem(std::string& dictName);
   };
 }

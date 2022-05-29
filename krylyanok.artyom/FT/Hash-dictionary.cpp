@@ -307,9 +307,9 @@ namespace krylyanok
       }
 
     }
-    Dictionary temparrr(left.length_ + right.length_, dictName, left.wordCounter_ + right.wordCounter_);
-    delete[] temparrr.data_;
-    temparrr.data_ = temparr;
-    return temparrr;
+    Dictionary newDict(left.length_ + right.length_, dictName, left.wordCounter_ + right.wordCounter_);
+    delete[] newDict.data_;
+    newDict.data_ = temparr;
+    return newDict;
   }
 }

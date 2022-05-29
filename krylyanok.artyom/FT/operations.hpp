@@ -8,6 +8,6 @@ namespace krylyanok
 {
   void correctVector(std::vector< std::string >& vec);
   bool correctString(std::string& string);
-  bool makeDict(std::string& nameFile, std::vector< std::string >&);
+  void makeDict(std::string& nameFile, std::vector< std::string >&);
 }
 #endif

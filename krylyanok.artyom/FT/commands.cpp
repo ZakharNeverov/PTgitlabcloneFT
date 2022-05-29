@@ -10,16 +10,10 @@ void krylyanok::Commands::getLoad()
   in_ >> nameDict >> nameFile;
   if (!(findElem(nameDict) == -1))
   {
-    out_ << "A dictionary with the same name already exists\n";
-    streamClean();
-    return;
+    throw std::logic_error("");
   }
   std::vector< std::string > words;
-  if (!makeDict(nameFile, words))
-  {
-    streamClean();
-    return;
-  }
+  makeDict(nameFile, words);
   dictionaries_.push_back({ words.size(), nameDict });
   for (std::string el : words)
   {
@@ -36,9 +30,7 @@ void krylyanok::Commands::getPrint()
   i = findElem(dictName);
   if (i == -1)
   {
-    out_ << "There is no dictionary with this name\n";
-    streamClean();
-    return;
+    throw std::logic_error("");
   }
   dictionaries_[i].printDictionary(out_);
   return;
@@ -51,9 +43,7 @@ void krylyanok::Commands::getTop()
   size_t i = findElem(dictName);
   if (i == -1)
   {
-    out_ << "There is no dictionary with this name\n";
-    streamClean();
-    return;
+    throw std::logic_error("");
   }
   dictionaries_[i].printTop(out_);
   return;
@@ -66,9 +56,7 @@ void krylyanok::Commands::getSearch()
   size_t i = findElem(dictName);
   if (i == -1)
   {
-    out_ << "There is no dictionary with this name\n";
-    streamClean();
-    return;
+    throw std::logic_error("");
   }
   std::string word = "";
   in_ >> word;
@@ -85,16 +73,12 @@ void krylyanok::Commands::getMerge()
   in_ >> mergeDictName >> dictName1;
   if (!(findElem(mergeDictName) == -1))
   {
-    out_ << "A dictionary with the same name already exists\n";
-    streamClean();
-    return;
+    throw std::logic_error("");
   }
   size_t i1 = findElem(dictName1);
   if (i1 == -1)
   {
-    out_ << "There is no dictionary with this name\n";
-    streamClean();
-    return;
+    throw std::logic_error("");
   }
   Dictionary mergeDicter(1, tempName);
   while (in_.peek() != '\n')
@@ -104,9 +88,7 @@ void krylyanok::Commands::getMerge()
     size_t i2 = findElem(dictName2);
     if (i2 == -1)
     {
-      out_ << "There is no dictionary with this name\n";
-      streamClean();
-      return;
+      throw std::logic_error("");
     }
     if (!succesfulMerge)
     {
@@ -128,18 +110,10 @@ void krylyanok::Commands::getDelete()
   size_t i = findElem(dictName);
   if (i == -1)
   {
-    out_ << "There is no dictionary with this name\n";
-    streamClean();
-    return;
+    throw std::logic_error("");
   }
   dictionaries_.erase(dictionaries_.begin() + i);
   return;
-}
-
-void krylyanok::Commands::streamClean()
-{
-  in_.clear();
-  in_.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
 }
 
 size_t krylyanok::Commands::findElem(std::string& dictName)

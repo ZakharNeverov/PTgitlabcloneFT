@@ -2,13 +2,12 @@
 #include <iostream>
 #include "hash-dictionary.hpp"
 
-bool krylyanok::makeDict(std::string& nameFile, std::vector< std::string >& temp)
+void krylyanok::makeDict(std::string& nameFile, std::vector< std::string >& temp)
 {
   std::ifstream file(nameFile);
   if (!file.is_open())
   {
-    std::cerr << "File is not open\n";
-    return 0;
+    throw std::logic_error("");
   }
   std::string word;
   while (file >> word)
@@ -17,7 +16,6 @@ bool krylyanok::makeDict(std::string& nameFile, std::vector< std::string >& temp
   }
   correctVector(temp);
   file.close();
-  return 1;
 }
 
 void krylyanok::correctVector(std::vector< std::string >& vec)

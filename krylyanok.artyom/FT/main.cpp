@@ -33,7 +33,11 @@ int main(int argc, char** argv)
     std::string nameFile = "";
     file >> nameDict >> nameFile;
     std::vector< std::string > words;
-    if (!krylyanok::makeDict(nameFile, words))
+    try
+    {
+      krylyanok::makeDict(nameFile, words);
+    }
+    catch (const std::exception&)
     {
       file.clear();
       file.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
@@ -60,19 +64,19 @@ int main(int argc, char** argv)
   {
     std::string nameOfCommand = "";
     std::cin >> nameOfCommand;
-    if (!nameOfCommand.empty())
+    if (nameOfCommand.empty())
     {
-      auto commandIter = commands.find(nameOfCommand);
-      if (commandIter == commands.end())
-      {
-        std::cout << "<INVALID COMMAND>\n";
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
-      }
-      else
-      {
-        commandIter->second();
-      }
+      continue;
+    }
+    try
+    {
+      commands.at(nameOfCommand)();
+    }
+    catch (const std::exception&)
+    {
+      std::cout << "<INVALID COMMAND>\n";
+      std::cin.clear();
+      std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
     }
   }
   return 0;
