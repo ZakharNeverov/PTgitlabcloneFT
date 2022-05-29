@@ -1,8 +1,10 @@
 #include "map-commands.hpp"
+#include <iomanip>
 #include <functional>
 #include "commands.hpp"
 #include "print-messages.hpp"
-void pyankov::create(pyankov::chain_t& chain, std::istream& in)
+#include "iofmtguard.hpp"
+void pyankov::create(pyankov::chain_t& chain, std::istream& in, int minValue, int maxValue, size_t precision)
 {
   std::string type = "";
   in >> type;
@@ -12,8 +14,8 @@ void pyankov::create(pyankov::chain_t& chain, std::istream& in)
   }
   std::map< std::string, std::function< void() > > createCommands(
     {
-      {"int", std::bind(pyankov::doCreateIntMatrix, std::ref(chain), std::ref(in))},
-      {"double", std::bind(pyankov::doCreateDoubleMatrix, std::ref(chain), std::ref(in))}
+      {"int", std::bind(pyankov::doCreateIntMatrix, std::ref(chain), std::ref(in), minValue, maxValue, precision)},
+      {"double", std::bind(pyankov::doCreateDoubleMatrix, std::ref(chain), std::ref(in), minValue, maxValue, precision)}
     }
   );
   createCommands.at(type)();
@@ -59,9 +61,7 @@ void pyankov::add(pyankov::chain_t& chain, std::istream& in)
     columns = chain.second.find(names.at(0))->second.getColumns();
   }
   pyankov::Matrix< double > doubleMatrix(rows, columns);
-  doubleMatrix.setZeroMatrix();
   pyankov::Matrix< int > intMatrix(rows, columns);
-  intMatrix.setZeroMatrix();
   for (size_t i = 0; i < names.size(); i++)
   {
     if (isDouble && chain.first.count(names.at(i)))
@@ -139,9 +139,7 @@ void pyankov::sub(pyankov::chain_t& chain, std::istream& in)
     columns = chain.second.find(names.at(0))->second.getColumns();
   }
   pyankov::Matrix< double > doubleMatrix(rows, columns);
-  doubleMatrix.setZeroMatrix();
   pyankov::Matrix< int > intMatrix(rows, columns);
-  intMatrix.setZeroMatrix();
   if (chain.first.count(names.at(0)))
   {
     doubleMatrix += chain.first.find(names.at(0))->second;
@@ -228,9 +226,7 @@ void pyankov::multiply(pyankov::chain_t& chain, std::istream& in)
     columns = chain.second.find(names.at(0))->second.getColumns();
   }
   pyankov::Matrix< double > doubleMatrix(rows, columns);
-  doubleMatrix.setZeroMatrix();
   pyankov::Matrix< int > intMatrix(rows, columns);
-  intMatrix.setZeroMatrix();
   if (chain.first.count(names.at(0)))
   {
     doubleMatrix += chain.first.find(names.at(0))->second;
@@ -297,7 +293,7 @@ void pyankov::concat(pyankov::chain_t& chain, std::istream& in)
   );
   concatCommands.at(direction)();
 }
-void pyankov::print(const pyankov::chain_t& chain, std::istream& in, std::ostream& out)
+void pyankov::print(const pyankov::chain_t& chain, std::istream& in, std::ostream& out, size_t precision)
 {
   std::string name = "";
   in >> name;
@@ -311,6 +307,8 @@ void pyankov::print(const pyankov::chain_t& chain, std::istream& in, std::ostrea
   }
   else
   {
+    pyankov::ioFmtGuard guard(out);
+    out << std::setprecision(precision);
     out << chain.second.find(name)->second;
   }
 }

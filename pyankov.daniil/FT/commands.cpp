@@ -29,7 +29,7 @@ bool pyankov::compareMatricesByName(const pyankov::chain_t& chain, const std::st
     return chain.second.find(left)->second == chain.second.find(right)->second;
   }
 }
-void pyankov::doCreateIntMatrix(pyankov::chain_t& chain, std::istream& in)
+void pyankov::doCreateIntMatrix(pyankov::chain_t& chain, std::istream& in, int minValue, int maxValue, size_t precision)
 {
   std::string name = "";
   size_t rows = 0;
@@ -39,7 +39,7 @@ void pyankov::doCreateIntMatrix(pyankov::chain_t& chain, std::istream& in)
   {
     throw std::invalid_argument("Incorrect create parameters!");
   }
-  pyankov::Matrix< int > matrix(rows, columns);
+  pyankov::Matrix< int > matrix(rows, columns, minValue, maxValue, precision);
   if (in.peek() != '\n')
   {
     in >> matrix;
@@ -50,7 +50,7 @@ void pyankov::doCreateIntMatrix(pyankov::chain_t& chain, std::istream& in)
   }
   chain.first.insert({name, matrix});
 }
-void pyankov::doCreateDoubleMatrix(pyankov::chain_t& chain, std::istream& in)
+void pyankov::doCreateDoubleMatrix(pyankov::chain_t& chain, std::istream& in, int minValue, int maxValue, size_t precision)
 {
   std::string name = "";
   size_t rows = 0;
@@ -60,7 +60,7 @@ void pyankov::doCreateDoubleMatrix(pyankov::chain_t& chain, std::istream& in)
   {
     throw std::invalid_argument("Incorrect create parameters!");
   }
-  pyankov::Matrix< double > matrix(rows, columns);
+  pyankov::Matrix< double > matrix(rows, columns, minValue, maxValue, precision);
   if (in.peek() != '\n')
   {
     in >> matrix;

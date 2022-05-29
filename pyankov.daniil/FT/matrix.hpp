@@ -20,6 +20,7 @@ namespace pyankov
     Matrix(const Matrix< T >& other) = default;
     Matrix(Matrix< T >&& other) noexcept = default;
     Matrix(size_t rows, size_t columns);
+    Matrix(size_t rows, size_t columns, int minValue, int maxValue, size_t precision);
     Matrix(size_t rows, size_t columns, const std::vector< T >& vector);
     ~Matrix() = default;
     Matrix< T >& operator=(const Matrix< T >& other) = default;
@@ -27,15 +28,9 @@ namespace pyankov
     size_t getRows() const;
     size_t getColumns() const;
     T getElement(size_t row, size_t column) const;
-    size_t getPrecision() const;
     void setElement(size_t row, size_t column, T element);
-    void setZeroMatrix();
-    static void setStaticValues(int minValue, int maxValue, size_t precision);
     Matrix< double > convertToDouble();
   private:
-    static int minValue_;
-    static int maxValue_;
-    static size_t precision_;
     size_t rows_;
     size_t columns_;
     std::vector< T > vector_;
@@ -59,27 +54,37 @@ pyankov::Matrix< T >::Matrix(size_t rows, size_t columns):
   columns_(columns),
   vector_()
 {
-  if (rows == 0 || columns == 0)
+  bool isCorrectType = (std::is_same< T, int >::value) || (std::is_same< T, double >::value);
+  if (rows == 0 || columns == 0 || !isCorrectType)
   {
     throw std::logic_error("Incorrect matrix size!");
   }
   vector_.resize(rows_ * columns_);
-  int newMaxValue = maxValue_ * std::pow(10, precision_);
-  int newMinValue = minValue_ * std::pow(10, precision_);
-  double multiplier = std::pow(10, precision_);
+}
+template< typename T >
+pyankov::Matrix< T >::Matrix(size_t rows, size_t columns, int minValue, int maxValue, size_t precision):
+  rows_(rows),
+  columns_(columns),
+  vector_()
+{
+  bool isCorrectType = (std::is_same< T, int >::value) || (std::is_same< T, double >::value);
+  if (rows == 0 || columns == 0 || minValue >= maxValue || precision == 0 || !isCorrectType)
+  {
+    throw std::logic_error("Incorrect matrix perameters!");
+  }
+  vector_.resize(rows * columns);
+  int newMaxValue = maxValue * std::pow(10, precision);
+  int newMinValue = minValue * std::pow(10, precision);
+  double multiplier = std::pow(10, precision);
   for (size_t i = 0; i < rows_ * columns_; i++)
   {
     if (std::is_same< T, int >::value)
     {
-      vector_.at(i) = static_cast< int >(static_cast< double >(std::rand()) / RAND_MAX * (maxValue_ - minValue_) + minValue_);
-    }
-    else if (std::is_same< T, double >::value)
-    {
-      vector_.at(i) = (static_cast< double >(std::rand()) / RAND_MAX * (newMaxValue - newMinValue) + newMinValue) / multiplier;
+      vector_.at(i) = static_cast< int >(static_cast< double >(std::rand()) / RAND_MAX * (maxValue - minValue) + minValue);
     }
     else
     {
-      throw std::logic_error("Incorrect matrix type!");
+      vector_.at(i) = (static_cast< double >(std::rand()) / RAND_MAX * (newMaxValue - newMinValue) + newMinValue) / multiplier;
     }
   }
 }
@@ -117,11 +122,6 @@ T pyankov::Matrix< T >::getElement(size_t row, size_t column) const
   return vector_.at(row * columns_ + column);
 }
 template< typename T >
-size_t pyankov::Matrix< T >::getPrecision() const
-{
-  return precision_;
-}
-template< typename T >
 void pyankov::Matrix< T >::setElement(size_t row, size_t column, T element)
 {
   if (row > rows_ || column > columns_)
@@ -129,25 +129,6 @@ void pyankov::Matrix< T >::setElement(size_t row, size_t column, T element)
     throw std::invalid_argument("Can not set element on these indexes!");
   }
   vector_.at(row * columns_ + column) = element;
-}
-template< typename T >
-void pyankov::Matrix< T >::setZeroMatrix()
-{
-  for (size_t i = 0; i < rows_ * columns_; i++)
-  {
-    vector_.at(i) = static_cast< T >(0);
-  }
-}
-template< typename T >
-void pyankov::Matrix< T >::setStaticValues(int minValue, int maxValue, size_t precision)
-{
-  if (minValue >= maxValue || precision == 0)
-  {
-    throw std::logic_error("Incorrect matrix class parameters!");
-  }
-  minValue_ = minValue;
-  maxValue_ = maxValue;
-  precision_ = precision;
 }
 template< typename T >
 pyankov::Matrix< double > pyankov::Matrix< T >::convertToDouble()
@@ -303,8 +284,7 @@ std::ostream& pyankov::operator<<(std::ostream& out, const pyankov::Matrix< T >&
       }
       else
       {
-        out << std::fixed << std::right << std::setprecision(matrix.getPrecision()) << std::setw(maxLen);
-        out << matrix.getElement(i, j);
+        out << std::fixed << std::right << std::setw(maxLen) << matrix.getElement(i, j);
       }
     }
     out << std::right << " |\n";

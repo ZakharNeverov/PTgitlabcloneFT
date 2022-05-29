@@ -13,8 +13,8 @@ namespace pyankov
   using chain_t = std::pair< int_chain_t, double_chain_t >;
   bool isContainingName(const chain_t& chain, const std::string& name);
   bool compareMatricesByName(const chain_t& chain, const std::string& left, const std::string& right);
-  void doCreateIntMatrix(chain_t& chain, std::istream& in);
-  void doCreateDoubleMatrix(chain_t& chain, std::istream& in);
+  void doCreateIntMatrix(chain_t& chain, std::istream& in, int minValue, int maxValue, size_t precision);
+  void doCreateDoubleMatrix(chain_t& chain, std::istream& in, int minValue, int maxValue, size_t precision);
   void concatToRight(chain_t& chain, const std::string& left, const std::string& right, const std::string& result);
   void concatToBot(chain_t& chain, const std::string& left, const std::string& right, const std::string& result);
   void concatToRightInt(chain_t& chain, const std::string& left, const std::string& right, const std::string& result);
