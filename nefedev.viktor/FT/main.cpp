@@ -23,6 +23,8 @@ int main()
       {"FIND", std::bind(nefedev::find, std::ref(std::cin), std::ref(std::cout), std::ref(dictArray))},
       {"FINDANDPRINT", std::bind(nefedev::findAndPrint, std::ref(std::cin), std::ref(std::cout), std::ref(dictArray))},
       {"MERGE", std::bind(nefedev::merge, std::ref(std::cin), std::ref(std::cout), std::ref(dictArray))},
+      {"SAVEDICT", std::bind(nefedev::saveDict, std::ref(std::cin), std::ref(std::cout), std::ref(dictArray))},
+      {"LOADDICT", std::bind(nefedev::loadDict, std::ref(std::cin), std::ref(std::cout), std::ref(dictArray))},
     });
   while (!std::cin.eof())
   {
@@ -30,16 +32,19 @@ int main()
     std::cin >> input;
     if (!input.empty())
     {
-      auto commandIter = commands.find(input);
-      if (commandIter != commands.end())
+      try
       {
-        commandIter->second();
+        commands.at(input)();
       }
-      else
+      catch (std::out_of_range)
       {
-        std::cout << "INVALID COMMAND\n";
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
+        nefedev::outInvalidCommand(std::cout);
+        nefedev::cleanIStream(std::cin);
+      }
+      catch (const std::exception& e)
+      {
+        std::cout << e.what() << '\n';
+        nefedev::cleanIStream(std::cin);
       }
     }
   }

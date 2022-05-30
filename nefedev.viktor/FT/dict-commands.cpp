@@ -7,40 +7,38 @@
 #include <numeric>
 #include <algorithm>
 #include "stream-guard.hpp"
+#include "delimeter.hpp"
 
 using FreqDictionary = std::map< std::string, unsigned int >;
 using DictionaryArray = std::unordered_map< std::string, FreqDictionary >;
 using WordAndFreq = std::pair< std::string, unsigned int >;
 
+const unsigned short int RECORD_SIZE = 15;
+const unsigned short int RECORD_PRECISION = 5;
+const std::string allowedSymbols = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-\'";
+
 namespace
 {
-  std::string& deleteWrongChars(std::string& str)
+  std::string& processString(std::string& str)
   {
+    std::transform(str.begin(), str.end(), str.begin(), std::toupper);
     for (size_t i = 0; i < str.length(); ++i)
     {
-      if ((str[i] < '0' && str[i] != '-' && str[i] != '\'') || (str[i] > '9' && str[i] < 'A') || (str[i] > 'Z' && str[i] < 'a') || str[i] > 'z')
+      if (allowedSymbols.find(str[i]) == allowedSymbols.npos)
       {
         str.erase(i, 1);
         --i;
       }
     }
-    if (!str.empty() && (str[0] == '-' || str[0] == '\''))
-    {
-      str.erase(0, 1);
-    }
-    if (!str.empty() && (str[str.length() - 1] == '-' || str[str.length() - 1] == '\''))
-    {
-      str.erase(str.length() - 1, 1);
-    }
     return str;
   }
   bool compAscendingFreq(WordAndFreq element1, WordAndFreq element2)
   {
-    return element1.second > element2.second;
+    return element1.second < element2.second;
   }
   bool compDescendingFreq(WordAndFreq element1, WordAndFreq element2)
   {
-    return element1.second < element2.second;
+    return element1.second > element2.second;
   }
   unsigned int accumulateDictSum(unsigned int sum, WordAndFreq record)
   {
@@ -48,7 +46,7 @@ namespace
   }
   void insertWord(std::string word, FreqDictionary& dict)
   {
-    deleteWrongChars(word);
+    processString(word);
     if (!word.empty())
     {
       if (dict.find(word) == dict.end())
@@ -67,6 +65,17 @@ namespace
   }
 }
 
+void nefedev::outInvalidCommand(std::ostream& out)
+{
+  out << "INVALID COMMAND\n";
+}
+
+void nefedev::cleanIStream(std::istream& in)
+{
+  std::cin.clear();
+  std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
+}
+
 void nefedev::insert(std::istream& in, std::ostream& out, DictionaryArray& dictArray)
 {
   std::string dictName = "";
@@ -74,13 +83,28 @@ void nefedev::insert(std::istream& in, std::ostream& out, DictionaryArray& dictA
   in >> dictName;
   in >> word;
   in.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
-  if (dictArray.find(dictName) == dictArray.end())
+  processString(word);
+  if (!word.empty())
   {
-    FreqDictionary dict;
-    dictArray.insert(std::make_pair(dictName, dict));
+    if (dictArray.find(dictName) == dictArray.end())
+    {
+      FreqDictionary dict;
+      dictArray.insert(std::make_pair(dictName, dict));
+    }
+    if(dictArray[dictName].find(word) == dictArray[dictName].end())
+    {
+      dictArray[dictName].insert(std::make_pair(word, 1));
+    }
+    else
+    {
+      ++dictArray[dictName][word];
+    }
+    out << "Inserted word \"" << word << "\" to dictionary " << dictName << '\n';
   }
-  insertWord(word, dictArray[dictName]);
-  out << "Inserted word \"" << word << "\" to dictionary " << dictName << '\n';
+  else
+  {
+    throw std::invalid_argument("INVALID WORD");
+  }
 }
 
 void nefedev::readText(std::istream& in, std::ostream& out, DictionaryArray& dictArray)
@@ -103,7 +127,15 @@ void nefedev::readText(std::istream& in, std::ostream& out, DictionaryArray& dic
     input.erase(0, input.find(' ') + 1);
     insertWord(word, dictArray[dictName]);
   }
-  out << "Inserted all words from the text\n";
+  if (dictArray[dictName].empty())
+  {
+    dictArray.erase(dictName);
+    throw std::invalid_argument("Could not find any valid words");
+  }
+  else
+  {
+    out << "Inserted all words from the text\n";
+  }
 }
 
 void nefedev::readFile(std::istream& in, std::ostream& out, DictionaryArray& dictArray)
@@ -115,17 +147,23 @@ void nefedev::readFile(std::istream& in, std::ostream& out, DictionaryArray& dic
     FreqDictionary dict;
     dictArray.insert(std::make_pair(dictName, dict));
   }
-  std::ifstream fin;
   std::string fileName;
   std::string input = "";
   in >> fileName;
-  fin.open(fileName);
-  while (!fin.eof())
+  std::ifstream fin(fileName);
+  if (fin.is_open())
   {
-    fin >> input;
-    insertWord(input, dictArray[dictName]);
+    while (!fin.eof())
+    {
+      fin >> input;
+      insertWord(input, dictArray[dictName]);
+    }
+    out << "Inserted all words from file \"" << fileName << "\"\n";
   }
-  out << "Inserted all words from file \"" << fileName << "\"\n";
+  else
+  {
+    throw std::invalid_argument("There is no such file");
+  }
 }
 
 void nefedev::deleteWord(std::istream& in, std::ostream& out, DictionaryArray& dictArray)
@@ -134,25 +172,26 @@ void nefedev::deleteWord(std::istream& in, std::ostream& out, DictionaryArray& d
   in >> dictName;
   if (dictArray.find(dictName) == dictArray.end())
   {
-    out << "There is no such dictionary\n";
+    throw std::invalid_argument("Dictionary does not exist");
   }
   else
   {
     std::string input = "";
     in >> input;
+    std::transform(input.begin(), input.end(), input.begin(), std::toupper);
     if (dictArray[dictName].find(input) == dictArray[dictName].end())
     {
-      std::cout << "There is no word \"" << input << "\" in the dictionary with number " << dictName << '\n';
+      throw std::invalid_argument("There is no such word in this dictionary");
     }
     else if (dictArray[dictName][input] > 1)
     {
       --dictArray[dictName][input];
-      out << "Deleted 1 enterance of the word from dictionary\n";
+      out << "Deleted 1 entrance of the word from dictionary\n";
     }
     else
     {
       dictArray[dictName].erase(input);
-      out << "Deleted 1 enterance of the word from dictionary\n";
+      out << "Deleted 1 entrance of the word from dictionary\n";
       if (dictArray[dictName].empty())
       {
         dictArray.erase(dictName);
@@ -168,20 +207,21 @@ void nefedev::deleteAllWords(std::istream& in, std::ostream& out, DictionaryArra
   in >> dictName;
   if (dictArray.find(dictName) == dictArray.end())
   {
-    out << "There is no such dictionary\n";
+    throw std::invalid_argument("Dictionary does not exist");
   }
   else
   {
     std::string input = "";
     in >> input;
+    std::transform(input.begin(), input.end(), input.begin(), std::toupper);
     if (dictArray[dictName].find(input) == dictArray[dictName].end())
     {
-      std::cout << "There is no word \"" << input << "\" in the dictionary with number " << dictName << '\n';
+      throw std::invalid_argument("There is no such word in this dictionary");
     }
     else
     {
       dictArray[dictName].erase(input);
-      out << "Deleted all enterances of the word\n";
+      out << "Deleted all entrances of the word\n";
       if (dictArray[dictName].empty())
       {
         dictArray.erase(dictName);
@@ -196,7 +236,7 @@ void nefedev::wordNumber(std::istream& in, std::ostream& out, DictionaryArray& d
   in >> dictName;
   if (dictArray.find(dictName) == dictArray.end())
   {
-    out << "There is no such dictionary\n";
+    throw std::invalid_argument("Dictionary does not exist");
   }
   else
   {
@@ -210,7 +250,7 @@ void nefedev::printAlphabetic(std::istream& in, std::ostream& out, DictionaryArr
   in >> dictName;
   if (dictArray.find(dictName) == dictArray.end())
   {
-    out << "There is no such dictionary\n";
+    throw std::invalid_argument("Dictionary does not exist");
   }
   else
   {
@@ -225,7 +265,7 @@ void nefedev::printAlphabetic(std::istream& in, std::ostream& out, DictionaryArr
       out << std::fixed << std::setprecision(5);
       for (FreqDictionary::iterator iter = dictArray[dictName].begin(); iter != dictArray[dictName].end(); ++iter)
       {
-        out << std::setw(15) << iter->first << " - " << static_cast<double>(iter->second) / wordNumber << '\n';
+        out << std::setw(RECORD_SIZE) << iter->first << " - " << static_cast< double >(iter->second) / wordNumber << '\n';
       }
     }
     else if (order == "DESCENDING")
@@ -236,14 +276,12 @@ void nefedev::printAlphabetic(std::istream& in, std::ostream& out, DictionaryArr
       out << std::fixed << std::setprecision(5);
       for (FreqDictionary::reverse_iterator iter = dictArray[dictName].rbegin(); iter != dictArray[dictName].rend(); ++iter)
       {
-        out << std::setw(15) << iter->first << " - " << static_cast<double>(iter->second) / wordNumber << '\n';
+        out << std::setw(RECORD_SIZE) << iter->first << " - " << static_cast< double >(iter->second) / wordNumber << '\n';
       }
     }
     else
     {
-      out << "INVALID ARGUMENT\n";
-      in.clear();
-      std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
+      throw std::invalid_argument("INVALID ARGUMENT\n");
     }
   }
 }
@@ -254,7 +292,7 @@ void nefedev::printFrequency(std::istream& in, std::ostream& out, DictionaryArra
   in >> dictName;
   if (dictArray.find(dictName) == dictArray.end())
   {
-    out << "There is no such dictionary\n";
+    throw std::invalid_argument("Dictionary does not exist");
   }
   else
   {
@@ -271,7 +309,7 @@ void nefedev::printFrequency(std::istream& in, std::ostream& out, DictionaryArra
       out << std::fixed << std::setprecision(5);
       for (std::vector< WordAndFreq >::iterator iter = vect.begin(); iter != vect.end(); ++iter)
       {
-        out << std::setw(15) << iter->first << " - " << static_cast<double>(iter->second) / wordNumber << '\n';
+        out << std::setw(RECORD_SIZE) << iter->first << " - " << static_cast< double >(iter->second) / wordNumber << '\n';
       }
     }
     else if (order == "DESCENDING")
@@ -283,14 +321,12 @@ void nefedev::printFrequency(std::istream& in, std::ostream& out, DictionaryArra
       out << std::fixed << std::setprecision(5);
       for (std::vector< WordAndFreq >::iterator iter = vect.begin(); iter != vect.end(); ++iter)
       {
-        out << std::setw(15) << iter->first << " - " << static_cast<double>(iter->second) / wordNumber << '\n';
+        out << std::setw(RECORD_SIZE) << iter->first << " - " << static_cast< double >(iter->second) / wordNumber << '\n';
       }
     }
     else
     {
-      out << "INVALID ARGUMENT\n";
-      in.clear();
-      std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
+      throw std::invalid_argument("INVALID ARGUMENT\n");
     }
   }
 }
@@ -301,19 +337,20 @@ void nefedev::find(std::istream& in, std::ostream& out, DictionaryArray& dictArr
   in >> dictName;
   if (dictArray.find(dictName) == dictArray.end())
   {
-    out << "There is no such dictionary\n";
+    throw std::invalid_argument("Dictionary does not exist");
   }
   else
   {
     std::string input = "";
     in >> input;
+    std::transform(input.begin(), input.end(), input.begin(), std::toupper);
     if (dictArray[dictName].find(input) != dictArray[dictName].end())
     {
-      out << "True\n";
+      out << "TRUE\n";
     }
     else
     {
-      out << "False\n";
+      out << "FALSE\n";
     }
   }
 }
@@ -324,23 +361,24 @@ void nefedev::findAndPrint(std::istream& in, std::ostream& out, DictionaryArray&
   in >> dictName;
   if (dictArray.find(dictName) == dictArray.end())
   {
-    out << "There is no such dictionary\n";
+    throw std::invalid_argument("Dictionary does not exist");
   }
   else
   {
     std::string input;
     in >> input;
+    std::transform(input.begin(), input.end(), input.begin(), std::toupper);
     if (dictArray[dictName].find(input) != dictArray[dictName].end())
     {
       unsigned int wordNumber = 0;
       wordNumber = evaluateWordNumber(dictArray[dictName]);
       nefedev::StreamGuard guard(out);
       out << std::fixed << std::setprecision(5);
-      out << std::setw(15) << input << ' ' << static_cast<double>(dictArray[dictName][input]) / wordNumber << '\n';
+      out << std::setw(RECORD_SIZE) << input << ' ' << static_cast< double >(dictArray[dictName][input]) / wordNumber << '\n';
     }
     else
     {
-      out << "False\n";
+      out << "FALSE\n";
     }
   }
 }
@@ -351,7 +389,7 @@ void nefedev::merge(std::istream& in, std::ostream& out, DictionaryArray& dictAr
   in >> dictName;
   if (dictArray.find(dictName) == dictArray.end())
   {
-    out << "Dictionary " << dictName << " does not exist\n";
+    throw std::invalid_argument("Dictionary does not exist");
   }
   else
   {
@@ -359,7 +397,7 @@ void nefedev::merge(std::istream& in, std::ostream& out, DictionaryArray& dictAr
     std::cin >> mergingDictName;
     if (dictArray.find(mergingDictName) == dictArray.end())
     {
-      out << "Dictionary " << mergingDictName << " does not exist\n";
+      throw std::invalid_argument("Merging dictionary does not exist");
     }
     else
     {
@@ -368,6 +406,74 @@ void nefedev::merge(std::istream& in, std::ostream& out, DictionaryArray& dictAr
         insertWord(iter->first, dictArray[dictName]);
       }
       dictArray.erase(mergingDictName);
+      out << "Dictionaries were merged successfully\n";
     }
+  }
+}
+
+void nefedev::saveDict(std::istream& in, std::ostream& out, DictionaryArray& dictArray)
+{
+  std::string dictName = "";
+  in >> dictName;
+  if (dictArray.find(dictName) == dictArray.end())
+  {
+    throw std::invalid_argument("Dictionary does not exist");
+  }
+  else
+  {
+    std::string fileName;
+    std::ofstream fout;
+    in >> fileName;
+    fout.open(fileName);
+    fout << "SAVEDICT_FILE";
+    for (FreqDictionary::iterator iter = dictArray[dictName].begin(); iter != dictArray[dictName].end(); ++iter)
+    {
+      fout << '\n' << iter->first << ' ' << iter->second;
+    }
+    out << "Dictionary was saved in file " << fileName << '\n';
+  }
+}
+
+void nefedev::loadDict(std::istream& in, std::ostream& out, DictionaryArray& dictArray)
+{
+  std::string dictName = "";
+  in >> dictName;
+  std::string fileName;
+  in >> fileName;
+  std::ifstream fin(fileName);
+  if (fin.is_open())
+  {
+    if (dictArray.find(dictName) != dictArray.end())
+    {
+      dictArray[dictName].clear();
+    }
+    else
+    {
+      FreqDictionary dict;
+      dictArray.insert(std::make_pair(dictName, dict));
+    }
+    unsigned int wordNumber;
+    std::string input;
+    fin >> std::noskipws;
+    using sep = nefedev::DelimeterIO;
+    fin >> input;
+    if (!fin || input != "SAVEDICT_FILE")
+    {
+      throw std::invalid_argument("INVALID_FILE\n");
+    }
+    while (!fin.eof())
+    {
+      fin >> sep{ '\n' } >> input >> sep{ ' ' } >> wordNumber;
+      if (!fin)
+      {
+        throw std::invalid_argument("Failed while reading the file\n");
+      }
+      dictArray[dictName].insert(std::make_pair(input, wordNumber));
+    }
+    out << "Dictionary was read from file " << fileName << '\n';
+  }
+  else
+  {
+    throw std::invalid_argument("File does not exist");
   }
 }

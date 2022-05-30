@@ -23,6 +23,11 @@ namespace nefedev
   void find(std::istream&, std::ostream&, DictionaryArray&);
   void findAndPrint(std::istream&, std::ostream&, DictionaryArray&);
   void merge(std::istream&, std::ostream&, DictionaryArray&);
+  void saveDict(std::istream&, std::ostream&, DictionaryArray&);
+  void loadDict(std::istream&, std::ostream&, DictionaryArray&);
+
+  void outInvalidCommand(std::ostream& out);
+  void cleanIStream(std::istream& in);
 }
 
 #endif
