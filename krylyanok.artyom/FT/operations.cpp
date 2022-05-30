@@ -18,6 +18,24 @@ void krylyanok::makeDict(std::string& nameFile, std::vector< std::string >& temp
   file.close();
 }
 
+void krylyanok::createDict(std::vector< std::string >& words, krylyanok::NameMap& temp)
+{
+  for (std::string el : words)
+  {
+    std::pair < std::string, krylyanok::HashStruct > pair(el, { el });
+    auto iter = temp.dict_.find(el);
+    if (iter != (temp.dict_.end()))
+    {
+      temp.wordCounter_++;
+      (*iter).second.freq_++;
+      continue;
+    }
+    temp.dict_.insert(pair);
+    temp.wordCounter_++;
+  }
+}
+
+
 void krylyanok::correctVector(std::vector< std::string >& vec)
 {
   for (int i = 0; i < vec.size(); i++)

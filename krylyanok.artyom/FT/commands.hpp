@@ -1,11 +1,12 @@
 #include "hash-dictionary.hpp"
+#include "dictionary.hpp"
 
 namespace krylyanok
 {
   struct Commands
   {
   public:
-    Commands(std::vector< krylyanok::Dictionary >& dictionaries, std::istream& in, std::ostream& out):
+    Commands(std::vector< NameMap >& dictionaries, std::istream& in, std::ostream& out):
       dictionaries_(dictionaries),
       in_(in),
       out_(out)
@@ -18,9 +19,8 @@ namespace krylyanok
     void getDelete();
 
   private:
-    std::vector< krylyanok::Dictionary >& dictionaries_;
+    std::vector< NameMap >& dictionaries_;
     std::istream& in_;
     std::ostream& out_;
-    size_t findElem(std::string& dictName);
   };
 }

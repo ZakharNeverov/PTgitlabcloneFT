@@ -8,8 +8,11 @@
 #include <map>
 #include <list>
 #include "operations.hpp"
+#include <unordered_map>
 #include "hash-dictionary.hpp"
 #include "commands.hpp"
+#include "dictionary.hpp"
+#include "errorhandler.hpp"
 
 int main(int argc, char** argv)
 {
@@ -24,8 +27,7 @@ int main(int argc, char** argv)
     std::cerr << "File is not open\n";
     return 1;
   }
-  using istreamIter_t = std::istream_iterator< krylyanok::Dictionary >;
-  std::vector< krylyanok::Dictionary > dictionaries;
+  std::vector< krylyanok::NameMap > dicts;
   while (!file.eof())
   {
     file.clear();
@@ -39,18 +41,14 @@ int main(int argc, char** argv)
     }
     catch (const std::exception&)
     {
-      file.clear();
-      file.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
+      krylyanok::streamClean(file);
       continue;
     }
-    dictionaries.push_back({ words.size(), nameDict });
-    for (std::string el : words)
-    {
-      dictionaries[dictionaries.size() - 1].add(el);
-    }
+    dicts.push_back({nameDict});
+    krylyanok::createDict(words, dicts[dicts.size() - 1]);
   }
   file.close();
-  krylyanok::Commands commStruct(dictionaries, std::cin, std::cout);
+  krylyanok::Commands commStruct(dicts, std::cin, std::cout);
   std::map< std::string, std::function< void(void) > > commands(
     {
       {"LOAD", std::bind(&krylyanok::Commands::getLoad, std::ref(commStruct))},
@@ -75,8 +73,7 @@ int main(int argc, char** argv)
     catch (const std::exception&)
     {
       std::cout << "<INVALID COMMAND>\n";
-      std::cin.clear();
-      std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
+      krylyanok::streamClean(std::cin);
     }
   }
   return 0;
