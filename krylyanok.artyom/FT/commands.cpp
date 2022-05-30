@@ -3,7 +3,6 @@
 #include "commands.hpp"
 #include "dictionary.hpp"
 #include "operations.hpp"
-#include <unordered_set>
 
 namespace
 {

@@ -1,6 +1,6 @@
 #include "operations.hpp"
 #include <iostream>
-#include "hash-dictionary.hpp"
+#include <fstream>
 
 void krylyanok::makeDict(std::string& nameFile, std::vector< std::string >& temp)
 {

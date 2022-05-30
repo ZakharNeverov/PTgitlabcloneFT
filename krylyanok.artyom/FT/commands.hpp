@@ -1,4 +1,3 @@
-#include "hash-dictionary.hpp"
 #include "dictionary.hpp"
 
 namespace krylyanok

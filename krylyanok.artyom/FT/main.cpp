@@ -2,14 +2,10 @@
 #include <fstream>
 #include <vector>
 #include <cctype>
-#include <algorithm>
 #include <iterator>
-#include <functional>
 #include <map>
-#include <list>
+#include <functional>
 #include "operations.hpp"
-#include <unordered_map>
-#include "hash-dictionary.hpp"
 #include "commands.hpp"
 #include "dictionary.hpp"
 #include "errorhandler.hpp"
