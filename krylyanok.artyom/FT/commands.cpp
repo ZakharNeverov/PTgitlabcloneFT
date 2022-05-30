@@ -39,7 +39,8 @@ namespace
       {
         out << std::setw(4) << nomber++ << " ";
         int setw = 15;
-        out << std::setw(setw) << (*it).second.word_ << std::setw(10) << round((*it).second.freq_ / static_cast<double>(temp.wordCounter_) * 1000) / 1000 << "\n";
+        double freq = round((*it).second.freq_ / static_cast<double>(temp.wordCounter_) * 1000) / 1000;
+        out << std::setw(setw) << (*it).second.word_ << std::setw(10) << freq << "\n";
       }
     }
   }
