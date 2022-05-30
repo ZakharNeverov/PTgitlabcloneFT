@@ -16,7 +16,8 @@ namespace
     in.clear();
     in.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
   }
-  std::map< std::string, std::function< void() > > defineAllCommands(std::istream& in, std::vector<shkroba::Dictionary>& base, std::ostream& out)
+  std::map< std::string, std::function< void() > > defineAllCommands(std::istream& in,
+  std::vector<shkroba::Dictionary>& base, std::ostream& out)
   {
     std::map< std::string, std::function< void() > > mapOfCommands =
       {
