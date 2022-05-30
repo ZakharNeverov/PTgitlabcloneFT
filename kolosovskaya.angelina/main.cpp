@@ -54,12 +54,7 @@ int main(int argc, char** argv)
       {
         continue;
       }
-      auto iter = commandsDict.find(command);
-      if (iter == commandsDict.end())
-      {
-        throw std::logic_error("<INVALID COMMAND>");
-      }
-      iter->second();
+      commandsDict.at(command);
     }
     catch (const std::exception&)
     {

@@ -41,7 +41,7 @@ namespace kolosovskaya
     namesIter = dictNames.erase(namesIter);
     if (!doesExist(newDictName, allDicts))
     {
-      for (auto&& name : dictNames)
+      for (auto&& name: dictNames)
       {
         if (!doesExist(name, allDicts))
         {
@@ -105,8 +105,7 @@ namespace kolosovskaya
       printNotExistedDictMessage(out);
       return;
     }
-    std::string fileName = dictName + ".txt";
-    std::ofstream fout(fileName);
+    std::ofstream fout(dictName);
     printDict(fout, dictName, allDicts);
     fout.close();
     out << "The dictionary " << dictName << " was successfully added!\n";
