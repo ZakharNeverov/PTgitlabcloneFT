@@ -36,7 +36,7 @@ namespace shkroba
     for (const auto &current: base)
     {
       shkroba::iofmtguard iofmtguard(out);
-      out << current.getName()<<'\n';
+      out << current.getName() <<'\n';
       shkroba::doSize(current, std::cout);
       out << '\n';
     }

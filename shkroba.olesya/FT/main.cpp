@@ -1,11 +1,8 @@
 #include <limits>
 #include <string>
 #include <functional>
-#include <map>
 #include <iostream>
 #include <fstream>
-#include <vector>
-#include "Dictionary.hpp"
 #include "Utilities.hpp"
 #include "userCommands.hpp"
 
@@ -16,10 +13,10 @@ namespace
     in.clear();
     in.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
   }
-  std::map< std::string, std::function< void() > > defineAllCommands(std::istream& in,
-  std::vector<shkroba::Dictionary>& base,std::ostream& out)
+  using mapCommandsType =  std::map< std::string, std::function< void() > >;
+  mapCommandsType defineAllCommands(std::istream& in, std::vector<shkroba::Dictionary>& base,std::ostream& out)
   {
-    std::map< std::string, std::function< void() > > mapOfCommands =
+    mapCommandsType mapOfCommands =
       {
         { "PRINT",std::bind(shkroba::makePrint, std::ref(in), std::ref(base), std::ref(out))},
         { "SIZE",std::bind(shkroba::makeSize, std::ref(in), std::ref(base), std::ref(out)) },
@@ -47,7 +44,7 @@ namespace
     std::cerr << "File is not open\n";
     return 1;
   }
-  std::vector<shkroba::Dictionary> dictionaries = shkroba::createDictionariesFromFile(fin);
+  std::vector< shkroba::Dictionary > dictionaries = shkroba::createDictionariesFromFile(fin);
   auto myCommands = defineAllCommands(std::cin, dictionaries, std::cout);
   while (!std::cin.eof())
   {

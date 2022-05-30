@@ -1,10 +1,11 @@
 #ifndef RGR_ENG_RUS_UTILITIES_HPP
 #define RGR_ENG_RUS_UTILITIES_HPP
 
-#include <iostream>
+#include <iosfwd>
 #include <set>
 #include <vector>
 #include "Dictionary.hpp"
+
 namespace shkroba
 {
   Dictionary createFromOneTranslate(const Dictionary& dictionary);

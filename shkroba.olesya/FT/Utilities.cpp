@@ -156,7 +156,8 @@ namespace shkroba
         word = word.substr(0, word.size() - 1);
       }
       str.clear();
-    } else
+    }
+    else
     {
       str.erase(0, str.find_first_of(' ') + 1);
     }
