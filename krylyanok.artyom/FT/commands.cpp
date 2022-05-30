@@ -44,6 +44,7 @@ namespace
       }
     }
   }
+
   void printTop(std::ostream& out, const map& temp)
   {
     std::vector< std::string >  topWord;
@@ -73,6 +74,7 @@ namespace
       out << std::setw(10) << el << " " << std::setw(8) << topFreq << "\n";
     }
   }
+
   void searhWord(std::ostream& out, const std::string& word, const map& temp)
   {
     auto iter = temp.find(word);
