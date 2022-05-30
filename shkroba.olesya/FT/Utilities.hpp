@@ -19,7 +19,7 @@ namespace shkroba
   void doCommonForTwo(const Dictionary& source, const Dictionary& extra, std::ostream& out);
   void doOneTranslate(const Dictionary& dictionary, std::ostream& out);
   void doCreateFromUniqueWords(const Dictionary& source, const Dictionary& extra, std::ostream& out);
-  std::string nextWord(std::string &str);
-  std::vector<Dictionary> createDictionariesFromFile(std::istream &fin);
+  std::string nextWord(std::string& str);
+  std::vector<Dictionary> createDictionariesFromFile(std::istream& fin);
 }
 #endif

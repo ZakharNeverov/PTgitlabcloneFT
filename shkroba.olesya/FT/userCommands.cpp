@@ -128,40 +128,33 @@ namespace shkroba
     }
     if (word == "PRINT")
     {
-      shkroba::iofmtguard iofmtguard(out);
       out << "Print words from the selected dictionary." << '\n';
     }
     else if (word == "SIZE")
     {
-      shkroba::iofmtguard iofmtguard(out);
       out << "Print size of selected dictionary." << '\n';
     }
     else if (word == "ONETRANSLATE")
     {
-      shkroba::iofmtguard iofmtguard(out);
       out << "Create the dictionary and print words from the selected dictionary that have one translation.";
-      out <<'\n';
+      out << '\n';
     }
     else if (word == "START")
     {
-      shkroba::iofmtguard iofmtguard(out);
       out << "Print words beginning with input letter from the selected dictionary."<< '\n';
     }
     else if (word == "ADDANOTHER")
     {
-      shkroba::iofmtguard iofmtguard(out);
       out << "Make dictionary from the current dictionary and test dictionary from program." << '\n';
       out << "Print it." << '\n';
     }
     else if (word == "UNIQUE")
     {
-      shkroba::iofmtguard iofmtguard(out);
       out << "Create common dictionary from words that do not repeat in current dictionary and in test dictionary from program.";
       out << "Print it." << '\n';
     }
     else if (word == "COMMON")
     {
-      shkroba::iofmtguard iofmtguard(out);
       out << "Create common dictionary with input number of dictionaries and print it." << '\n';
     }
     else

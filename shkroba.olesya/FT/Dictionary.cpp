@@ -4,10 +4,9 @@
 
 namespace shkroba
 {
-  Dictionary::Dictionary(const std::string &name)
-  {
-    name_ = name;
-  }
+  Dictionary::Dictionary(const std::string &name):
+    name_(name)
+  {}
 
   void Dictionary::insert(const std::string &word, const std::string &translate)
   {
@@ -18,8 +17,8 @@ namespace shkroba
     }
     else
     {
-      std::set<std::string> set;
-      std::shared_ptr<std::set<std::string> > ptr = std::make_shared<std::set<std::string> >(set);
+      std::set< std::string > set;
+      std::shared_ptr< std::set< std::string > > ptr = std::make_shared< std::set< std::string > >(set);
       ptr->insert(translate);
       pairER pair = std::make_pair(word, ptr);
       dictionary_.insert(pair);
@@ -34,7 +33,7 @@ namespace shkroba
     }
   }
 
-  std::map<std::string, std::shared_ptr<std::set<std::string> > >::const_iterator
+  std::map< std::string, std::shared_ptr< std::set< std::string > > >::const_iterator
   Dictionary::search(const std::string &word) const
   {
     return dictionary_.find(word);
@@ -67,7 +66,7 @@ namespace shkroba
 
   void Dictionary::findWord(char letter, std::ostream &out) const
   {
-    std::vector<std::string> result;
+    std::vector< std::string > result;
     for (auto &item: dictionary_)
     {
       if (item.first[0] == letter)
@@ -100,24 +99,24 @@ namespace shkroba
     return name_;
   }
 
-  std::map<std::string, std::shared_ptr<std::set<std::string> > >::const_iterator Dictionary::begin() const
+  std::map< std::string, std::shared_ptr< std::set< std::string > > >::const_iterator Dictionary::begin() const
   {
     return dictionary_.begin();
   }
 
-  std::map<std::string, std::shared_ptr<std::set<std::string> > >::const_iterator Dictionary::end() const
+  std::map< std::string, std::shared_ptr< std::set< std::string > > >::const_iterator Dictionary::end() const
   {
     return dictionary_.end();
   }
 
-  std::istream &operator>>(std::istream &in, Dictionary &dictionary)
+  std::istream &operator>>(std::istream& in, Dictionary& dictionary)
   {
     std::string newLine;
     std::getline(in, newLine, '\n');
     std::string name = nextWord(newLine);
     dictionary.name_ = name;
     std::string word;
-    std::set<std::string> set;
+    std::set< std::string > set;
     while (!in.eof())
     {
       std::getline(in, newLine, '\n');
@@ -131,7 +130,7 @@ namespace shkroba
         std::string translate = nextWord(newLine);
         set.insert(translate);
       }
-      std::shared_ptr<std::set<std::string> > ptr = std::make_shared<std::set<std::string> >(set);
+      std::shared_ptr< std::set< std::string > > ptr = std::make_shared< std::set< std::string > >(set);
       pairER pair = std::make_pair(word, ptr);
       dictionary.insert(pair);
       set.clear();
@@ -139,7 +138,7 @@ namespace shkroba
     return in;
   }
 
-  void Dictionary::rename(const std::string &newName)
+  void Dictionary::rename(const std::string& newName)
   {
     name_ = newName;
   }

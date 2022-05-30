@@ -33,7 +33,8 @@ namespace shkroba
         {
           isCommon = false;
           break;
-        } else
+        }
+        else
         {
           pairER item = *dictionarySecond.search(
             pair.first);
