@@ -10,6 +10,7 @@ namespace surby
   std::string getBestDict(std::string&);
   std::unordered_map< char, std::string > getDictionary(std::string&);
   std::unordered_map< std::string, char > getReverseDictionary(std::string&);
+  std::string getBestDictCompare(std::string, std::pair< char, std::string >);
 }
 
 #endif

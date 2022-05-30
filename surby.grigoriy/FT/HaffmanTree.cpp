@@ -2,16 +2,14 @@
 surby::Node* surby::getNode(char simv, int count, Node* left, Node* right)
 {
   Node* node = new Node();
-
   node->simv = simv;
   node->count = count;
   node->left = left;
   node->right = right;
-
   return node;
 }
 
-bool surby::compare::operator()(Node* l, Node* r)
+bool surby::compare::operator()(Node* left, Node* right)
 {
-  return l->count > r->count;
+  return left->count > right->count;
 }

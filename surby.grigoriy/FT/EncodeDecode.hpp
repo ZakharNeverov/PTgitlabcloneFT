@@ -12,5 +12,4 @@ namespace surby
 
   void encodeHaffmanTree(Node* head, std::string str, std::unordered_map< char, std::string >& huffmanCode);
 }
-
 #endif

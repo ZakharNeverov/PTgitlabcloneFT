@@ -8,13 +8,11 @@ std::string surby::getNextArg(std::string& line, size_t k)
   {
     str += line[i];
   }
-
   if (line[i] == ' ' && str.size() == 0)
   {
     str = " ";
     i++;
   }
-
   if (line[i] == '\0' || i == line.size())
   {
     line = '\0';

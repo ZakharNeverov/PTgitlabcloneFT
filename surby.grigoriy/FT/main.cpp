@@ -15,7 +15,7 @@ int main()
   std::unordered_map < std::string, std::string > texts;
   std::map < std::string, std::function< void() > > commands;
 
-  commands["addText"] = std::bind(surby::addTextCommand, std::ref(texts), std::ref(line));
+  commands["addText"] = std::bind(surby::addTextCommand, std::ref(texts), std::ref(line), std::ref(std::cin));
   commands["getDictionary"] = std::bind(surby::getDictionaryCommand, std::ref(texts), std::ref(line), std::ref(std::cout));
   commands["getText"] = std::bind(surby::getTextCommand, std::ref(texts), std::ref(line), std::ref(std::cout));
   commands["encode"] = std::bind(surby::encodeCommand, std::ref(texts), std::ref(line));
@@ -39,8 +39,8 @@ int main()
     }
     catch (const std::exception& e)
     {
-      std::cerr << e.what() << '\n';
-      return 2;
+      std::cerr << e.what();
+      line = "\0";
     }
   }
   return 0;

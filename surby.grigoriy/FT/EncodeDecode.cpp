@@ -1,4 +1,5 @@
 #include "EncodeDecode.hpp"
+#include <numeric>
 
 std::string surby::encode(std::string& text, std::string& dictionary)
 {
@@ -14,7 +15,9 @@ std::string surby::encode(std::string& text, std::string& dictionary)
   }
 
   std::string result = "";
-  for (char simv : text) {
+
+  for (char simv : text)
+  {
     result += dict[simv];
   }
   return result;
@@ -23,7 +26,6 @@ std::string surby::encode(std::string& text, std::string& dictionary)
 std::string surby::decode(std::string& text, std::string& dictionary)
 {
   std::unordered_map< std::string, char > dict = surby::getReverseDictionary(dictionary);
-
   std::string code;
   std::string result;
 
@@ -42,7 +44,9 @@ std::string surby::decode(std::string& text, std::string& dictionary)
 void surby::encodeHaffmanTree(Node* head, std::string str, std::unordered_map< char, std::string >& huffmanCode)
 {
   if (head == nullptr)
+  {
     return;
+  }
   if (!head->left && !head->right) {
     huffmanCode[head->simv] = str;
   }

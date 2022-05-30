@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include "Dictionary.hpp"
 
-void surby::addTextCommand(textes_map& texts, std::string& line)
+void surby::addTextCommand(textes_map& texts, std::string& line, std::istream& in)
 {
   std::string name = surby::getNextArg(line, 1);
   std::string namefile = surby::getNextArg(line, 1);
@@ -12,12 +12,12 @@ void surby::addTextCommand(textes_map& texts, std::string& line)
 
   if (namefile[0] == '\0')
   {
-    std::getline(std::cin, text);
+    std::getline(in, text);
   }
   else
   {
-    std::ifstream in(namefile);
-    std::getline(in, text, '\0');
+    std::ifstream inFile(namefile);
+    std::getline(inFile, text, '\0');
   }
   texts[name] = text;
 }
@@ -27,21 +27,17 @@ void surby::getDictionaryCommand(textes_map& texts, std::string& line, std::ostr
   std::string name = surby::getNextArg(line, 1);
   std::string namefile = surby::getNextArg(line, 1);
 
-  if (texts.find(name) == texts.end()) {
-    out << "text with name - " << name << " - exist\n";
+  isTextExist(name, texts, out);
+
+  if (namefile[0] == '\0')
+  {
+    std::string answer = surby::getBestDict(texts[name]);
+    out << answer;
   }
   else
   {
-    if (namefile[0] == '\0')
-    {
-      std::string answer = surby::getBestDict(texts[name]);
-      out << answer;
-    }
-    else
-    {
-      std::ofstream outFile(namefile);
-      outFile << surby::getBestDict(texts[name]);
-    }
+    std::ofstream outFile(namefile);
+    outFile << surby::getBestDict(texts[name]);
   }
 }
 
@@ -49,11 +45,8 @@ void surby::getTextCommand(textes_map& texts, std::string& line, std::ostream& o
 {
   std::string name = surby::getNextArg(line, 1);
 
-  if (texts.find(name) == texts.end())
-  {
-    out << "text with name - " << name << " - exist\n";
-    return;
-  }
+  isTextExist(name, texts, out);
+
   std::string nanmefile = surby::getNextArg(line, 1);
   if (nanmefile[0] == '\0')
   {
@@ -144,7 +137,11 @@ void surby::checkDifferenceCommand(textes_map& texts, std::string& line, std::os
   std::string fileIn = surby::getNextArg(line, 1);
   int memoryBefore = 0;
   int memoryAfter = 0;
+
+  isTextExist(name, texts, out);
+
   std::string text = texts[name];
+
   memoryBefore = text.size() * sizeof(char);
   if (fileIn == def)
   {
@@ -158,8 +155,21 @@ void surby::checkDifferenceCommand(textes_map& texts, std::string& line, std::os
     text = surby::encode(text, dict);
   }
   memoryAfter = text.size() / 8;
+  printDifference(memoryBefore, memoryAfter, out);
+}
+
+void surby::printDifference(int memoryBefore, int memoryAfter, std::ostream& out)
+{
   out << "memoryBefore  = " << memoryBefore << " bytes\nmemoryAfter = " << memoryAfter << " bytes" << std::endl;
   int dif = memoryBefore - memoryAfter;
   out << "difference =  " << dif << " bytes" << std::endl;
   out << "compression = " << 100 - 100 * dif / memoryBefore << '%' << std::endl;
+}
+
+void surby::isTextExist(const std::string& name, textes_map& texts, std::ostream& out)
+{
+  if (texts.find(name) == texts.end())
+  {
+    throw std::overflow_error("text exist\n");
+  }
 }

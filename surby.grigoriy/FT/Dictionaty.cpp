@@ -1,20 +1,24 @@
 #include "Dictionary.hpp"
+#include <numeric>
+#include <iterator>
 #include <iostream>
 
 std::string surby::getBestDict(std::string& text)
 {
   std::unordered_map< char, int > dict;
-  for (char simv : text) {
+  for (char simv : text)
+  {
     dict[simv]++;
   }
 
   std::priority_queue< Node*, std::vector< Node* >, compare > pq;
 
-  for (auto pair : dict) {
+  for (auto pair : dict)
+  {
     pq.push(surby::getNode(pair.first, pair.second, nullptr, nullptr));
   }
 
-  while (pq.size() != 1)
+  while (pq.size() > 1)
   {
     Node* left = pq.top();
     pq.pop();
@@ -29,23 +33,9 @@ std::string surby::getBestDict(std::string& text)
   std::unordered_map< char, std::string > huffmanCode;
   surby::encodeHaffmanTree(head, "", huffmanCode);
 
-  std::string fwd;
+  std::string result = std::accumulate(huffmanCode.begin(), huffmanCode.end(), std::string(), surby::getBestDictCompare);
 
-  for (auto pair : huffmanCode) {
-
-    if (pair.first == '\n')
-    {
-      fwd += "\\n";
-    }
-    else
-    {
-      fwd += pair.first;
-    }
-    fwd += " ";
-    fwd += pair.second;
-    fwd += '\n';
-  }
-  return fwd;
+  return result;
 }
 
 std::unordered_map< char, std::string > surby::getDictionary(std::string& line)
@@ -75,9 +65,9 @@ std::unordered_map< char, std::string > surby::getDictionary(std::string& line)
   return dict;
 }
 
-std::unordered_map<std::string, char> surby::getReverseDictionary(std::string& line)
+std::unordered_map< std::string, char > surby::getReverseDictionary(std::string& line)
 {
-  std::unordered_map<std::string, char> revdict;
+  std::unordered_map< std::string, char > revdict;
 
   while (line.size() > 1)
   {
@@ -100,4 +90,20 @@ std::unordered_map<std::string, char> surby::getReverseDictionary(std::string& l
     }
   }
   return revdict;
+}
+
+std::string surby::getBestDictCompare(std::string result, std::pair< char, std::string > pair)
+{
+  if (pair.first == '\n')
+  {
+    result += "\\n";
+  }
+  else
+  {
+    result += pair.first;
+  }
+  result += " ";
+  result += pair.second;
+  result += '\n';
+  return result;
 }
