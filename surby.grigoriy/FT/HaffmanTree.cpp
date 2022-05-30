@@ -1,8 +1,8 @@
 #include "HaffmanTree.hpp"
-surby::Node* surby::getNode(char simv, int count, Node* left, Node* right)
+surby::Node* surby::getNode(char symb, int count, Node* left, Node* right)
 {
   Node* node = new Node();
-  node->simv = simv;
+  node->symb = symb;
   node->count = count;
   node->left = left;
   node->right = right;

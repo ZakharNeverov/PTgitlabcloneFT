@@ -5,7 +5,7 @@ namespace surby
 {
   struct Node
   {
-    char simv;
+    char symb;
     int count;
     Node* left, * right;
   };

@@ -1,22 +1,16 @@
 #include "Dictionary.hpp"
 #include <numeric>
+#include <functional>
 #include <iterator>
 #include <iostream>
 
 std::string surby::getBestDict(std::string& text)
 {
+  using namespace std::placeholders;
   std::unordered_map< char, int > dict;
-  for (char simv : text)
-  {
-    dict[simv]++;
-  }
-
-  std::priority_queue< Node*, std::vector< Node* >, compare > pq;
-
-  for (auto pair : dict)
-  {
-    pq.push(surby::getNode(pair.first, pair.second, nullptr, nullptr));
-  }
+  std::for_each(text.begin(), text.end(), std::bind(surby::createDictCompare, _1, std::ref(dict)));
+  surby::priorityQueue pq;
+  std::for_each(dict.begin(), dict.end(), std::bind(createPriorityQueueCompare, _1, std::ref(pq)));
 
   while (pq.size() > 1)
   {
@@ -29,12 +23,10 @@ std::string surby::getBestDict(std::string& text)
   }
 
   Node* head = pq.top();
-
   std::unordered_map< char, std::string > huffmanCode;
   surby::encodeHaffmanTree(head, "", huffmanCode);
-
-  std::string result = std::accumulate(huffmanCode.begin(), huffmanCode.end(), std::string(), surby::getBestDictCompare);
-
+  std::string result;
+  result = std::accumulate(huffmanCode.begin(), huffmanCode.end(), std::string(), surby::getBestDictCompare);
   return result;
 }
 
@@ -64,7 +56,6 @@ std::unordered_map< char, std::string > surby::getDictionary(std::string& line)
   }
   return dict;
 }
-
 std::unordered_map< std::string, char > surby::getReverseDictionary(std::string& line)
 {
   std::unordered_map< std::string, char > revdict;
@@ -106,4 +97,12 @@ std::string surby::getBestDictCompare(std::string result, std::pair< char, std::
   result += pair.second;
   result += '\n';
   return result;
+}
+void surby::createPriorityQueueCompare(std::pair< const char, int > pair, priorityQueue& pq)
+{
+  pq.push(surby::getNode(pair.first, pair.second, nullptr, nullptr));
+}
+void surby::createDictCompare(char symb, std::unordered_map< char, int >& dict)
+{
+  dict[symb]++;
 }

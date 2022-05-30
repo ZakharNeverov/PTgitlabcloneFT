@@ -45,10 +45,9 @@ int main()
   }
   return 0;
 }
-
 /*addText name C:\S1in.txt
 getDictionary name C:\S1out.txt
-getText name C:\S1out.txt
+getText name C:\S1in.txt
 encode C:\S1in.txt C:\S1out.txt name
 decode name C:\S1out.txt name2
 encodeKey name default name2
