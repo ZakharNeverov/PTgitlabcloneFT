@@ -44,3 +44,4 @@ namespace stretenskiy
     return out << "Insufficient data\n";
   }
 }
+
