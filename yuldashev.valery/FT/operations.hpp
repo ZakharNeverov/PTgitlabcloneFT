@@ -90,7 +90,7 @@ namespace yuldashev
     return result;
   }
   template < class T >
-  bool setDataToMatrix(std::istream& in, Matrix< T >& matrix)
+  void setDataToMatrix(std::istream& in, Matrix< T >& matrix)
   {
     size_t numRows = 0;
     size_t numColumns = 0;
@@ -98,7 +98,7 @@ namespace yuldashev
     in >> numColumns;
     if (in.rdstate() == std::ios::failbit)
     {
-      return false;
+      throw std::logic_error("Wrong argument.");
     }
     for (size_t i = 0; i < numRows; i++)
     {
@@ -114,12 +114,11 @@ namespace yuldashev
         columns.push_back(num);
         if (in.rdstate() == std::ios::failbit)
         {
-          return false;
+          throw std::logic_error("Wrong argument.");
         }
       }
       matrix.data.push_back(columns);
     }
-    return true;
   }
 }
 #endif

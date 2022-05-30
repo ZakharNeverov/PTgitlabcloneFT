@@ -12,7 +12,7 @@ namespace yuld = yuldashev;
 int main()
 {
   yuld::MatrixChain matrixChain;
-  std::map< std::string, std::function< bool() > > commands(
+  std::map< std::string, std::function< void() > > commands(
     {
       {"create", std::bind(yuld::doCreate, std::ref(std::cin), std::ref(matrixChain))},
       {"open", std::bind(yuld::doImport, std::ref(std::cin), std::ref(matrixChain))},
@@ -36,11 +36,13 @@ int main()
     auto command = commands.find(cmdName);
     try
     {
-      if (!(command != commands.end() && command->second()))
+      if (command == commands.end())
       {
-        yuld::printInvalid(std::cout);
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
+        throw std::logic_error("Command not found.");
+      }
+      else
+      {
+        command->second();
       }
     }
     catch (const std::exception& e)

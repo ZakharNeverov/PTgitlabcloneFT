@@ -58,7 +58,7 @@ namespace yuldashev
     vectorChain.push_back(matrix);
   }
   template < class T >
-  bool doMathOperation(std::istream& in, MatrixChain& chain, std::function< Matrix< T >(const Matrix< T >&, const Matrix< T >&) > f)
+  void doMathOperation(std::istream& in, MatrixChain& chain, std::function< Matrix< T >(const Matrix< T >&, const Matrix< T >&) > f)
   {
     std::string resultname = "";
     in >> resultname;
@@ -85,7 +85,7 @@ namespace yuldashev
     } while (in.peek() != '\n');
     if (mathChain.empty())
     {
-      return false;
+      throw std::logic_error("Matrix chain is empty.");
     }
     Matrix< double > matrixResult = mathChain[0];
     for (size_t i = 1; i < mathChain.size(); i++)
@@ -93,7 +93,6 @@ namespace yuldashev
       matrixResult = f(matrixResult, mathChain[i]);
     }
     chain.dChain.insert({ resultname, matrixResult });
-    return true;
   }
 }
 #endif

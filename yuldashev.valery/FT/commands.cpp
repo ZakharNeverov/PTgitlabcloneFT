@@ -7,7 +7,7 @@
 #include "print.hpp"
 namespace yuldashev
 {
-  bool doCreate(std::istream& in, MatrixChain& chain)
+  void doCreate(std::istream& in, MatrixChain& chain)
   {
     std::string name = "";
     in >> name;
@@ -20,29 +20,21 @@ namespace yuldashev
     if (type == "int")
     {
       Matrix< int > matrix;
-      if (!setDataToMatrix(in, matrix))
-      {
-        return false;
-      }
+      setDataToMatrix(in, matrix);
       chain.iChain.insert({ name, matrix });
-      return true;
     }
     else if (type == "double")
     {
       Matrix< double > matrix;
-      if (!setDataToMatrix(in, matrix))
-      {
-        return false;
-      }
+      setDataToMatrix(in, matrix);
       chain.dChain.insert({ name, matrix });
-      return true;
     }
     else
     {
       throw std::logic_error("Wrong type.");
     }
   }
-  bool doImport(std::istream& in, MatrixChain& chain)
+  void doImport(std::istream& in, MatrixChain& chain)
   {
     std::string filename = "";
     std::string name = "";
@@ -60,81 +52,66 @@ namespace yuldashev
     if (type == "int")
     {
       Matrix< int > matrix;
-      if (!setDataToMatrix(file, matrix))
-      {
-        return false;
-      }
+      setDataToMatrix(file, matrix);
       chain.iChain.insert({ name, matrix });
-      return true;
     }
     else if (type == "double")
     {
       Matrix< double > matrix;
-      if (!setDataToMatrix(file, matrix))
-      {
-        return false;
-      }
+      setDataToMatrix(file, matrix);
       chain.dChain.insert({ name, matrix });
-      return true;
     }
     else
     {
       throw std::logic_error("Wrong type.");
     }
-    return true;
   }
-  bool doMultiply(std::istream& in, MatrixChain& chain)
+  void doMultiply(std::istream& in, MatrixChain& chain)
   {
-    try
-    {
-      using namespace std::placeholders;
-      return doMathOperation< double >(in, chain, std::bind(multiply< double >, _1, _2));
-    }
-    catch (const std::exception& e)
-    {
-      return false;
-    }
+    using namespace std::placeholders;
+    doMathOperation< double >(in, chain, std::bind(multiply< double >, _1, _2));
   }
-  bool doPrint(std::istream& in, std::ostream& out, const MatrixChain& chain, bool isFile)
+  void doPrint(std::istream& in, std::ostream& out, const MatrixChain& chain, bool isFile)
   {
     std::string name = "";
     in >> name;
     using namespace std::placeholders;
     bool res1 = findAndDo< int >(name, chain.iChain, std::bind(print< int >, std::ref(out), _1, isFile));
     bool res2 = findAndDo< double >(name, chain.dChain, std::bind(print< double >, std::ref(out), _1, isFile));
-    return res1 || res2;
+    if (!(res1 || res2))
+    {
+      throw std::logic_error("Wrong argument");
+    }
   }
-  bool doDelete(std::istream& in, MatrixChain& chain)
+  void doDelete(std::istream& in, MatrixChain& chain)
   {
     std::string name = "";
     in >> name;
     using namespace std::placeholders;
     bool res1 = findAndDo< int >(name, chain.iChain, std::bind(deleteMatrix< int >, _1, std::ref(chain.iChain)));
     bool res2 = findAndDo< double >(name, chain.dChain, std::bind(deleteMatrix< double >, _1, std::ref(chain.dChain)));
-    return res1 || res2;
+    if (!(res1 || res2))
+    {
+      throw std::logic_error("Wrong argument");
+    }
   }
-  bool doSave(std::istream& in, MatrixChain& chain)
+  void doSave(std::istream& in, MatrixChain& chain)
   {
     std::string filename = "";
     in >> filename;
     if (filename.empty())
     {
-      throw "Wrong name/filename.";
+      throw std::logic_error("Wrong filename.");
     }
     std::ofstream file(filename);
     if (!file.is_open())
     {
       throw std::logic_error("File not found.");
     }
-    if (!doPrint(in, file, chain, true))
-    {
-      file.close();
-      return false;
-    }
+    doPrint(in, file, chain, true);
     file.close();
-    return true;
   }
-  bool doReplaceAt(std::istream& in, MatrixChain& chain)
+  void doReplaceAt(std::istream& in, MatrixChain& chain)
   {
     std::string name = "";
     size_t row = 0;
@@ -143,37 +120,26 @@ namespace yuldashev
     in >> name >> row >> column >> number;
     if (name.empty() || in.rdstate() == std::ios::failbit)
     {
-      return false;
+      throw std::logic_error("Wrong argument.");
     }
     using namespace std::placeholders;
     auto fInt = std::bind(replace< int >, _1, std::ref(chain.iChain), name, row, column, number);
     auto fDouble = std::bind(replace< double >, _1, std::ref(chain.dChain), name, row, column, number);
     bool res1 = findAndDo< int >(name, chain.iChain, fInt);
     bool res2 = findAndDo< double >(name, chain.dChain, fDouble);
-    return res1 || res2;
-  }
-  bool doSum(std::istream& in, MatrixChain& chain)
-  {
-    try
+    if (!(res1 || res2))
     {
-      using namespace std::placeholders;
-      return doMathOperation< double >(in, chain, std::bind(sum< double >, _1, _2));
-    }
-    catch (const std::exception& e)
-    {
-      return false;
+      throw std::logic_error("Wrong argument");
     }
   }
-  bool doMultiplyByElement(std::istream& in, MatrixChain& chain)
+  void doSum(std::istream& in, MatrixChain& chain)
   {
-    try
-    {
-      using namespace std::placeholders;
-      return doMathOperation< double >(in, chain, std::bind(multiplyByElement< double >, _1, _2));
-    }
-    catch (const std::exception& e)
-    {
-      return false;
-    }
+    using namespace std::placeholders;
+    doMathOperation< double >(in, chain, std::bind(sum< double >, _1, _2));
+  }
+  void doMultiplyByElement(std::istream& in, MatrixChain& chain)
+  {
+    using namespace std::placeholders;
+    doMathOperation< double >(in, chain, std::bind(multiplyByElement< double >, _1, _2));
   }
 }

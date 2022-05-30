@@ -2,7 +2,7 @@
 #include <iostream>
 namespace yuldashev
 {
-  iofmtguard::iofmtguard(std::basic_ios< char >& s) :
+  iofmtguard::iofmtguard(std::basic_ios< char >& s):
     s_(s),
     fill_(s.fill()),
     prec_(s.precision()),
