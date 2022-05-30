@@ -33,14 +33,19 @@ namespace
   }
 }
 
- int main(int argc, char** argv)
+int main(int args)
+
+// int main(int argc, char** argv)
+//{
+//  if (argc != 2)
+//  {
+//    std::cerr << "Bad args\n";
+//    return 1;
+//  }
+//  std::ifstream fin(argv[1]);
 {
-  if (argc != 2)
-  {
-    std::cerr << "Bad args\n";
-    return 1;
-  }
-  std::ifstream fin(argv[1]);
+  system("chcp 65001");
+  std::fstream fin("in.txt");
   if (!fin.is_open())
   {
     std::cerr << "File is not open\n";
