@@ -6,7 +6,7 @@
 
 namespace
 {
-  using map = std::unordered_map <std::string, krylyanok::HashStruct >;
+  using map = std::unordered_map < std::string, krylyanok::HashStruct >;
 
   size_t findElem(std::string& dictName, std::vector< krylyanok::NameMap >& dicts)
   {

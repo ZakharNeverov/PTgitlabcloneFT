@@ -24,7 +24,7 @@ namespace krylyanok
   struct NameMap
   {
     std::string name_;
-    std::unordered_map <std::string, HashStruct > dict_;
+    std::unordered_map < std::string, HashStruct > dict_;
     size_t wordCounter_;
     NameMap() = delete;
     NameMap(std::string& word):
