@@ -1,8 +1,8 @@
-#ifndef IOKEYS_HPP
-#define IOKEYS_HPP
+#ifndef IOPROCCESSING_HPP
+#define IOPROCCESSING_HPP
 
 #include <ios>
-#include "command-system.hpp"
+#include <set>
 
 namespace stretenskiy
 {
@@ -23,10 +23,33 @@ namespace stretenskiy
     char exp;
   };
 
+  struct DelimeterNameIO
+  {
+    std::string exp;
+  };
+
+  struct WordIO
+  {
+    std::string &ref;
+  };
+
+  struct NameDictIO
+  {
+    std::string &ref;
+  };
+
+  struct TranslateIO
+  {
+    std::set < std::string > &ref;
+  };
+
   bool checkContinueInputWord(std::istream &);
+  void doCleanStream(std::istream &);
   std::istream &operator>>(std::istream &, DelimeterIO &&);
-  std::ostream &operator<<(std::ostream &, const function::myDict &);
-  void readingDict(std::istream &, function::vecDict &, function::nameDict &);
+  std::istream &operator>>(std::istream &, DelimeterNameIO &&);
+  std::istream &operator>>(std::istream &, WordIO &&);
+  std::istream &operator>>(std::istream &, NameDictIO &&);
+  std::istream &operator>>(std::istream &, TranslateIO &&);
 }
 
 #endif

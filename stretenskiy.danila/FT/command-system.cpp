@@ -2,32 +2,37 @@
 
 #include <iostream>
 #include <algorithm>
+#include <functional>
 #include "ioProccessing.hpp"
+#include "warningMessages.hpp"
 
 namespace
 {
-  size_t getIndexDict(const stretenskiy::function::nameDict &, const std::string &);
-  size_t findNameDict(std::istream &, const stretenskiy::function::nameDict &);
+  bool isEqualName(const stretenskiy::Dictionary &, const std::string &);
+  size_t getIndexDict(std::ostream &, const std::string &, const stretenskiy::function::vecDict &);
+  size_t findNameDict(std::ostream &, std::istream &, const stretenskiy::function::vecDict &);
 }
 
 namespace stretenskiy
 {
-  void function::creationDict(std::ostream &out, vecDict &vecDict, nameDict &vecName, std::istream &in)
+  void function::creationDict(std::ostream &out, vecDict &vecDict, std::istream &in)
   {
     std::string nameD;
     in >> nameD;
-    if (std::find(vecName.begin(), vecName.end(), nameD) != vecName.end())
+    using namespace std::placeholders;
+    auto iter = std::find_if(vecDict.begin(), vecDict.end(), std::bind(isEqualName, _1, nameD));
+    if (iter != vecDict.end())
     {
-      throw std::logic_error("This dict has already");
+      informExistDict(out);
+      return;
     }
-    vecName.push_back(nameD);
-    myDict dict;
+    Dictionary dict{nameD};
     vecDict.push_back(dict);
   }
 
-  void function::add(std::ostream &out, vecDict &vecDict, const nameDict &vecName, std::istream &in)
+  void function::add(std::ostream &out, vecDict &vecDict, std::istream &in)
   {
-    size_t index = findNameDict(in, vecName);
+    size_t index = findNameDict(out, in, vecDict);
     if (checkContinueInputWord(in))
     {
       std::string word;
@@ -38,26 +43,27 @@ namespace stretenskiy
         {
           std::string transl;
           in >> transl;
-          vecDict[index][word].insert(transl);
+          vecDict[index].content_[word].insert(transl);
         }
         return;
       }
     }
-    throw std::logic_error("Enter the word");
+    informEnterWord(out);
   }
 
-  void function::removeWord(std::ostream &out, vecDict &vecDict, const nameDict &vecName, std::istream &in)
+  void function::removeWord(std::ostream &out, vecDict &vecDict, std::istream &in)
   {
-    size_t index = findNameDict(in, vecName);
+    size_t index = findNameDict(out, in, vecDict);
     if (checkContinueInputWord(in))
     {
       std::string word;
       in >> word;
       if (!word.empty())
       {
-        if (vecDict[index].find(word) == vecDict[index].end())
+        if (vecDict[index].content_.find(word) == vecDict[index].content_.end())
         {
-          throw std::logic_error("The right word was not found in the dictionary");
+          informNotFindWord(out);
+          return;
         }
         if (checkContinueInputWord(in))
         {
@@ -67,30 +73,30 @@ namespace stretenskiy
           {
             do
             {
-              vecDict[index][word].erase(transl);
+              vecDict[index].content_[word].erase(transl);
             }
             while (checkContinueInputWord(in) && in >> transl);
             return;
           }
         }
-        vecDict[index].erase(word);
+        vecDict[index].content_.erase(word);
         return;
       }
     }
-    throw std::logic_error("Enter the word");
+    informEnterWord(out);
   }
 
-  void function::search(std::ostream &out, const vecDict &vecDict, const nameDict &vecName, std::istream &in)
+  void function::search(std::ostream &out, const vecDict &vecDict, std::istream &in)
   {
-    size_t index = findNameDict(in, vecName);
+    size_t index = findNameDict(out, in, vecDict);
     if (checkContinueInputWord(in))
     {
       std::string word;
       in >> word;
       if (!word.empty())
       {
-        auto iter = vecDict[index].find(word);
-        if (iter != vecDict[index].end())
+        auto iter = vecDict[index].content_.find(word);
+        if (iter != vecDict[index].content_.end())
         {
           std::string transl;
           if (checkContinueInputWord(in) && in >> transl)
@@ -110,53 +116,53 @@ namespace stretenskiy
         }
         else
         {
-          throw std::logic_error("The right word was not found in the dictionary");
+          informNotFindWord(out);
+          return;
         }
       }
     }
-    throw std::logic_error("Enter the word");
+    informEnterWord(out);
   }
 
-  void function::clearDict(std::ostream &out, vecDict &vecDict, const nameDict &vecName, std::istream &in)
+  void function::clearDict(std::ostream &out, vecDict &vecDict, std::istream &in)
   {
-    size_t index = findNameDict(in, vecName);
+    size_t index = findNameDict(out, in, vecDict);
     while (checkContinueInputWord(in))
     {
       std::string word;
       in >> word;
-      if (vecDict[index].find(word) != vecDict[index].end())
+      if (vecDict[index].content_.find(word) != vecDict[index].content_.end())
       {
-        vecDict[index][word].clear();
+        vecDict[index].content_[word].clear();
       }
       else
       {
-        out << "The right word was not found in the dictionary\n";
+        informNotFindWord(out);
+        return;
       }
     }
-    vecDict[index].clear();
+    vecDict[index].content_.clear();
   }
 
-  void function::unionDict(std::ostream &out, vecDict &vecDict, const nameDict &vecName, std::istream &in)
+  void function::unionDict(std::ostream &out, vecDict &vecDict, std::istream &in)
   {
-    size_t indexBase = findNameDict(in, vecName);
-    size_t indexOne = findNameDict(in, vecName);
-    function::myDict dictBase = vecDict[indexOne];
+    size_t indexBase = findNameDict(out, in, vecDict);
+    size_t indexOne = findNameDict(out, in, vecDict);
+    Dictionary dictBase = vecDict[indexOne];
+    dictBase.name_ = vecDict[indexBase].name_;
     int count = 1;
     while (checkContinueInputWord(in))
     {
-      std::string nameTwo;
-      in >> nameTwo;
-      auto iter = std::find(vecName.begin(), vecName.end(), nameTwo);
-      if (iter == vecName.end())
+      using namespace std::placeholders;
+      size_t indexTwo = findNameDict(out, in, vecDict);
+      if (indexTwo == vecDict.size())
       {
-        out << "Name " << nameTwo << " don't find in dict, create him\n";
         continue;
       }
-      size_t indexTwo = iter - vecName.begin();
-      auto dict_it = vecDict[indexTwo].begin();
-      while (dict_it != vecDict[indexTwo].end())
+      auto dict_it = vecDict[indexTwo].content_.begin();
+      while (dict_it != vecDict[indexTwo].content_.end())
       {
-        dictBase[dict_it->first].insert(dict_it->second.begin(), dict_it->second.end());
+        dictBase.content_[dict_it->first].insert(dict_it->second.begin(), dict_it->second.end());
         dict_it++;
       }
       count++;
@@ -167,32 +173,30 @@ namespace stretenskiy
     }
     else
     {
-      out << "Insufficient data\n";
+      informInsufficientData(out);
     }
   }
 
-  void function::intersectDict(std::ostream &out, vecDict &vecDict, const nameDict &vecName, std::istream &in)
+  void function::intersectDict(std::ostream &out, vecDict &vecDict, std::istream &in)
   {
-    size_t indexBase = findNameDict(in, vecName);
-    size_t indexOne = findNameDict(in, vecName);
-    function::myDict dictBase = vecDict[indexOne];
+    size_t indexBase = findNameDict(out, in, vecDict);
+    size_t indexOne = findNameDict(out, in, vecDict);
+    Dictionary dictBase = vecDict[indexOne];
+    dictBase.name_ = vecDict[indexBase].name_;
     int count = 1;
     while (checkContinueInputWord(in))
     {
-      std::string nameTwo;
-      in >> nameTwo;
-      auto iter = std::find(vecName.begin(), vecName.end(), nameTwo);
-      if (iter == vecName.end())
+      using namespace std::placeholders;
+      size_t indexTwo = findNameDict(out, in, vecDict);
+      if (indexTwo == vecDict.size())
       {
-        out << "Name " << nameTwo << " don't find in dict, create him\n";
         continue;
       }
-      size_t indexTwo = iter - vecName.begin();
-      auto dict_it = dictBase.begin();
-      while (dict_it != dictBase.end())
+      auto dict_it = dictBase.content_.begin();
+      while (dict_it != dictBase.content_.end())
       {
-        auto set_two = vecDict[indexTwo].find(dict_it->first);
-        if (set_two != vecDict[indexTwo].end())
+        auto set_two = vecDict[indexTwo].content_.find(dict_it->first);
+        if (set_two != vecDict[indexTwo].content_.end())
         {
           std::set< std::string > setTemp;
           auto iBegOne = dict_it->second.begin();
@@ -200,13 +204,13 @@ namespace stretenskiy
           auto iBegTwo = set_two->second.begin();
           auto iEndTwo = set_two->second.end();
           std::set_intersection(iBegOne, iEndOne, iBegTwo, iEndTwo, std::inserter(setTemp, setTemp.begin()));
-          dictBase[dict_it->first] = setTemp;
+          dictBase.content_[dict_it->first] = setTemp;
         }
         else
         {
           auto temp_it = dict_it->first;
           dict_it++;
-          dictBase.erase(temp_it);
+          dictBase.content_.erase(temp_it);
           continue;
         }
         dict_it++;
@@ -219,38 +223,47 @@ namespace stretenskiy
     }
     else
     {
-      out << "Insufficient data\n";
+      informInsufficientData(out);
     }
   }
 
-  void function::print(std::ostream &out, const vecDict &vecDict, const nameDict &vecName, std::istream &in)
+  void function::print(std::ostream &out, const vecDict &vecDict, std::istream &in)
   {
     while (checkContinueInputWord(in))
     {
-      size_t index = findNameDict(in, vecName);
-      out << "DICTIONARY " << vecName[index] << '\n';
-      out << vecDict[index];
+      size_t index = findNameDict(out, in, vecDict);
+      if (index == vecDict.size())
+      {
+        continue;
+      }
+      commandPrintDict(out, vecDict[index]);
     }
   }
 }
 
 namespace
 {
-  size_t getIndexDict(const stretenskiy::function::nameDict &vecName, const std::string &nameD)
+  bool isEqualName(const stretenskiy::Dictionary &dict, const std::string &nameD)
   {
-    auto iter = std::find(vecName.begin(), vecName.end(), nameD);
-    if (iter == vecName.end())
-    {
-      throw std::logic_error("This name don't find in dict, create him");
-    }
-    return iter - vecName.begin();
+    return dict.name_ == nameD;
   }
 
-  size_t findNameDict(std::istream &in, const stretenskiy::function::nameDict &vecName)
+  size_t getIndexDict(std::ostream &out, const std::string &nameD, const stretenskiy::function::vecDict &vecDict)
+  {
+    using namespace std::placeholders;
+    auto iter = std::find_if(vecDict.begin(), vecDict.end(), std::bind(isEqualName, _1, nameD));
+    if (iter == vecDict.end())
+    {
+      stretenskiy::informUnexistDict(out);
+    }
+    return std::distance(vecDict.begin(), iter);
+  }
+
+  size_t findNameDict(std::ostream &out, std::istream &in, const stretenskiy::function::vecDict &vecDict)
   {
     std::string nameD;
     in >> nameD;
-    size_t index = getIndexDict(vecName, nameD);
+    size_t index = getIndexDict(out, nameD, vecDict);
     return index;
   }
 }

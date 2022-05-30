@@ -2,78 +2,77 @@
 #include <fstream>
 #include <map>
 #include <functional>
+#include <iterator>
 #include <stdexcept>
 #include "command-system.hpp"
 #include "ioProccessing.hpp"
+#include "warningMessages.hpp"
+#include "dictionary.hpp"
 
 int main(int argc, char* argv[])
 {
   if (argc <= 1)
   {
-    std::cerr << "Oh my God, I don't see the file\n";
+    stretenskiy::informBadArgs(std::cerr);
     return 1;
   }
   std::setlocale(LC_ALL, "rus");
   std::ifstream in(argv[1]);
   if (!in.is_open())
   {
-    std::cerr << "I can't open the file, I have paws\n";
+    stretenskiy::informNotOpenFile(std::cerr);
     return 1;
   }
   using namespace stretenskiy;
   using namespace stretenskiy::function;
-
-  nameDict name;
+  using is_it = std::istream_iterator< Dictionary >;
   vecDict hashT;
-  readingDict(in, hashT, name);
+  while (!in.eof())
+  {
+    std::copy(is_it(in), is_it(), std::back_inserter(hashT));
+    if (!in)
+    {
+      doCleanStream(in);
+    }
+  }
+  in.close();
+
+  std::copy(hashT.begin(), hashT.end(), std::ostream_iterator< Dictionary >(std::cout, "\n"));
 
   using namespace std::placeholders;
   std::map< std::string, std::function< void(std::ostream &) > > commands(
   {
-    {"CREATION", std::bind(creationDict, _1, std::ref(hashT), std::ref(name), std::ref(std::cin))},
-    {"ADD", std::bind(add, _1, std::ref(hashT), std::ref(name), std::ref(std::cin))},
-    {"REMOVE", std::bind(removeWord, _1, std::ref(hashT), std::ref(name), std::ref(std::cin))},
-    {"PRINT", std::bind(print, _1, std::ref(hashT), std::ref(name), std::ref(std::cin))},
-    {"SEARCH", std::bind(search, _1, std::ref(hashT), std::ref(name), std::ref(std::cin))},
-    {"CLEAR", std::bind(clearDict, _1, std::ref(hashT), std::ref(name), std::ref(std::cin))},
-    {"UNION", std::bind(unionDict, _1, std::ref(hashT), std::ref(name), std::ref(std::cin))},
-    {"INTERSECTION", std::bind(intersectDict, _1, std::ref(hashT), std::ref(name), std::ref(std::cin))}
+    {"CREATION", std::bind(creationDict, _1, std::ref(hashT), std::ref(std::cin))},
+    {"ADD", std::bind(add, _1, std::ref(hashT), std::ref(std::cin))},
+    {"REMOVE", std::bind(removeWord, _1, std::ref(hashT), std::ref(std::cin))},
+    {"PRINT", std::bind(print, _1, std::ref(hashT), std::ref(std::cin))},
+    {"SEARCH", std::bind(search, _1, std::ref(hashT), std::ref(std::cin))},
+    {"CLEAR", std::bind(clearDict, _1, std::ref(hashT), std::ref(std::cin))},
+    {"UNION", std::bind(unionDict, _1, std::ref(hashT), std::ref(std::cin))},
+    {"INTERSECTION", std::bind(intersectDict, _1, std::ref(hashT), std::ref(std::cin))}
   });
 
   while (!std::cin.eof())
   {
-    std::string command;
-    std::cin >> command;
-    if (!command.empty())
+    std::cin.clear();
+    std::string commandName;
+    std::cin >> commandName;
+    if (!commandName.empty())
     {
-      auto iter = commands.find(command);
-      if (iter != commands.end())
+      try
       {
-        try
-        {
-          iter->second(std::cout);
-        }
-        catch (const std::exception &e)
-        {
-          std::cout << e.what() << '\n';
-          std::cin.clear();
-          std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
-        }
+        commands.at(commandName)(std::cout);
       }
-      else
+      catch (const std::exception &e)
       {
-        std::cout << "The necessary command was not found!!!\n";
-        std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
+        stretenskiy::informNotFindCommand(std::cout);
+        doCleanStream(std::cin);
       }
     }
   }
 
   std::ofstream out(argv[1], std::ios::trunc);
-  for (size_t i = 0; i < hashT.size(); ++i)
-  {
-    out << "DICTIONARY " << name[i] << '\n';
-    out << hashT[i];
-  }
+  std::copy(hashT.begin(), hashT.end(), std::ostream_iterator< Dictionary >(out, "\n"));
   out.close();
   return 0;
 }

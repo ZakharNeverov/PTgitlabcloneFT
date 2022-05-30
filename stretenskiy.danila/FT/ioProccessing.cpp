@@ -1,6 +1,7 @@
 #include "ioProccessing.hpp"
 
 #include <iostream>
+#include <limits>
 
 namespace stretenskiy
 {
@@ -25,6 +26,12 @@ namespace stretenskiy
     return static_cast< bool >(in);
   }
 
+  void doCleanStream(std::istream &in)
+  {
+    in.clear();
+    in.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
+  }
+
   std::istream &operator>>(std::istream &in, DelimeterIO &&dest)
   {
     std::istream::sentry sentry(in);
@@ -41,44 +48,58 @@ namespace stretenskiy
     return in;
   }
 
-  std::ostream &operator<<(std::ostream &out, const function::myDict &dict)
+  std::istream &operator>>(std::istream &in, DelimeterNameIO &&dest)
   {
-    for (auto map_it = dict.begin(); map_it != dict.end(); ++map_it)
+    std::istream::sentry sentry(in);
+    if (!sentry)
     {
-      out << map_it->first << ":";
-      for (const auto &i : map_it->second)
-      {
-        out << ' ' << i;
-      }
-      out << '\n';
+      return in;
     }
-    return out;
+    std::string str;
+    in >> str;
+    if (in && (str != dest.exp))
+    {
+      in.setstate(std::ios::failbit);
+    }
+    return in;
   }
 
-  void readingDict(std::istream &in, function::vecDict &vecDict, function::nameDict &nameDict)
+  std::istream &operator>>(std::istream &in, WordIO &&word)
   {
-    std::string string;
-    while (!in.eof() && in >> string)
+    std::istream::sentry sentry(in);
+    if (!sentry)
     {
-      if (string == "DICTIONARY")
-      {
-        std::string nameD;
-        in >> nameD;
-        nameDict.push_back(nameD);
-        function::myDict temp;
-        vecDict.push_back(temp);
-      }
-      else if (string[string.length() - 1] == ':')
-      {
-        string.pop_back();
-        while (checkContinueInputWord(in))
-        {
-          std::string transl;
-          in >> transl;
-          vecDict[vecDict.size() - 1][string].insert(transl);
-        }
-        in.clear();
-      }
+      return in;
     }
+    return std::getline(in >> DelimeterIO{'"'}, word.ref, '"');
+  }
+
+  std::istream &operator>>(std::istream &in, NameDictIO &&nameD)
+  {
+    std::istream::sentry sentry(in);
+    if (!sentry)
+    {
+      return in;
+    }
+    in >> DelimeterNameIO{"DICTIONARY"} >> WordIO{nameD.ref};
+    return in;
+  }
+
+  std::istream &operator>>(std::istream &in, TranslateIO &&transl)
+  {
+    std::istream::sentry sentry(in);
+    if (!sentry)
+    {
+      return in;
+    }
+    do
+    {
+      std::string temp;
+      in >> WordIO{temp};
+      transl.ref.insert(temp);
+    }
+    while(in >> DelimeterIO{','});
+    in.clear();
+    return in;
   }
 }
