@@ -34,12 +34,11 @@ int main()
     {
       try
       {
-        auto commandIter = commands.find(input);
-        if (commandIter != commands.end())
+        try
         {
-          commandIter->second();
+          commands.at(input)();
         }
-        else
+        catch (const std::out_of_range&)
         {
           throw std::invalid_argument("INVALID COMMAND");
         }
