@@ -459,7 +459,7 @@ void nefedev::loadDict(std::istream& in, std::ostream& out, DictionaryArray& dic
     fin >> input;
     if (!fin || input != "SAVEDICT_FILE")
     {
-      throw std::invalid_argument("INVALID_FILE\n");
+      throw std::invalid_argument("INVALID FILE\n");
     }
     while (!fin.eof())
     {
@@ -470,7 +470,7 @@ void nefedev::loadDict(std::istream& in, std::ostream& out, DictionaryArray& dic
       }
       dictArray[dictName].insert(std::make_pair(input, wordNumber));
     }
-    out << "Dictionary was read from file " << fileName << '\n';
+    out << "Dictionary was loaded from file " << fileName << '\n';
   }
   else
   {
