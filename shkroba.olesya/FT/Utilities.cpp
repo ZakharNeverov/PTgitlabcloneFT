@@ -1,13 +1,16 @@
 #include "Utilities.hpp"
 #include "Dictionary.hpp"
 #include "userCommands.hpp"
+#include <iostream>
+#include <algorithm>
+#include <iterator>
 
 namespace shkroba
 {
 
-  std::ostream &operator<<(std::ostream &out, std::set< std::string > &set)
+  std::ostream& operator<<(std::ostream& out, std::set< std::string >& set)
   {
-    for (auto &item: set)
+    for (auto& item: set)
     {
       out << item << ' ';
     }
@@ -15,7 +18,7 @@ namespace shkroba
     return out;
   }
 
-  Dictionary createCommonDictionary(std::vector< Dictionary > &common)
+  Dictionary createCommonDictionary(std::vector< Dictionary >& common)
   {
     Dictionary result("result");
     bool isCommon;
@@ -23,11 +26,11 @@ namespace shkroba
     std::map< std::string, size_t > translates;
 
     Dictionary dictionary = *common.begin();
-    for (const auto &pair: dictionary)
+    for (const auto& pair: dictionary)
     {
       isCommon = true;
       translates.clear();
-      for (const auto &dictionarySecond: common)
+      for (const auto& dictionarySecond: common)
       {
         if (dictionarySecond.search(pair.first) == dictionarySecond.end())
         {
@@ -38,7 +41,7 @@ namespace shkroba
         {
           pairER item = *dictionarySecond.search(
             pair.first);
-          for (const auto &word: *item.second)
+          for (const auto& word: *item.second)
           {
             translates[word]++;
           }
@@ -47,7 +50,7 @@ namespace shkroba
       if (isCommon)
       {
         std::set< std::string > set;
-        for (const auto &translate: translates)
+        for (const auto& translate: translates)
         {
           if (translate.second == common.size())
           {
@@ -80,73 +83,65 @@ namespace shkroba
     return result;
   }
 
-  Dictionary createFromUniqueWords(const Dictionary &d1, const Dictionary &d2)
+  Dictionary createFromUniqueWords(const Dictionary& d1, const Dictionary& d2)
   {
     Dictionary common("common");
-    for (const pairER &item: d1)
-    {
-      if (d2.search(item.first) == d2.end())
-      {
-        common.insert(item);
-      }
-    }
-    for (const pairER &item: d2)
-    {
-      if (d1.search(item.first) == d1.end())
-      {
-        common.insert(item);
-      }
-    }
+    std::set_intersection(d1.getDictionary().begin(), d1.getDictionary().end(), d2.getDictionary().begin(),
+                        d2.getDictionary().end(),
+                        std::inserter(common.getDictionary(), common.getDictionary().begin()));
     return common;
   }
 
-  Dictionary createFromOneTranslate(const Dictionary &dictionary)
+  Dictionary createFromOneTranslate(const Dictionary& dictionary)
   {
-    Dictionary newDictionary("newDict");
-    for (const auto &word: dictionary)
-    {
-      if (word.second->size() == 1)
-      {
-        newDictionary.insert(word);
-      }
-    }
+    std::cout << "Input name of new dictionary" << '\n';
+    std::string name;
+    std::cin >> name;
+    Dictionary newDictionary(name);
+    std::copy_if(dictionary.begin(), dictionary.end(),
+                 std::inserter(newDictionary.getDictionary(), newDictionary.begin()),
+                 [](const std::pair< std::string, std::shared_ptr< std::set< std::string > > >& pair)
+                 { return pair.second->size() == 1; });
     return newDictionary;
   }
 
-  void doPrintDictionary(const Dictionary &dictionary, std::ostream &out)
+
+  void doPrintDictionary(const Dictionary& dictionary, std::ostream& out)
   {
     dictionary.printDictionary(out);
   }
 
-  void doSize(const Dictionary &dictionary, std::ostream &out)
+  void doSize(const Dictionary& dictionary, std::ostream& out)
   {
     out << dictionary.size();
   }
 
-  void doFindWord(const Dictionary &dictionary, char letter, std::ostream &out)
+  void doFindWord(const Dictionary& dictionary, char letter, std::ostream& out)
   {
     dictionary.findWord(letter, std::cout);
   }
 
-  void doCommonForTwo(const Dictionary &source, const Dictionary &extra, std::ostream &out)
+  void doCommonForTwo(const Dictionary& source, const Dictionary& extra, std::ostream& out)
   {
     Dictionary result;
+    std::merge(source.getDictionary().begin(), source.getDictionary().end(), extra.getDictionary().begin(),
+               extra.getDictionary().end(), std::inserter(result.getDictionary(), result.begin()));
     result.addWords(source);
     result.addWords(extra);
     result.printDictionary(out);
   }
 
-  void doOneTranslate(const Dictionary &dictionary, std::ostream &out)
+  void doOneTranslate(const Dictionary& dictionary, std::ostream& out)
   {
     createFromOneTranslate(dictionary).printDictionary(out);
   }
 
-  void doCreateFromUniqueWords(const Dictionary &first, const Dictionary &second, std::ostream &out)
+  void doCreateFromUniqueWords(const Dictionary& first, const Dictionary& second, std::ostream& out)
   {
     createFromUniqueWords(first, second).printDictionary(out);
   }
 
-  std::string nextWord(std::string &str)
+  std::string nextWord(std::string& str)
   {
     std::string word = str.substr(0, str.find_first_of(' '));
     if (str.find_first_of(' ') == -1)
@@ -164,7 +159,7 @@ namespace shkroba
     return word;
   }
 
-  std::vector< Dictionary > createDictionariesFromFile(std::istream &in)
+  std::vector< Dictionary > createDictionariesFromFile(std::istream& in)
   {
     std::vector< Dictionary > resultVector;
     while (!in.eof())

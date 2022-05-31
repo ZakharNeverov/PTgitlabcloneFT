@@ -10,7 +10,7 @@ namespace shkroba
 {
   Dictionary createFromOneTranslate(const Dictionary& dictionary);
   Dictionary createCommonDictionary(std::vector< Dictionary >& common);
-  Dictionary createFromUniqueWords(const Dictionary& d1, const Dictionary& d2);
+  Dictionary createFromUniqueWords(const  Dictionary& d1, const Dictionary& d2);
 
   std::ostream& operator<<(std::ostream& out, std::set< std::string >& set);
 
@@ -21,6 +21,6 @@ namespace shkroba
   void doOneTranslate(const Dictionary& dictionary, std::ostream& out);
   void doCreateFromUniqueWords(const Dictionary& source, const Dictionary& extra, std::ostream& out);
   std::string nextWord(std::string& str);
-  std::vector<Dictionary> createDictionariesFromFile(std::istream& fin);
+  std::vector< Dictionary > createDictionariesFromFile(std::istream& fin);
 }
 #endif

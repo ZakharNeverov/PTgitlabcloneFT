@@ -31,14 +31,18 @@ namespace
   }
 }
 
- int main(int argc, char** argv)
+int main(int argc, char**argv)
 {
-  if (argc != 2)
-  {
-    std::cerr << "Bad args\n";
-    return 1;
-  }
-  std::ifstream fin(argv[1]);
+// int main(int argc, char** argv)
+//{
+//  if (argc != 2)
+//  {
+//    std::cerr << "Bad args\n";
+//    return 1;
+//  }
+
+  std::ifstream fin("in.txt");
+//  std::ifstream fin(argv[1]);
   if (!fin.is_open())
   {
     std::cerr << "File is not open\n";

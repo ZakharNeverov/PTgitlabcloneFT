@@ -1,7 +1,8 @@
 #include "userCommands.hpp"
 #include <algorithm>
-#include <iomanip>
+//#include <iomanip>
 #include <functional>
+#include <iostream>
 #include "Utilities.hpp"
 #include "iofmtguard.hpp"
 #include "Dictionary.hpp"
@@ -21,9 +22,9 @@ namespace shkroba
 {
   using namespace std::placeholders;
 
-  void makePrint(std::istream &in, std::vector< Dictionary > &base, std::ostream &out)
+  void makePrint(std::istream& in, std::vector< Dictionary >& base, std::ostream& out)
   {
-    for (const auto &current: base)
+    for (const auto& current: base)
     {
       shkroba::iofmtguard iofmtguard(out);
       shkroba::doPrintDictionary(current, std::cout);
@@ -31,9 +32,9 @@ namespace shkroba
     }
   }
 
-  void makeSize(std::istream &in, std::vector< Dictionary > &base, std::ostream &out)
+  void makeSize(std::istream& in, std::vector< Dictionary >& base, std::ostream& out)
   {
-    for (const auto &current: base)
+    for (const auto& current: base)
     {
       shkroba::iofmtguard iofmtguard(out);
       out << current.getName() <<'\n';
@@ -42,7 +43,7 @@ namespace shkroba
     }
   }
 
-  void makeFindWord(std::istream &in, std::vector< Dictionary > &base, std::ostream &out)
+  void makeFindWord(std::istream& in, std::vector< Dictionary >& base, std::ostream& out)
   {
     char letter;
     in >> letter;
@@ -50,7 +51,7 @@ namespace shkroba
     {
       throw std::logic_error("<INVALID COMMAND>");
     }
-    for (const auto &current: base)
+    for (const auto& current: base)
     {
       out << current.getName()<<'\n';
       shkroba::iofmtguard iofmtguard(out);
@@ -59,9 +60,9 @@ namespace shkroba
     }
   }
 
-  void makeOneTranslate(std::istream &in, std::vector< Dictionary >& base, std::ostream &out)
+  void makeOneTranslate(std::istream& in, std::vector< Dictionary >& base, std::ostream& out)
   {
-    for (const auto &current: base)
+    for (const auto& current: base)
     {
       shkroba::iofmtguard iofmtguard(out);
       shkroba::doOneTranslate(current, out);
@@ -69,11 +70,11 @@ namespace shkroba
     }
   }
 
-  void makeUnique(std::istream &in, std::vector< Dictionary >& base, std::ostream &out)
+  void makeUnique(std::istream& in, std::vector< Dictionary >& base, std::ostream& out)
   {
     shkroba::Dictionary test;
     in >> test;
-    for (const auto &current: base)
+    for (const auto& current: base)
     {
       shkroba::iofmtguard iofmtguard(out);
       shkroba::doCreateFromUniqueWords(current, test, std::cout);
@@ -81,7 +82,7 @@ namespace shkroba
     }
   }
 
-  void makeCommonForTwo(std::istream &in, std::vector< Dictionary >& base, std::ostream &out)
+  void makeCommonForTwo(std::istream& in, std::vector< Dictionary >& base, std::ostream& out)
   {
     shkroba::Dictionary test;
     in >> test;
@@ -94,7 +95,7 @@ namespace shkroba
     }
   }
 
-  void makeCommonDictionary(std::istream &in, std::vector< Dictionary >& base, std::ostream &out)
+  void makeCommonDictionary(std::istream& in, std::vector< Dictionary >& base, std::ostream& out)
   {
     std::string number;
     in >> number;
@@ -108,7 +109,7 @@ namespace shkroba
       throw std::invalid_argument("Error! There are only 5 dictionaries.");
     }
     std::vector< Dictionary > dictionaries;
-    for (int i = 0; i < count; i++)
+    for (size_t i = 0; i < count; i++)
     {
       dictionaries.push_back(base[i]);
     }
