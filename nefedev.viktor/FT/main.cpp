@@ -34,12 +34,15 @@ int main()
     {
       try
       {
-        commands.at(input)();
-      }
-      catch (const std::out_of_range&)
-      {
-        nefedev::outInvalidCommand(std::cout);
-        nefedev::cleanIStream(std::cin);
+        auto commandIter = commands.find(input);
+        if (commandIter != commands.end())
+        {
+          commandIter->second();
+        }
+        else
+        {
+          throw std::invalid_argument("INVALID COMMAND");
+        }
       }
       catch (const std::invalid_argument& e)
       {

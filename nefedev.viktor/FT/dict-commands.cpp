@@ -487,7 +487,15 @@ void nefedev::loadDict(std::istream& in, std::ostream& out, DictionaryArray& dic
       }
       dictArray[dictName].insert(std::make_pair(input, wordNumber));
     }
-    out << "Dictionary was loaded from file " << fileName << '\n';
+    if (dictArray[dictName].empty())
+    {
+      dictArray.erase(dictName);
+      throw std::invalid_argument("Could not find any valid words");
+    }
+    else
+    {
+      out << "Dictionary was loaded from file " << fileName << '\n';
+    }
   }
   else
   {
