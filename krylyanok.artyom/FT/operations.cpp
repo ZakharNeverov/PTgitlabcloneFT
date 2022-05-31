@@ -79,7 +79,7 @@ void krylyanok::makeTech(std::string& nameFile, krylyanok::NameMap& temp)
     throw std::logic_error("");
   }
   std::string parameter = "";
-  file >> parameter; 
+  file >> parameter;
   temp.wordCounter_ = std::stoul(parameter);
   std::string parameter2 = "";
   while (file >> parameter)

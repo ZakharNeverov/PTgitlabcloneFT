@@ -1,14 +1,14 @@
-#include "operations.hpp"
 #include <fstream>
 #include <iomanip>
-#include <unordered_map>
+
 #include "commands.hpp"
 #include "dictionary.hpp"
 #include "operations.hpp"
+#include <unordered_map>
 
 namespace
 {
-  using map = std::unordered_map < std::string, krylyanok::HashStruct >;
+  using map = std::unordered_map< std::string, krylyanok::HashStruct >;
 
   size_t findElem(std::string& dictName, std::vector< krylyanok::NameMap >& dicts)
   {
@@ -48,7 +48,7 @@ namespace
 
   void printTop(std::ostream& out, const map& temp)
   {
-    std::vector< std::string >  topWord;
+    std::vector< std::string > topWord;
     size_t topFreq = 0;
     for (size_t i = 0; i < temp.bucket_count(); i++)
     {
@@ -98,7 +98,7 @@ namespace
       }
       for (auto it = left.cbegin(i); it != left.cend(i); ++it)
       {
-        std::pair < std::string, krylyanok::HashStruct > pair((*it).first, (*it).second);
+        std::pair< std::string, krylyanok::HashStruct > pair((*it).first, (*it).second);
         newDict.insert(pair);
       }
     }
@@ -116,7 +116,7 @@ namespace
           (*iter).second.freq_ += (*it).second.freq_;
           continue;
         }
-        std::pair < std::string, krylyanok::HashStruct > pair((*it).first, (*it).second);
+        std::pair< std::string, krylyanok::HashStruct > pair((*it).first, (*it).second);
         newDict.insert(pair);
       }
     }
@@ -139,7 +139,7 @@ namespace
       }
     }
   }
-  
+
   void insertWord(krylyanok::NameMap& temp, std::string& word)
   {
     if (!krylyanok::correctString(word))
@@ -159,7 +159,7 @@ namespace
         ++it;
       }
     }
-    std::pair < std::string, krylyanok::HashStruct > pair(word, { word });
+    std::pair< std::string, krylyanok::HashStruct > pair(word, { word });
     temp.dict_.insert(pair);
     temp.wordCounter_++;
   }
