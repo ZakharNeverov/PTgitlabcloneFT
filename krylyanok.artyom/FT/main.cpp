@@ -52,7 +52,10 @@ int main(int argc, char** argv)
       {"TOP", std::bind(&krylyanok::Commands::getTop, std::ref(commStruct))},
       {"SEARCH", std::bind(&krylyanok::Commands::getSearch, std::ref(commStruct))},
       {"MERGE", std::bind(&krylyanok::Commands::getMerge, std::ref(commStruct))},
-      {"DELETE", std::bind(&krylyanok::Commands::getDelete, std::ref(commStruct))}
+      {"DELETE", std::bind(&krylyanok::Commands::getDelete, std::ref(commStruct))},
+      {"SAVE", std::bind(&krylyanok::Commands::getSave, std::ref(commStruct))},
+      {"INSERTWORD", std::bind(&krylyanok::Commands::getInsertWord, std::ref(commStruct))},
+      {"DELETEWORD", std::bind(&krylyanok::Commands::getDeleteWord, std::ref(commStruct))}
     });
   while (!std::cin.eof())
   {

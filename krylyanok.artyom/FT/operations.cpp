@@ -35,10 +35,9 @@ void krylyanok::createDict(std::vector< std::string >& words, krylyanok::NameMap
   }
 }
 
-
 void krylyanok::correctVector(std::vector< std::string >& vec)
 {
-  for (int i = 0; i < vec.size(); i++)
+  for (size_t i = 0; i < vec.size(); i++)
   {
     if (!correctString(vec.at(i)))
     {
@@ -70,4 +69,24 @@ bool krylyanok::correctString(std::string& string)
     }
   }
   return true;
+}
+
+void krylyanok::makeTech(std::string& nameFile, krylyanok::NameMap& temp)
+{
+  std::ifstream file(nameFile);
+  if (!file.is_open())
+  {
+    throw std::logic_error("");
+  }
+  std::string parameter = "";
+  file >> parameter; 
+  temp.wordCounter_ = std::stoul(parameter);
+  std::string parameter2 = "";
+  while (file >> parameter)
+  {
+    file >> parameter2;
+    size_t freq = std::stoul(parameter2);
+    std::pair < std::string, krylyanok::HashStruct > pair(parameter, { parameter, freq });
+    temp.dict_.insert(pair);
+  }
 }

@@ -8,14 +8,14 @@ namespace krylyanok
 {
   struct HashStruct
   {
-    int freq_;
+    size_t freq_;
     std::string word_;
     HashStruct() = delete;
     HashStruct(std::string& word):
       freq_(1),
       word_(word)
     {}
-    HashStruct(std::string& word, int& freq):
+    HashStruct(std::string& word, size_t& freq):
       freq_(freq),
       word_(word)
     {}

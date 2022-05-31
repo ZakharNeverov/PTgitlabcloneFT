@@ -16,6 +16,9 @@ namespace krylyanok
     void getSearch();
     void getMerge();
     void getDelete();
+    void getSave();
+    void getDeleteWord();
+    void getInsertWord();
 
   private:
     std::vector< NameMap >& dictionaries_;

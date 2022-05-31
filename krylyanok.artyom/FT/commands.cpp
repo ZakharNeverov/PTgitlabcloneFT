@@ -1,5 +1,7 @@
 #include "operations.hpp"
+#include <fstream>
 #include <iomanip>
+#include <unordered_map>
 #include "commands.hpp"
 #include "dictionary.hpp"
 #include "operations.hpp"
@@ -19,7 +21,7 @@ namespace
       }
       if (dicts.size() - 1 == i)
       {
-        return -1;
+        return dicts.size();
       }
     }
     return i;
@@ -120,30 +122,98 @@ namespace
     }
     return newDict;
   }
+
+  void deleteWord(krylyanok::NameMap& temp, const std::string& word)
+  {
+    for (auto it = temp.dict_.begin(); it != temp.dict_.end();)
+    {
+      if (it->first == word)
+      {
+        temp.wordCounter_ -= (*it).second.freq_;
+        temp.dict_.erase(it);
+        return;
+      }
+      else
+      {
+        ++it;
+      }
+    }
+  }
+  
+  void insertWord(krylyanok::NameMap& temp, std::string& word)
+  {
+    if (!krylyanok::correctString(word))
+    {
+      throw std::logic_error("");
+    }
+    for (auto it = temp.dict_.begin(); it != temp.dict_.end();)
+    {
+      if (it->first == word)
+      {
+        temp.wordCounter_++;
+        (*it).second.freq_++;
+        return;
+      }
+      else
+      {
+        ++it;
+      }
+    }
+    std::pair < std::string, krylyanok::HashStruct > pair(word, { word });
+    temp.dict_.insert(pair);
+    temp.wordCounter_++;
+  }
+
+  void saveDictionary(std::ostream& out, const krylyanok::NameMap& temp)
+  {
+    out << temp.wordCounter_ << "\n";
+    for (size_t i = 0; i < temp.dict_.bucket_count(); i++)
+    {
+      if (temp.dict_.cbegin(i) == temp.dict_.cend(i))
+      {
+        continue;
+      }
+      for (auto it = temp.dict_.cbegin(i); it != temp.dict_.cend(i); ++it)
+      {
+        out << (*it).second.word_ << " " << (*it).second.freq_ << "\n";
+      }
+    }
+  }
 }
 
 void krylyanok::Commands::getLoad()
 {
   std::string nameDict = "";
+  std::string parameter = "";
   std::string nameFile = "";
-  in_ >> nameDict >> nameFile;
-  if (!(findElem(nameDict, dictionaries_) == -1))
+  in_ >> parameter >> nameDict >> nameFile;
+  if (!(findElem(nameDict, dictionaries_) == dictionaries_.size()))
   {
     throw std::logic_error("");
   }
-  std::vector< std::string > words;
-  makeDict(nameFile, words);
-  dictionaries_.push_back({nameDict});
-  krylyanok::createDict(words, dictionaries_[dictionaries_.size() - 1]);
+  if (parameter == "TECH")
+  {
+    dictionaries_.push_back({ nameDict });
+    makeTech(nameFile, dictionaries_[dictionaries_.size() - 1]);
+    return;
+  }
+  else if (parameter == "TEXT")
+  {
+    std::vector< std::string > words;
+    makeDict(nameFile, words);
+    dictionaries_.push_back({ nameDict });
+    krylyanok::createDict(words, dictionaries_[dictionaries_.size() - 1]);
+    return;
+  }
+  throw std::logic_error("");
 }
 
 void krylyanok::Commands::getPrint()
 {
   std::string dictName = "";
   in_ >> dictName;
-  size_t i = 0;
-  i = findElem(dictName, dictionaries_);
-  if (i == -1)
+  size_t i = findElem(dictName, dictionaries_);
+  if (i == dictionaries_.size())
   {
     throw std::logic_error("");
   }
@@ -155,7 +225,7 @@ void krylyanok::Commands::getTop()
   std::string dictName = "";
   in_ >> dictName;
   size_t i = findElem(dictName, dictionaries_);
-  if (i == -1)
+  if (i == dictionaries_.size())
   {
     throw std::logic_error("");
   }
@@ -167,7 +237,7 @@ void krylyanok::Commands::getSearch()
   std::string dictName = "";
   in_ >> dictName;
   size_t i = findElem(dictName, dictionaries_);
-  if (i == -1)
+  if (i == dictionaries_.size())
   {
     throw std::logic_error("");
   }
@@ -182,12 +252,12 @@ void krylyanok::Commands::getMerge()
   std::string mergeDictName = "";
   std::string dictName1 = "";
   in_ >> mergeDictName >> dictName1;
-  if (!(findElem(mergeDictName, dictionaries_) == -1))
+  if (!(findElem(mergeDictName, dictionaries_) == dictionaries_.size()))
   {
     throw std::logic_error("");
   }
   size_t i1 = findElem(dictName1, dictionaries_);
-  if (i1 == -1)
+  if (i1 == dictionaries_.size())
   {
     throw std::logic_error("");
   }
@@ -197,7 +267,7 @@ void krylyanok::Commands::getMerge()
     std::string dictName2 = "";
     in_ >> dictName2;
     size_t i2 = findElem(dictName2, dictionaries_);
-    if (i2 == -1)
+    if (i2 == dictionaries_.size())
     {
       throw std::logic_error("");
     }
@@ -219,9 +289,56 @@ void krylyanok::Commands::getDelete()
   std::string dictName = "";
   in_ >> dictName;
   size_t i = findElem(dictName, dictionaries_);
-  if (i == -1)
+  if (i == dictionaries_.size())
   {
     throw std::logic_error("");
   }
   dictionaries_.erase(dictionaries_.begin() + i);
+}
+
+void krylyanok::Commands::getSave()
+{
+  std::string dictName = "";
+  std::string fileName = "";
+  in_ >> dictName >> fileName;
+  size_t i = findElem(dictName, dictionaries_);
+  if (i == dictionaries_.size())
+  {
+    throw std::logic_error("");
+  }
+  std::ofstream fout(fileName, std::ios_base::out | std::ios_base::trunc);
+  if (!fout.is_open())
+  {
+    throw std::logic_error("");
+  }
+  saveDictionary(fout, dictionaries_[i]);
+}
+
+void krylyanok::Commands::getDeleteWord()
+{
+  std::string dictName = "";
+  in_ >> dictName;
+  size_t i = findElem(dictName, dictionaries_);
+  if (i == dictionaries_.size())
+  {
+    throw std::logic_error("");
+  }
+  std::string word = "";
+  in_ >> word;
+  deleteWord(dictionaries_[i], word);
+}
+
+void krylyanok::Commands::getInsertWord()
+{
+
+  std::string dictName = "";
+  in_ >> dictName;
+  size_t i = findElem(dictName, dictionaries_);
+  if (i == dictionaries_.size())
+  {
+    throw std::logic_error("");
+  }
+  std::string word = "";
+  in_ >> word;
+  insertWord(dictionaries_[i], word);
 }
