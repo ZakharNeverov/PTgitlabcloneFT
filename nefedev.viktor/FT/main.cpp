@@ -36,12 +36,12 @@ int main()
       {
         commands.at(input)();
       }
-      catch (std::out_of_range)
+      catch (const std::out_of_range&)
       {
         nefedev::outInvalidCommand(std::cout);
         nefedev::cleanIStream(std::cin);
       }
-      catch (const std::exception& e)
+      catch (const std::invalid_argument& e)
       {
         std::cout << e.what() << '\n';
         nefedev::cleanIStream(std::cin);

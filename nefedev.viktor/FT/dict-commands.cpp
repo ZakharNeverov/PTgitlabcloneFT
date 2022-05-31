@@ -13,7 +13,6 @@ using FreqDictionary = std::map< std::string, unsigned int >;
 using DictionaryArray = std::unordered_map< std::string, FreqDictionary >;
 using WordAndFreq = std::pair< std::string, unsigned int >;
 
-const unsigned short int RECORD_SIZE = 15;
 const unsigned short int RECORD_PRECISION = 5;
 const std::string allowedSymbols = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-\'";
 
@@ -62,6 +61,16 @@ namespace
   unsigned int evaluateWordNumber(FreqDictionary& dict)
   {
     return std::accumulate(dict.begin(), dict.end(), 0, accumulateDictSum);
+  }
+  size_t getWordLength(size_t sum, WordAndFreq pair1)
+  {
+    return sum + pair1.first.size();
+  }
+  size_t evaluateAverageWordLength(FreqDictionary& dict)
+  {
+    size_t sumWordLength = std::accumulate(dict.begin(), dict.end(), 0, getWordLength);
+    unsigned int wordNumber = dict.size();
+    return sumWordLength / wordNumber;
   }
 }
 
@@ -158,7 +167,15 @@ void nefedev::readFile(std::istream& in, std::ostream& out, DictionaryArray& dic
       fin >> input;
       insertWord(input, dictArray[dictName]);
     }
-    out << "Inserted all words from file \"" << fileName << "\"\n";
+    if (dictArray[dictName].empty())
+    {
+      dictArray.erase(dictName);
+      throw std::invalid_argument("Could not find any valid words");
+    }
+    else
+    {
+      out << "Inserted all words from file \"" << fileName << "\"\n";
+    }
   }
   else
   {
@@ -259,24 +276,24 @@ void nefedev::printAlphabetic(std::istream& in, std::ostream& out, DictionaryArr
     order.erase(0, 1);
     if (order == "ASCENDING" || order == "")
     {
-      unsigned int wordNumber = 0;
-      wordNumber = evaluateWordNumber(dictArray[dictName]);
+      unsigned int wordNumber = evaluateWordNumber(dictArray[dictName]);
+      unsigned int wordlength = evaluateAverageWordLength(dictArray[dictName]);
       nefedev::StreamGuard guard(out);
       out << std::fixed << std::setprecision(5);
       for (FreqDictionary::iterator iter = dictArray[dictName].begin(); iter != dictArray[dictName].end(); ++iter)
       {
-        out << std::setw(RECORD_SIZE) << iter->first << " - " << static_cast< double >(iter->second) / wordNumber << '\n';
+        out << std::setw(wordlength) << iter->first << " - " << static_cast< double >(iter->second) / wordNumber << '\n';
       }
     }
     else if (order == "DESCENDING")
     {
-      unsigned int wordNumber = 0;
-      wordNumber = evaluateWordNumber(dictArray[dictName]);
+      unsigned int wordNumber = evaluateWordNumber(dictArray[dictName]);
+      unsigned int wordlength = evaluateAverageWordLength(dictArray[dictName]);
       nefedev::StreamGuard guard(out);
       out << std::fixed << std::setprecision(5);
       for (FreqDictionary::reverse_iterator iter = dictArray[dictName].rbegin(); iter != dictArray[dictName].rend(); ++iter)
       {
-        out << std::setw(RECORD_SIZE) << iter->first << " - " << static_cast< double >(iter->second) / wordNumber << '\n';
+        out << std::setw(wordlength) << iter->first << " - " << static_cast< double >(iter->second) / wordNumber << '\n';
       }
     }
     else
@@ -303,25 +320,25 @@ void nefedev::printFrequency(std::istream& in, std::ostream& out, DictionaryArra
     if (order == "ASCENDING" || order == "")
     {
       std::sort(vect.begin(), vect.end(), compAscendingFreq);
-      unsigned int wordNumber = 0;
-      wordNumber = evaluateWordNumber(dictArray[dictName]);
+      unsigned int wordNumber = evaluateWordNumber(dictArray[dictName]);
+      unsigned int wordlength = evaluateAverageWordLength(dictArray[dictName]);
       nefedev::StreamGuard guard(out);
       out << std::fixed << std::setprecision(5);
       for (std::vector< WordAndFreq >::iterator iter = vect.begin(); iter != vect.end(); ++iter)
       {
-        out << std::setw(RECORD_SIZE) << iter->first << " - " << static_cast< double >(iter->second) / wordNumber << '\n';
+        out << std::setw(wordlength) << iter->first << " - " << static_cast< double >(iter->second) / wordNumber << '\n';
       }
     }
     else if (order == "DESCENDING")
     {
       std::sort(vect.begin(), vect.end(), compDescendingFreq);
-      unsigned int wordNumber = 0;
-      wordNumber = evaluateWordNumber(dictArray[dictName]);
+      unsigned int wordNumber = evaluateWordNumber(dictArray[dictName]);
+      unsigned int wordlength = evaluateAverageWordLength(dictArray[dictName]);
       nefedev::StreamGuard guard(out);
       out << std::fixed << std::setprecision(5);
       for (std::vector< WordAndFreq >::iterator iter = vect.begin(); iter != vect.end(); ++iter)
       {
-        out << std::setw(RECORD_SIZE) << iter->first << " - " << static_cast< double >(iter->second) / wordNumber << '\n';
+        out << std::setw(wordlength) << iter->first << " - " << static_cast< double >(iter->second) / wordNumber << '\n';
       }
     }
     else
@@ -374,7 +391,7 @@ void nefedev::findAndPrint(std::istream& in, std::ostream& out, DictionaryArray&
       wordNumber = evaluateWordNumber(dictArray[dictName]);
       nefedev::StreamGuard guard(out);
       out << std::fixed << std::setprecision(5);
-      out << std::setw(RECORD_SIZE) << input << ' ' << static_cast< double >(dictArray[dictName][input]) / wordNumber << '\n';
+      out << input << ' ' << static_cast< double >(dictArray[dictName][input]) / wordNumber << '\n';
     }
     else
     {
