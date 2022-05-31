@@ -34,18 +34,11 @@ int main()
     {
       try
       {
-        try
-        {
-          commands.at(input)();
-        }
-        catch (const std::out_of_range&)
-        {
-          throw std::invalid_argument("INVALID COMMAND");
-        }
+        commands.at(input)();
       }
-      catch (const std::invalid_argument& e)
+      catch (const std::exception& e)
       {
-        std::cout << e.what() << '\n';
+        nefedev::outInvalidCommand(std::cout);
         nefedev::cleanIStream(std::cin);
       }
     }
