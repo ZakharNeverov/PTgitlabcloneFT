@@ -14,7 +14,7 @@ namespace
     in.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
   }
   using mapCommandsType =  std::map< std::string, std::function< void() > >;
-  mapCommandsType defineAllCommands(std::istream& in, std::vector<shkroba::Dictionary>& base,std::ostream& out)
+  mapCommandsType defineAllCommands(std::istream& in, std::vector< shkroba::Dictionary >& base, std::ostream& out)
   {
     mapCommandsType mapOfCommands =
       {
@@ -30,6 +30,7 @@ namespace
     return mapOfCommands;
   }
 }
+
 
 int main(int argc, char** argv)
 {

@@ -3,7 +3,7 @@
 #include <map>
 #include <set>
 #include <memory>
-#include <ostream>
+#include <iosfwd>
 
 namespace shkroba
 {

@@ -18,4 +18,3 @@ namespace shkroba
 }
 
 #endif
-
