@@ -1,10 +1,9 @@
 #include "Utilities.hpp"
-#include "Dictionary.hpp"
-#include "userCommands.hpp"
 #include <iostream>
 #include <algorithm>
 #include <iterator>
-
+#include "Dictionary.hpp"
+#include "userCommands.hpp"
 namespace shkroba
 {
   std::ostream& operator<<(std::ostream& out, std::set< std::string >& set)
@@ -38,8 +37,7 @@ namespace shkroba
         }
         else
         {
-          pairER item = *dictionarySecond.search(
-            pair.first);
+          pairER item = *dictionarySecond.search(pair.first);
           for (const auto& word: *item.second)
           {
             translates[word]++;
@@ -85,9 +83,13 @@ namespace shkroba
   Dictionary createFromUniqueWords(const Dictionary& d1, const Dictionary& d2)
   {
     Dictionary common("common");
-    std::set_intersection(d1.getDictionary().begin(), d1.getDictionary().end(), d2.getDictionary().begin(),
-                        d2.getDictionary().end(),
-                        std::inserter(common.getDictionary(), common.getDictionary().begin()));
+    std::set_intersection(
+      d1.getDictionary().begin(),
+      d1.getDictionary().end(),
+      d2.getDictionary().begin(),
+      d2.getDictionary().end(),
+      std::inserter(common.getDictionary(), common.getDictionary().begin())
+    );
     return common;
   }
 
@@ -103,7 +105,6 @@ namespace shkroba
                  { return pair.second->size() == 1; });
     return newDictionary;
   }
-
 
   void doPrintDictionary(const Dictionary& dictionary, std::ostream& out)
   {
@@ -123,8 +124,13 @@ namespace shkroba
   void doCommonForTwo(const Dictionary& source, const Dictionary& extra, std::ostream& out)
   {
     Dictionary result;
-    std::merge(source.getDictionary().begin(), source.getDictionary().end(), extra.getDictionary().begin(),
-               extra.getDictionary().end(), std::inserter(result.getDictionary(), result.begin()));
+    std::merge(
+      source.getDictionary().begin(),
+      source.getDictionary().end(),
+      extra.getDictionary().begin(),
+      extra.getDictionary().end(),
+      std::inserter(result.getDictionary(), result.begin())
+    );
     result.addWords(source);
     result.addWords(extra);
     result.printDictionary(out);

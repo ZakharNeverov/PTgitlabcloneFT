@@ -27,7 +27,7 @@ namespace shkroba
     }
   }
 
-  void Dictionary::insert(const pairER &item)
+  void Dictionary::insert(const pairER& item)
   {
     for (const auto& item1: *item.second)
     {
