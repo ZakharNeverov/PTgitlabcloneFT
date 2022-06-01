@@ -18,14 +18,14 @@ namespace
   {
     mapCommandsType mapOfCommands =
       {
-        { "PRINT",std::bind(shkroba::makePrint, std::ref(in), std::ref(base), std::ref(out))},
-        { "SIZE",std::bind(shkroba::makeSize, std::ref(in), std::ref(base), std::ref(out)) },
-        { "START", std::bind(shkroba::makeFindWord, std::ref(in), std::ref(base), std::ref(out)) },
-        { "ONETRANSLATE", std::bind(shkroba::makeOneTranslate, std::ref(in), std::ref(base), std::ref(out)) },
-        { "FROMTWO", std::bind(shkroba::makeCommonForTwo, std::ref(in), std::ref(base), std::ref(out)) },
-        { "UNIQUE", std::bind(shkroba::makeUnique, std::ref(in), std::ref(base), std::ref(out)) },
-        { "COMMON", std::bind(shkroba::makeCommonDictionary, std::ref(in), std::ref(base), std::ref(out)) },
-        { "HELP", std::bind(shkroba::makeHelp, std::ref(in), std::ref(out)) }
+        {"PRINT", std::bind(shkroba::makePrint, std::ref(in), std::ref(base), std::ref(out))},
+        {"SIZE", std::bind(shkroba::makeSize, std::ref(in), std::ref(base), std::ref(out))},
+        {"START", std::bind(shkroba::makeFindWord, std::ref(in), std::ref(base), std::ref(out))},
+        {"ONETRANSLATE", std::bind(shkroba::makeOneTranslate, std::ref(in), std::ref(base), std::ref(out))},
+        {"FROMTWO", std::bind(shkroba::makeCommonForTwo, std::ref(in), std::ref(base), std::ref(out))},
+        {"UNIQUE", std::bind(shkroba::makeUnique, std::ref(in), std::ref(base), std::ref(out))},
+        {"COMMON", std::bind(shkroba::makeCommonDictionary, std::ref(in), std::ref(base), std::ref(out))},
+        {"HELP", std::bind(shkroba::makeHelp, std::ref(in), std::ref(out))}
       };
     return mapOfCommands;
   }

@@ -44,7 +44,9 @@ namespace shkroba
             item.second->begin(),
             item.second->end(),
             [&translates](const std::string& str)
-            { translates[str]++;}
+            {
+              translates[str]++;
+            }
           );
         }
       }
@@ -108,7 +110,9 @@ namespace shkroba
       dictionary.end(),
       std::inserter(newDictionary.getDictionary(), newDictionary.begin()),
       [](const std::pair< std::string, std::shared_ptr< std::set< std::string > > >& pair)
-      {return pair.second->size() == 1;}
+      {
+        return pair.second->size() == 1;
+      }
     );
     return newDictionary;
   }

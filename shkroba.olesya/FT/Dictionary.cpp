@@ -1,11 +1,11 @@
 #include "Dictionary.hpp"
 #include <iterator>
-#include "Utilities.hpp"
 #include <iostream>
+#include "Utilities.hpp"
 
 namespace shkroba
 {
-  Dictionary::Dictionary(const std::string& name) :
+  Dictionary::Dictionary(const std::string& name):
     name_(name)
   {}
 
@@ -157,7 +157,7 @@ namespace shkroba
 
   bool Dictionary::operator!=(const Dictionary& rhs) const
   {
-    return !(*this == rhs);
+    return (this != &rhs);
   }
 
   std::map< std::string, std::shared_ptr< std::set< std::string> > >::iterator Dictionary::begin()
