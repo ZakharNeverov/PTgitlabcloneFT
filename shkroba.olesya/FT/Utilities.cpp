@@ -38,8 +38,7 @@ namespace shkroba
         }
         else
         {
-          pairER item = *dictionarySecond.search(
-            pair.first);
+          pairER item = *dictionarySecond.search(pair.first);
           for (const auto& word: *item.second)
           {
             translates[word]++;
@@ -110,7 +109,6 @@ namespace shkroba
     );
     return newDictionary;
   }
-
 
   void doPrintDictionary(const Dictionary& dictionary, std::ostream& out)
   {

@@ -3,7 +3,6 @@
 #include "Utilities.hpp"
 #include <iostream>
 
-
 namespace shkroba
 {
   Dictionary::Dictionary(const std::string& name) :

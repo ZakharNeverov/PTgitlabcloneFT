@@ -87,7 +87,7 @@ namespace shkroba
   void makeFindWord(std::istream& in, std::vector< Dictionary >& base, std::ostream& out)
   {
     std::string string;
-    std::getline(in >> std::ws , string);
+    std::getline(in >> std::ws, string);
     std::string letter;
     getNextWord(string, letter);
     if (letter.size() != 1)
@@ -186,7 +186,7 @@ namespace shkroba
   void makeCommonDictionary(std::istream& in, std::vector< Dictionary >& base, std::ostream& out)
   {
     std::string string;
-    std::getline(in >> std::ws , string);
+    std::getline(in >> std::ws, string);
     std::vector< Dictionary > dictionaries;
     while(string != "")
     {

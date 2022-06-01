@@ -3,8 +3,7 @@
 #include <map>
 #include <set>
 #include <memory>
-#include <ostream>
-//#include <iosfwd>
+#include <iosfwd>
 
 namespace shkroba
 {
@@ -45,7 +44,6 @@ namespace shkroba
 
     std::map< std::string, std::shared_ptr< std::set< std::string > > >& getDictionary();
     const std::map< std::string, std::shared_ptr< std::set< std::string > > >& getDictionary() const;
-
 
   private:
     std::map< std::string, std::shared_ptr< std::set< std::string > > > dictionary_;
