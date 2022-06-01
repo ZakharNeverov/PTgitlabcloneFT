@@ -1,6 +1,7 @@
 #include "Utilities.hpp"
 #include <iostream>
 #include <algorithm>
+#include <functional>
 #include <iterator>
 #include "Dictionary.hpp"
 #include "userCommands.hpp"
@@ -39,10 +40,12 @@ namespace shkroba
         else
         {
           pairER item = *dictionarySecond.search(pair.first);
-          for (const auto& word: *item.second)
-          {
-            translates[word]++;
-          }
+          std::for_each(
+            item.second->begin(),
+            item.second->end(),
+            [&translates](const std::string& str)
+            { translates[str]++;}
+          );
         }
       }
       if (isCommon)
@@ -90,7 +93,7 @@ namespace shkroba
       d2.getDictionary().begin(),
       d2.getDictionary().end(),
       std::inserter(common.getDictionary(), common.getDictionary().begin())
-   );
+    );
     return common;
   }
 
@@ -105,7 +108,7 @@ namespace shkroba
       dictionary.end(),
       std::inserter(newDictionary.getDictionary(), newDictionary.begin()),
       [](const std::pair< std::string, std::shared_ptr< std::set< std::string > > >& pair)
-      { return pair.second->size() == 1; }
+      {return pair.second->size() == 1;}
     );
     return newDictionary;
   }
