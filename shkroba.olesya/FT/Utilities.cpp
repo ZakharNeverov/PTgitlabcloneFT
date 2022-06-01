@@ -85,9 +85,13 @@ namespace shkroba
   Dictionary createFromUniqueWords(const Dictionary& d1, const Dictionary& d2)
   {
     Dictionary common("common");
-    std::set_intersection(d1.getDictionary().begin(), d1.getDictionary().end(), d2.getDictionary().begin(),
-                        d2.getDictionary().end(),
-                        std::inserter(common.getDictionary(), common.getDictionary().begin()));
+    std::set_intersection(
+      d1.getDictionary().begin(),
+      d1.getDictionary().end(),
+      d2.getDictionary().begin(),
+      d2.getDictionary().end(),
+      std::inserter(common.getDictionary(), common.getDictionary().begin())
+   );
     return common;
   }
 
@@ -100,10 +104,10 @@ namespace shkroba
     std::copy_if(
       dictionary.begin(),
       dictionary.end(),
-          std::inserter(newDictionary.getDictionary(), newDictionary.begin()),
+      std::inserter(newDictionary.getDictionary(), newDictionary.begin()),
       [](const std::pair< std::string, std::shared_ptr< std::set< std::string > > >& pair)
       { return pair.second->size() == 1; }
-      );
+    );
     return newDictionary;
   }
 
