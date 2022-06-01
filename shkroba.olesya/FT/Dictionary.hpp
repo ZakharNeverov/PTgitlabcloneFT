@@ -3,7 +3,8 @@
 #include <map>
 #include <set>
 #include <memory>
-#include <iosfwd>
+#include <ostream>
+//#include <iosfwd>
 
 namespace shkroba
 {
@@ -29,7 +30,7 @@ namespace shkroba
     bool deleteWord(const std::string& word);
     void printDictionary(std::ostream& out) const;
     size_t size() const;
-    void findWord(char letter, std::ostream& out) const;
+    void findWord(std::string letter, std::ostream& out) const;
     void addWords(const Dictionary& dictionary);
 
     std::map< std::string, std::shared_ptr< std::set< std::string > > >::const_iterator begin() const;

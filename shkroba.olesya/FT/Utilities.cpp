@@ -4,6 +4,7 @@
 #include <iterator>
 #include "Dictionary.hpp"
 #include "userCommands.hpp"
+
 namespace shkroba
 {
   std::ostream& operator<<(std::ostream& out, std::set< std::string >& set)
@@ -37,7 +38,8 @@ namespace shkroba
         }
         else
         {
-          pairER item = *dictionarySecond.search(pair.first);
+          pairER item = *dictionarySecond.search(
+            pair.first);
           for (const auto& word: *item.second)
           {
             translates[word]++;
@@ -83,13 +85,9 @@ namespace shkroba
   Dictionary createFromUniqueWords(const Dictionary& d1, const Dictionary& d2)
   {
     Dictionary common("common");
-    std::set_intersection(
-      d1.getDictionary().begin(),
-      d1.getDictionary().end(),
-      d2.getDictionary().begin(),
-      d2.getDictionary().end(),
-      std::inserter(common.getDictionary(), common.getDictionary().begin())
-    );
+    std::set_intersection(d1.getDictionary().begin(), d1.getDictionary().end(), d2.getDictionary().begin(),
+                        d2.getDictionary().end(),
+                        std::inserter(common.getDictionary(), common.getDictionary().begin()));
     return common;
   }
 
@@ -99,12 +97,16 @@ namespace shkroba
     std::string name;
     std::cin >> name;
     Dictionary newDictionary(name);
-    std::copy_if(dictionary.begin(), dictionary.end(),
-                 std::inserter(newDictionary.getDictionary(), newDictionary.begin()),
-                 [](const std::pair< std::string, std::shared_ptr< std::set< std::string > > >& pair)
-                 { return pair.second->size() == 1; });
+    std::copy_if(
+      dictionary.begin(),
+      dictionary.end(),
+          std::inserter(newDictionary.getDictionary(), newDictionary.begin()),
+      [](const std::pair< std::string, std::shared_ptr< std::set< std::string > > >& pair)
+      { return pair.second->size() == 1; }
+      );
     return newDictionary;
   }
+
 
   void doPrintDictionary(const Dictionary& dictionary, std::ostream& out)
   {
@@ -116,7 +118,7 @@ namespace shkroba
     out << dictionary.size();
   }
 
-  void doFindWord(const Dictionary& dictionary, char letter, std::ostream& out)
+  void doFindWord(const Dictionary& dictionary, std::string letter, std::ostream& out)
   {
     dictionary.findWord(letter, std::cout);
   }

@@ -66,12 +66,12 @@ namespace shkroba
     return dictionary_.size();
   }
 
-  void Dictionary::findWord(char letter, std::ostream& out) const
+  void Dictionary::findWord(std::string letter, std::ostream& out) const
   {
     std::vector< std::string > result;
     for (auto& item: dictionary_)
     {
-      if (item.first[0] == letter)
+      if (item.first[0] == letter[0])
       {
         result.push_back(item.first);
       }

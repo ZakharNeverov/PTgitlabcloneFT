@@ -16,7 +16,7 @@ namespace shkroba
 
   void doPrintDictionary(const Dictionary& dictionary, std::ostream& out);
   void doSize(const Dictionary& dictionary, std::ostream& out);
-  void doFindWord(const Dictionary& dictionary, char letter, std::ostream& out);
+  void doFindWord(const Dictionary& dictionary, std::string letter, std::ostream& out);
   void doCommonForTwo(const Dictionary& source, const Dictionary& extra, std::ostream& out);
   void doOneTranslate(const Dictionary& dictionary, std::ostream& out);
   void doCreateFromUniqueWords(const Dictionary& source, const Dictionary& extra, std::ostream& out);
