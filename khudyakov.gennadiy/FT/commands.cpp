@@ -219,9 +219,7 @@ namespace khudyakov
       auto found = std::find_if(begin, end, std::bind(wordInString, std::stoi(number), _1));
       while (found != (*iterDict).second.end())
       {
-        (*iterDict).second.erase(found);
-        begin = (*iterDict).second.begin();
-        end = (*iterDict).second.end();
+        begin = (*iterDict).second.erase(found);
         found = std::find_if(begin, end, std::bind(wordInString, std::stoi(number), _1));
       }
     }
