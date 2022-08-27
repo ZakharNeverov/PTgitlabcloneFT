@@ -338,7 +338,7 @@ namespace khudyakov
     std::string dictName1 = khudyakov::getWord(str);
     auto iter1 = dicts.find(dictName1);
     auto itList1 = (*iter1).second;
-    if (iter1 == dicts.end())
+    if (iter1 == dicts.end() || str.empty())
     {
       throw std::logic_error{"Invalid command"};
     }
