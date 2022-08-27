@@ -12,31 +12,6 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  khudyakov::Dicts_t dicts;
-  for (int i = 1; i < argc; i++)
-  {
-    std::ifstream fileStream(argv[i]);
-    if (!fileStream)
-    {
-      khudyakov::errorOpenFileMessage(std::cerr);
-      return 1;
-    }
-    khudyakov::Dict_t dict;
-    std::string nameOfDict = argv[i];
-    size_t numberOfString = 1;
-    std::string string = "";
-    while (!fileStream.eof())
-    {
-      std::getline(fileStream, string);
-      if (string.empty())
-      {
-        continue;
-      }
-      khudyakov::parseStringToDict(string, numberOfString++, dict);
-    }
-    dicts.emplace(nameOfDict, dict);
-  }
-
   using cmd_t = std::function< void(std::string, khudyakov::Dicts_t&) >;
   using constCmd_t = std::function< void(const std::string&, const khudyakov::Dicts_t&) >;
   using cmdDict_t = typename std::map< std::string, cmd_t >;
@@ -54,7 +29,6 @@ int main(int argc, char* argv[])
     {"union", khudyakov::unit}
   };
 
-  using namespace std::placeholders;
   constCmdDict_t constCommands
   {
     {"print", khudyakov::print},
@@ -64,6 +38,31 @@ int main(int argc, char* argv[])
 
   try
   {
+    khudyakov::Dicts_t dicts;
+    for (int i = 1; i < argc; i++)
+    {
+      std::ifstream fileStream(argv[i]);
+      if (!fileStream)
+      {
+        khudyakov::errorOpenFileMessage(std::cerr);
+        return 1;
+      }
+      khudyakov::Dict_t dict;
+      std::string nameOfDict = argv[i];
+      size_t numberOfString = 1;
+      std::string string = "";
+      while (!fileStream.eof())
+      {
+        std::getline(fileStream, string);
+        if (string.empty())
+        {
+          continue;
+        }
+        khudyakov::parseStringToDict(string, numberOfString++, dict);
+      }
+      dicts.emplace(nameOfDict, dict);
+    }
+
     while (!std::cin.eof())
     {
       std::string str = "";

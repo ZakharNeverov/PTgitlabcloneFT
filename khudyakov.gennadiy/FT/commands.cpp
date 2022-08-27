@@ -12,7 +12,7 @@
 namespace
 {
   using Pair_t = std::pair< std::string, khudyakov::List_t >;
-  bool compareOften(const Pair_t& lhs, const Pair_t& rhs)
+  bool compareSizeList(const Pair_t& lhs, const Pair_t& rhs)
   {
     return lhs.second.size() < rhs.second.size();
   }
@@ -177,13 +177,13 @@ namespace khudyakov
 
   void deleteOften(std::string str, Dicts_t& dicts)
   {
-    doDeleteOften(str, dicts, compareOften);
+    doDeleteOften(str, dicts, compareSizeList);
   }
 
   void deleteRare(std::string str, Dicts_t& dicts)
   {
     using namespace std::placeholders;
-    doDeleteOften(str, dicts, std::bind(compareOften, _2, _1));
+    doDeleteOften(str, dicts, std::bind(compareSizeList, _2, _1));
   }
 
   void deleteWord(std::string str, Dicts_t& dicts)
@@ -306,7 +306,7 @@ namespace khudyakov
     auto iter2 = dicts.find(dictName2);
     if (iter1 == dicts.end() || iter2 == dicts.end())
     {
-      throw std::logic_error{ "Invalid command" };
+      throw std::logic_error{"Invalid command"};
     }
     auto itList1 = (*iter1).second;
     auto itList2 = (*iter2).second;
@@ -319,7 +319,7 @@ namespace khudyakov
       iter2 = dicts.find(dictName2);
       if (iter2 == dicts.end())
       {
-        throw std::logic_error{ "Invalid command" };
+        throw std::logic_error{"Invalid command"};
       }
       itList2 = (*iter2).second;
       khudyakov::Dict_t temp;
