@@ -32,7 +32,7 @@ namespace
     return lhs.first.size() < rhs.first.size();
   }
 
-  size_t sumSimilarityWords(size_t result, const Pair_t& exp, const khudyakov::Dict_t& dict)
+  size_t sumSimilarWords(size_t result, const Pair_t& exp, const khudyakov::Dict_t& dict)
   {
     using namespace std::placeholders;
     auto f = std::bind(wordEqual, _1, exp);
@@ -144,10 +144,12 @@ namespace khudyakov
   {
     size_t sum = dict1.size() + dict2.size();
     using namespace std::placeholders;
-    size_t similarWords = std::accumulate(dict2.cbegin(), dict2.cend(), 0, std::bind(sumSimilarityWords, _1, _2, dict1));
+    auto cbegin = dict2.cbegin();
+    auto cend = dict2.cend();
+    size_t similarWords = std::accumulate(cbegin, cend, 0, std::bind(sumSimilarWords, _1, _2, dict1));
     if (sum == 0)
     {
-      return 0;
+      return sum;
     }
     return (static_cast< double >(similarWords) / static_cast< double >(sum)) * 100;
   }
@@ -239,13 +241,14 @@ namespace khudyakov
       }
       std::list< std::string > list;
       auto start = (*iterDict).second.begin();
+      auto end = (*iterDict).second.end();
       using namespace std::placeholders;
-      auto found = std::find_if(start, (*iterDict).second.end(), std::bind(wordInString, std::stoi(number), _1));
+      auto found = std::find_if(start, end, std::bind(wordInString, std::stoi(number), _1));
       while (found != (*iterDict).second.end())
       {
         list.push_back((*found).first);
         start = ++found;
-        found = std::find_if(start, (*iterDict).second.end(), std::bind(wordInString, std::stoi(number), _1));
+        found = std::find_if(start, end, std::bind(wordInString, std::stoi(number), _1));
       }
       using ostreamIterator_t = typename std::ostream_iterator< std::string >;
       std::copy(list.cbegin(), list.cend(), ostreamIterator_t(std::cout, " "));

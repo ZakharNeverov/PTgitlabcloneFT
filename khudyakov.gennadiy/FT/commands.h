@@ -5,7 +5,6 @@
 #include <list>
 #include <map>
 
-
 namespace khudyakov
 {
   using List_t = std::list< size_t >;
