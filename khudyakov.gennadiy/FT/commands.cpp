@@ -239,19 +239,19 @@ namespace khudyakov
       {
         throw std::logic_error{"Invalid command"};
       }
-      std::list< std::string > list;
+      std::vector< std::string > words;
       auto start = (*iterDict).second.begin();
       auto end = (*iterDict).second.end();
       using namespace std::placeholders;
       auto found = std::find_if(start, end, std::bind(wordInString, std::stoi(number), _1));
       while (found != (*iterDict).second.end())
       {
-        list.push_back((*found).first);
+        words.push_back((*found).first);
         start = ++found;
         found = std::find_if(start, end, std::bind(wordInString, std::stoi(number), _1));
       }
       using ostreamIterator_t = typename std::ostream_iterator< std::string >;
-      std::copy(list.cbegin(), list.cend(), ostreamIterator_t(std::cout, " "));
+      std::copy(words.cbegin(), words.cend(), ostreamIterator_t(std::cout, " "));
       if (!str.empty())
       {
         std::cout << '\n';
@@ -328,7 +328,7 @@ namespace khudyakov
       khudyakov::Dict_t temp;
       std::set_intersection(dict.cbegin(), dict.cend(), itList2.cbegin(),
         itList2.cend(), std::inserter(temp, temp.begin()), compareWord);
-      dict = temp;
+      dict = std::move(temp);
     }
     dicts.emplace(nameOfNewDict, dict);
   }
