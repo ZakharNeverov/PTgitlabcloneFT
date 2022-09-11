@@ -4,7 +4,6 @@
 #include <iomanip>
 #include <functional>
 #include <vector>
-#include "messagesIO.hpp"
 
 namespace
 {
@@ -125,7 +124,6 @@ void bokiy::read(std::istream& istr, maps_t& maps)
   {
     in >> key;
     in >> value;
-    
     map.insert({key, std::stoi(value)});
   }
   std::string mapName = words[0];

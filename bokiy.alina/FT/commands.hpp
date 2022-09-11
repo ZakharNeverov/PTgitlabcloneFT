@@ -21,7 +21,6 @@ namespace bokiy
   void complementOrIntersect(std::istream&, maps_t&, comp_f_t);
   void print(std::istream&, maps_t&);
   void printFrequentOrRarestWord(std::istream&, maps_t&, get_el_f_t_);
-  
 
   bool frequentCompare(node_t& first, node_t& second);
   node_t& getFrequentElement(map_t&);
