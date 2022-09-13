@@ -3,7 +3,10 @@
 #include <fstream>
 #include <sstream>
 
-yermakov::CharData::CharData(): language_(), text_(), freqDict_()
+yermakov::CharData::CharData():
+  language_(),
+  text_(),
+  freqDict_()
 {}
 
 void yermakov::CharData::calculateFrequency()

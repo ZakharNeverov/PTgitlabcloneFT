@@ -11,9 +11,15 @@ int main()
 
   std::map< std::string, funcObj > commandsArray
   {
-      {"GET", yermakov::doGet},           {"WRITE", yermakov::doWrite},       {"CALCULATE", yermakov::doCalculateSize},
-      {"PRINT", yermakov::doPrint},           {"COMPRESS", yermakov::doCompress}, {"DECOMPRESS", yermakov::doDecompress},
-      {"EFFICIENCY", yermakov::doEfficiency}, {"CONCAT", yermakov::doConcat},     {"CUTOFF", yermakov::doCut}
+    {"GET", yermakov::doGet},
+    {"WRITE", yermakov::doWrite},
+    {"CALCULATE", yermakov::doCalculateSize},
+    {"PRINT", yermakov::doPrint},
+    {"COMPRESS", yermakov::doCompress},
+    {"DECOMPRESS", yermakov::doDecompress},
+    {"EFFICIENCY", yermakov::doEfficiency},
+    {"CONCAT", yermakov::doConcat},
+    {"CUTOFF", yermakov::doCut}
   };
 
   yermakov::TextDict texts;

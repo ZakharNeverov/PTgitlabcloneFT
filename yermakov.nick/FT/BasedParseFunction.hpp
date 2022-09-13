@@ -5,7 +5,6 @@
 
 namespace yermakov
 {
-  std::string getName(std::string& description);
   std::string getWord(std::string& description);
 }
 

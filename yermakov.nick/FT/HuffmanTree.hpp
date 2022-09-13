@@ -30,11 +30,10 @@ namespace yermakov
   class HuffmanTree
   {
   public:
-    HuffmanTree() = default;
+    HuffmanTree();
     HuffmanTree(const CharData&);
     CharData compress(const CharData&) const;
     CharData decompress(const CharData&) const;
-
   private:
     HuffNode* root_;
     std::map< char, std::string > codeDict_;

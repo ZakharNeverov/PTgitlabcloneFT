@@ -4,7 +4,7 @@
 #include <functional>
 #include <algorithm>
 #include <numeric>
-#include <vector>
+
 #include <sstream>
 
 bool yermakov::MinFreq::operator()(yermakov::HuffNode* n1, yermakov::HuffNode* n2)
@@ -39,6 +39,13 @@ void yermakov::HuffmanTree::createDicts(HuffNode* root, std::string previosBits)
   createDicts(root->right_, previosBits + "1");
 }
 
+yermakov::HuffmanTree::HuffmanTree():
+  root_(nullptr),
+  codeDict_(),
+  charDict_()
+{
+}
+
 yermakov::HuffmanTree::HuffmanTree(const CharData& text)
 {
   Queue queue;
@@ -58,18 +65,29 @@ yermakov::HuffmanTree::HuffmanTree(const CharData& text)
   createDicts(root_, "");
 }
 
+namespace
+{
+  struct CodeCreator
+  {
+    CodeCreator(const std::map< char, std::string >& codeDict):
+      codeDict_(codeDict)
+    {}
+
+    std::string operator()(std::string a, std::string b)
+    {
+      return std::move(a) + b + " ";
+    }
+    std::map< char, std::string > codeDict_;
+  };
+}
+
 yermakov::CharData yermakov::HuffmanTree::compress(const CharData& text) const
 {
-  std::string code = std::string();
-  // std::accumulate(text.text_.begin(), text.text_.end(), std::string());
-  for (size_t i = 0; i < text.text_.length(); i++)
-  {
-    code += codeDict_.at(text.text_[i]);
-    code += i == text.text_.length() - 1 ? "\n" : " ";
-  }
+  CodeCreator creator(codeDict_);
+  std::string code = std::accumulate(text.text_.begin(), text.text_.end(), std::string(), creator);
   CharData newText;
   newText.language_ = text.language_;
-  newText.text_ = code;
+  newText.text_ = code.substr(0, code.find_last_of(" "));
   return newText;
 }
 

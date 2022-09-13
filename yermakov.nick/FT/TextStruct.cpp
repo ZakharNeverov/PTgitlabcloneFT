@@ -3,7 +3,10 @@
 #include <fstream>
 #include <sstream>
 
-yermakov::Text::Text(CharData data, HuffmanTree tree): data_(data), isCompress_(false), tree_(tree)
+yermakov::Text::Text(CharData data, HuffmanTree tree):
+  data_(data),
+  isCompress_(false),
+  tree_(tree)
 {
 
 }
