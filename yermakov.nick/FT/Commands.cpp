@@ -2,6 +2,7 @@
 
 #include <ostream>
 #include <fstream>
+#include <algorithm>
 
 #include "Messages.hpp"
 #include "BasedParseFunction.hpp"
@@ -114,7 +115,7 @@ namespace
   {
     bool operator()(char ch)
     {
-      return ch != ' '; 
+      return ch != ' ';
     }
   };
 }
@@ -125,17 +126,20 @@ void yermakov::doEfficiency(std::ostream& out, yermakov::TextDict& dict, std::st
   std::string secondTextName = getWord(description);
   auto firstText = dict.find(firstTextName);
   auto secondText = dict.find(secondTextName);
-  if (firstText == dict.end() || secondText == dict.end() || (*firstText).second.isCompress_ ||
-      !(*secondText).second.isCompress_ || (*firstText).second.data_.language_ != (*secondText).second.data_.language_)
+  bool isGoodName = firstText == dict.end() || secondText == dict.end();
+  bool isRightCompress = (*firstText).second.isCompress_ || !(*secondText).second.isCompress_;
+  bool isGoodLanguage = (*firstText).second.data_.language_ != (*secondText).second.data_.language_;
+  if (isGoodName || isGoodLanguage || isRightCompress)
   {
     printInvalid(out) << "\n";
     return;
   }
   std::string str = (*secondText).second.data_.text_;
   std::size_t countStr = (std::count_if(str.begin(), str.end(), countSymb()) / 8);
+  double eff = (static_cast< double >(countStr) / (*firstText).second.data_.text_.size()) * 100;
   out << "BEFORE COMPRESS: " << (*firstText).second.data_.text_.size() << "\n";
   out << "AFTER COMPRESS: " << countStr << "\n";
-  out << "EFFICIENCY: " << (static_cast< double >(countStr) / (*firstText).second.data_.text_.size()) * 100 << "%" << "\n";
+  out << "EFFICIENCY: " << eff << "%" << "\n";
 }
 
 void yermakov::doConcat(std::ostream& out, yermakov::TextDict& dict, std::string& description)
@@ -150,8 +154,10 @@ void yermakov::doConcat(std::ostream& out, yermakov::TextDict& dict, std::string
   }
   auto firstText = dict.find(firstTextName);
   auto secondText = dict.find(secondTextName);
-  if (firstText == dict.end() || secondText == dict.end() || (*firstText).second.isCompress_ ||
-      (*secondText).second.isCompress_ || (*firstText).second.data_.language_ != (*secondText).second.data_.language_)
+  bool isGoodName = firstText == dict.end() || secondText == dict.end();
+  bool isRightCompress = (*firstText).second.isCompress_ || (*secondText).second.isCompress_;
+  bool isGoodLanguage = (*firstText).second.data_.language_ != (*secondText).second.data_.language_;
+  if (isGoodName || isGoodLanguage || isRightCompress)
   {
     printInvalid(out) << "\n";
     return;
