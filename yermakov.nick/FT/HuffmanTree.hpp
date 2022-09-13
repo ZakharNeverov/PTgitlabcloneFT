@@ -26,12 +26,14 @@ namespace yermakov
 
   HuffNode* getNode(char, std::size_t, HuffNode*, HuffNode*);
   void pushNode(std::pair< char, std::size_t >, Queue&);
+  void DestroyRecursive(HuffNode*);
 
   class HuffmanTree
   {
   public:
     HuffmanTree();
     HuffmanTree(const CharData&);
+    ~HuffmanTree();
     CharData compress(const CharData&) const;
     CharData decompress(const CharData&) const;
   private:

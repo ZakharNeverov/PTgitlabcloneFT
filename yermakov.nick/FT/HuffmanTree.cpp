@@ -4,7 +4,6 @@
 #include <functional>
 #include <algorithm>
 #include <numeric>
-
 #include <sstream>
 
 bool yermakov::MinFreq::operator()(yermakov::HuffNode* n1, yermakov::HuffNode* n2)
@@ -65,6 +64,11 @@ yermakov::HuffmanTree::HuffmanTree(const CharData& text)
   createDicts(root_, "");
 }
 
+yermakov::HuffmanTree::~HuffmanTree()
+{
+  DestroyRecursive(root_);
+}
+
 namespace
 {
   struct CodeCreator
@@ -105,4 +109,14 @@ yermakov::CharData yermakov::HuffmanTree::decompress(const CharData& text) const
   newText.language_ = text.language_;
   newText.text_ = textString;
   return newText;
+}
+
+void yermakov::DestroyRecursive(HuffNode* node)
+{
+  if (node)
+  {
+    DestroyRecursive(node->left_);
+    DestroyRecursive(node->right_);
+    delete node;
+  }
 }
