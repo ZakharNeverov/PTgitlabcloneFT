@@ -6,6 +6,11 @@
 #include <numeric>
 #include <sstream>
 
+yermakov::HuffNode::HuffNode(char, std::size_t, HuffNode*, HuffNode*)
+{
+
+}
+
 bool yermakov::MinFreq::operator()(yermakov::HuffNode* n1, yermakov::HuffNode* n2)
 {
   return n1->weight_ > n2->weight_;
@@ -13,17 +18,7 @@ bool yermakov::MinFreq::operator()(yermakov::HuffNode* n1, yermakov::HuffNode* n
 
 void yermakov::pushNode(std::pair< char, std::size_t > pair, Queue& pq)
 {
-  pq.push(getNode(pair.first, pair.second, nullptr, nullptr));
-}
-
-yermakov::HuffNode* yermakov::getNode(char ch, std::size_t weight, HuffNode* left, HuffNode* right)
-{
-  HuffNode* node = new HuffNode();
-  node->ch_ = ch;
-  node->weight_ = weight;
-  node->left_ = left;
-  node->right_ = right;
-  return node;
+  pq.push(new HuffNode(pair.first, pair.second, nullptr, nullptr));
 }
 
 void yermakov::HuffmanTree::createDicts(HuffNode* root, std::string previosBits)
@@ -56,7 +51,7 @@ yermakov::HuffmanTree::HuffmanTree(const CharData& text)
     queue.pop();
     HuffNode* n2 = queue.top();
     queue.pop();
-    HuffNode* newNode = getNode('\n', n2->weight_ + n1->weight_, n1, n2);
+    HuffNode* newNode = new HuffNode('\n', n2->weight_ + n1->weight_, n1, n2);
     queue.push(newNode);
   }
   root_ = queue.top();

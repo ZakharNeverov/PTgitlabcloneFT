@@ -11,6 +11,7 @@ namespace yermakov
   struct HuffNode
   {
     HuffNode() = default;
+    HuffNode(char, std::size_t, HuffNode*, HuffNode*);
     char ch_;
     std::size_t weight_;
     HuffNode* right_;
@@ -24,7 +25,6 @@ namespace yermakov
 
   using Queue = std::priority_queue< HuffNode*, std::vector< HuffNode* >, MinFreq >;
 
-  HuffNode* getNode(char, std::size_t, HuffNode*, HuffNode*);
   void pushNode(std::pair< char, std::size_t >, Queue&);
   void DestroyRecursive(HuffNode*);
 
