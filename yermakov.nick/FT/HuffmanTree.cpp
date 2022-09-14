@@ -6,7 +6,11 @@
 #include <numeric>
 #include <sstream>
 
-yermakov::HuffNode::HuffNode(char, std::size_t, HuffNode*, HuffNode*)
+yermakov::HuffNode::HuffNode(char ch, std::size_t weight, HuffNode* left, HuffNode* right):
+  ch_(ch),
+  weight_(weight),
+  left_(left),
+  right_(right)
 {
 
 }
@@ -34,7 +38,6 @@ void yermakov::HuffmanTree::createDicts(HuffNode* root, std::string previosBits)
 }
 
 yermakov::HuffmanTree::HuffmanTree():
-  root_(nullptr),
   codeDict_(),
   charDict_()
 {
@@ -54,14 +57,10 @@ yermakov::HuffmanTree::HuffmanTree(const CharData& text)
     HuffNode* newNode = new HuffNode('\n', n2->weight_ + n1->weight_, n1, n2);
     queue.push(newNode);
   }
-  root_ = queue.top();
+  HuffNode* root_ = queue.top();
   queue.pop();
   createDicts(root_, "");
-}
-
-yermakov::HuffmanTree::~HuffmanTree()
-{
-  DestroyRecursive(root_);
+  destroyRecursive(root_);
 }
 
 namespace
@@ -72,9 +71,9 @@ namespace
       codeDict_(codeDict)
     {}
 
-    std::string operator()(std::string a, std::string b)
+    std::string operator()(std::string a, const char b)
     {
-      return std::move(a) + b + " ";
+      return std::move(a) + codeDict_.at(b) + " ";
     }
     std::map< char, std::string > codeDict_;
   };
@@ -106,12 +105,18 @@ yermakov::CharData yermakov::HuffmanTree::decompress(const CharData& text) const
   return newText;
 }
 
-void yermakov::DestroyRecursive(HuffNode* node)
+void yermakov::destroyRecursive(HuffNode* node)
 {
   if (node)
   {
-    DestroyRecursive(node->left_);
-    DestroyRecursive(node->right_);
+    if (node->left_)
+    {
+      destroyRecursive(node->left_);
+    }
+    if (node->right_)
+    {
+      destroyRecursive(node->right_);
+    }
     delete node;
   }
 }

@@ -82,7 +82,7 @@ void yermakov::doPrint(std::ostream& out, yermakov::TextDict& dict, std::string&
     printInvalid(out) << "\n";
     return;
   }
-  out << (*toPrint).first;
+  out << (*toPrint).second;
 }
 
 void yermakov::doCompress(std::ostream& out, yermakov::TextDict& dict, std::string& description)
@@ -136,10 +136,10 @@ void yermakov::doEfficiency(std::ostream& out, yermakov::TextDict& dict, std::st
   }
   std::string str = (*secondText).second.data_.text_;
   std::size_t countStr = (std::count_if(str.begin(), str.end(), countSymb()) / 8);
-  double eff = (static_cast< double >(countStr) / (*firstText).second.data_.text_.size()) * 100;
+  double eff = static_cast< double >((*firstText).second.data_.text_.size()) / countStr;
   out << "BEFORE COMPRESS: " << (*firstText).second.data_.text_.size() << "\n";
   out << "AFTER COMPRESS: " << countStr << "\n";
-  out << "EFFICIENCY: " << eff << "%" << "\n";
+  out << "EFFICIENCY: " << eff << "\n";
 }
 
 void yermakov::doConcat(std::ostream& out, yermakov::TextDict& dict, std::string& description)
