@@ -57,10 +57,10 @@ yermakov::HuffmanTree::HuffmanTree(const CharData& text)
     HuffNode* newNode = new HuffNode('\n', n2->weight_ + n1->weight_, n1, n2);
     queue.push(newNode);
   }
-  HuffNode* root_ = queue.top();
+  HuffNode* root = queue.top();
   queue.pop();
-  createDicts(root_, "");
-  destroyRecursive(root_);
+  createDicts(root, "");
+  destroyRecursive(root);
 }
 
 namespace
@@ -109,14 +109,8 @@ void yermakov::destroyRecursive(HuffNode* node)
 {
   if (node)
   {
-    if (node->left_)
-    {
-      destroyRecursive(node->left_);
-    }
-    if (node->right_)
-    {
-      destroyRecursive(node->right_);
-    }
+    destroyRecursive(node->left_);
+    destroyRecursive(node->right_);
     delete node;
   }
 }
