@@ -6,7 +6,7 @@
 #include <numeric>
 #include <sstream>
 
-yermakov::HuffNode::HuffNode(char ch, std::size_t weight, HuffNode* left, HuffNode* right):
+yermakov::HuffNode::HuffNode(char ch, std::size_t weight, NodePtr left, NodePtr right):
   ch_(ch),
   weight_(weight),
   left_(left),
@@ -15,17 +15,17 @@ yermakov::HuffNode::HuffNode(char ch, std::size_t weight, HuffNode* left, HuffNo
 
 }
 
-bool yermakov::MinFreq::operator()(yermakov::HuffNode* n1, yermakov::HuffNode* n2)
+bool yermakov::MinFreq::operator()(NodePtr n1, NodePtr n2)
 {
   return n1->weight_ > n2->weight_;
 }
 
 void yermakov::pushNode(std::pair< char, std::size_t > pair, Queue& pq)
 {
-  pq.push(new HuffNode(pair.first, pair.second, nullptr, nullptr));
+  pq.push(std::make_shared< HuffNode >(pair.first, pair.second, nullptr, nullptr));
 }
 
-void yermakov::HuffmanTree::createDicts(HuffNode* root, std::string previosBits)
+void yermakov::HuffmanTree::createDicts(NodePtr root, std::string previosBits)
 {
   if (!root->right_ && !root->left_)
   {
@@ -50,17 +50,16 @@ yermakov::HuffmanTree::HuffmanTree(const CharData& text)
   std::for_each(text.freqDict_.begin(), text.freqDict_.end(), std::bind(pushNode, _1, std::ref(queue)));
   while (queue.size() > 1)
   {
-    HuffNode* n1 = queue.top();
+    NodePtr n1 = queue.top();
     queue.pop();
-    HuffNode* n2 = queue.top();
+    NodePtr n2 = queue.top();
     queue.pop();
-    HuffNode* newNode = new HuffNode('\n', n2->weight_ + n1->weight_, n1, n2);
+    NodePtr newNode = std::make_shared< HuffNode >('\n', n2->weight_ + n1->weight_, n1, n2);
     queue.push(newNode);
   }
-  HuffNode* root = queue.top();
+  NodePtr root = queue.top();
   queue.pop();
   createDicts(root, "");
-  destroyRecursive(root);
 }
 
 namespace
@@ -103,14 +102,4 @@ yermakov::CharData yermakov::HuffmanTree::decompress(const CharData& text) const
   newText.language_ = text.language_;
   newText.text_ = textString;
   return newText;
-}
-
-void yermakov::destroyRecursive(HuffNode* node)
-{
-  if (node)
-  {
-    destroyRecursive(node->left_);
-    destroyRecursive(node->right_);
-    delete node;
-  }
 }

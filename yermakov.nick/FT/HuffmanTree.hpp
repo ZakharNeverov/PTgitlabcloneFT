@@ -3,6 +3,7 @@
 
 #include <queue>
 #include <cstddef>
+#include <memory>
 
 #include "CharDataStruct.hpp"
 
@@ -11,22 +12,23 @@ namespace yermakov
   struct HuffNode
   {
     HuffNode() = default;
-    HuffNode(char, std::size_t, HuffNode*, HuffNode*);
+    HuffNode(char, std::size_t, std::shared_ptr< yermakov::HuffNode >, std::shared_ptr< yermakov::HuffNode >);
     char ch_;
     std::size_t weight_;
-    HuffNode* right_;
-    HuffNode* left_;
+    NodePtr right_;
+    NodePtr left_;
   };
+
+  using NodePtr = std::shared_ptr< yermakov::HuffNode >;
 
   struct MinFreq
   {
-    bool operator()(yermakov::HuffNode*, yermakov::HuffNode*);
+    bool operator()(NodePtr, NodePtr);
   };
 
-  using Queue = std::priority_queue< HuffNode*, std::vector< HuffNode* >, MinFreq >;
+  using Queue = std::priority_queue< NodePtr, std::vector< NodePtr >, MinFreq >;
 
   void pushNode(std::pair< char, std::size_t >, Queue&);
-  void destroyRecursive(HuffNode*);
 
   class HuffmanTree
   {
@@ -38,7 +40,7 @@ namespace yermakov
   private:
     std::map< char, std::string > codeDict_;
     std::map< std::string, char > charDict_;
-    void createDicts(HuffNode*, std::string);
+    void createDicts(NodePtr, std::string);
   };
 }
 
