@@ -44,7 +44,9 @@ yermakov::HuffmanTree::HuffmanTree():
 {
 }
 
-yermakov::HuffmanTree::HuffmanTree(const CharData& text)
+yermakov::HuffmanTree::HuffmanTree(const CharData& text):
+  codeDict_(),
+  charDict_()
 {
   Queue queue;
   using namespace std::placeholders;
