@@ -2,7 +2,7 @@
 
 #include <fstream>
 
-yermakov::Text::Text(CharData data, HuffmanTree tree):
+yermakov::Text::Text(const CharData& data, const HuffmanTree& tree):
   data_(data),
   isCompress_(false),
   tree_(tree)

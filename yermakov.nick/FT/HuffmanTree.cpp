@@ -26,7 +26,7 @@ void yermakov::pushNode(std::pair< char, std::size_t > pair, Queue& pq)
   pq.push(std::make_shared< HuffNode >(pair.first, pair.second, nullptr, nullptr));
 }
 
-void yermakov::HuffmanTree::createDicts(NodePtr root, std::string previosBits)
+void yermakov::HuffmanTree::createDicts(NodePtr root, const std::string& previosBits)
 {
   if (!root->right_ && !root->left_)
   {

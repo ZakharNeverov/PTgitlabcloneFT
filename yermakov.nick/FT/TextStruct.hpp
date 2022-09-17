@@ -13,7 +13,7 @@ namespace yermakov
   struct Text
   {
     Text() = default;
-    Text(CharData, HuffmanTree);
+    Text(const CharData&, const HuffmanTree&);
     CharData data_;
     HuffmanTree tree_;
     bool isCompress_ = false;
