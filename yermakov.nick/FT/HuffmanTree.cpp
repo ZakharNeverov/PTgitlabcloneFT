@@ -13,40 +13,27 @@ yermakov::HuffNode::HuffNode(char ch, std::size_t weight, NodePtr left, NodePtr 
   left_(left),
   right_(right)
 {
-
 }
 
-bool yermakov::MinFreq::operator()(NodePtr n1, NodePtr n2)
+namespace
 {
-  return n1->weight_ > n2->weight_;
-}
-
-void yermakov::pushNode(std::pair< char, std::size_t > pair, Queue& pq)
-{
-  pq.push(std::make_shared< HuffNode >(pair.first, pair.second, nullptr, nullptr));
-}
-
-void yermakov::HuffmanTree::createDicts(NodePtr root, const std::string& previosBits)
-{
-  if (!root->right_ && !root->left_)
+  struct MinFreq
   {
-    codeDict_.insert({root->ch_, previosBits});
-    charDict_.insert({previosBits, root->ch_});
-    return;
+    bool operator()(yermakov::NodePtr n1, yermakov::NodePtr n2)
+    {
+      return n1->weight_ > n2->weight_;
+    }
+  };
+
+  using Queue = std::priority_queue< yermakov::NodePtr, std::vector< yermakov::NodePtr >, MinFreq >;
+
+  void pushNode(std::pair< char, std::size_t > pair, Queue& pq)
+  {
+    pq.push(std::make_shared< yermakov::HuffNode >(pair.first, pair.second, nullptr, nullptr));
   }
-  createDicts(root->left_, previosBits + "0");
-  createDicts(root->right_, previosBits + "1");
 }
 
-yermakov::HuffmanTree::HuffmanTree():
-  codeDict_(),
-  charDict_()
-{
-}
-
-yermakov::HuffmanTree::HuffmanTree(const CharData& text):
-  codeDict_(),
-  charDict_()
+yermakov::NodePtr yermakov::HuffmanTree::makeHuffTree(const CharData& text)
 {
   Queue queue;
   using namespace std::placeholders;
@@ -62,7 +49,49 @@ yermakov::HuffmanTree::HuffmanTree(const CharData& text):
   }
   NodePtr root = queue.top();
   queue.pop();
-  createDicts(root, "");
+  return root;
+}
+
+std::map< char, std::string > yermakov::HuffmanTree::createCodeDict(NodePtr root)
+{
+  std::map< char, std::string > codeDict;
+  this->CreateRecursiveCodeDict(codeDict, root, "");
+  return codeDict;
+}
+
+std::map< std::string, char > yermakov::HuffmanTree::createCharDict()
+{
+  std::map< std::string, char > charDict;
+  auto iter = codeDict_.begin();
+  while (iter != codeDict_.end())
+  {
+    charDict.insert({(*iter).second, (*iter).first});
+    ++iter;
+  }
+  return charDict;
+}
+
+void yermakov::HuffmanTree::CreateRecursiveCodeDict(std::map< char, std::string >& codeDict, NodePtr root, const std::string& previosBits)
+{
+  if (!root->right_ && !root->left_)
+  {
+    codeDict.insert({root->ch_, previosBits});
+    return;
+  }
+  CreateRecursiveCodeDict(codeDict, root->left_, previosBits + "0");
+  CreateRecursiveCodeDict(codeDict, root->right_, previosBits + "1");
+}
+
+yermakov::HuffmanTree::HuffmanTree():
+  codeDict_(),
+  charDict_()
+{
+}
+
+yermakov::HuffmanTree::HuffmanTree(const CharData& text):
+  codeDict_(createCodeDict(makeHuffTree(text))),
+  charDict_(createCharDict())
+{
 }
 
 namespace

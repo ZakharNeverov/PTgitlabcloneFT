@@ -173,7 +173,6 @@ void yermakov::doCut(std::ostream &out, yermakov::TextDict &dict, std::string &d
   }
   catch (...)
   {
-    printInvalid(out) << "\n";
-    return;
+    throw;
   }
 }

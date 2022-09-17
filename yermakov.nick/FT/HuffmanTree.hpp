@@ -21,17 +21,7 @@ namespace yermakov
       std::shared_ptr< yermakov::HuffNode > left_;
     };
   }
-
   using NodePtr = std::shared_ptr< yermakov::HuffNode >;
-
-  struct MinFreq
-  {
-    bool operator()(NodePtr, NodePtr);
-  };
-
-  using Queue = std::priority_queue< NodePtr, std::vector< NodePtr >, MinFreq >;
-
-  void pushNode(std::pair< char, std::size_t >, Queue&);
 
   class HuffmanTree
   {
@@ -44,7 +34,10 @@ namespace yermakov
   private:
     std::map< char, std::string > codeDict_;
     std::map< std::string, char > charDict_;
-    void createDicts(NodePtr, const std::string&);
+    void CreateRecursiveCodeDict(std::map< char, std::string >&, NodePtr, const std::string&);
+    NodePtr makeHuffTree(const CharData& text);
+    std::map< char, std::string > createCodeDict(NodePtr root);
+    std::map< std::string, char > createCharDict();
   };
 }
 
