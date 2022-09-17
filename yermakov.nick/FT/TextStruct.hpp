@@ -4,7 +4,6 @@
 #include <string>
 #include <iosfwd>
 #include <map>
-#include <cstddef>
 
 #include "HuffmanTree.hpp"
 #include "CharDataStruct.hpp"

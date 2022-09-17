@@ -1,30 +1,46 @@
 #include "CharDataStruct.hpp"
 
 #include <fstream>
-#include <sstream>
+#include <algorithm>
 
 yermakov::CharData::CharData():
   language_(),
   text_(),
   freqDict_()
-{}
+{
+}
+
+namespace yermakov
+{
+  namespace
+  {
+    struct DictCreator
+    {
+      DictCreator(const FreqMap &map):
+        frequencyDict_(map)
+      {
+      }
+
+      void operator()(const char ch)
+      {
+        frequencyDict_[ch]++;
+      }
+
+      FreqMap frequencyDict_;
+    };
+  }
+}
 
 void yermakov::CharData::calculateFrequency()
 {
-  std::stringstream stream(text_);
+
   FreqMap frequencyDict;
-  char c;
-  stream >> std::noskipws;
-  std::string textString;
-  while (stream >> c)
-  {
-    textString += c;
-    frequencyDict[c]++;
-  }
-  freqDict_ = frequencyDict;
+  DictCreator creator(frequencyDict);
+  std::for_each(text_.begin(), text_.end(), creator);
+  freqDict_ = creator.frequencyDict_;
 }
 
-std::istream& yermakov::operator>>(std::istream& input, CharData& text)
+std::istream &yermakov::operator>>(std::istream &input, CharData &text)
 {
   std::string helpString;
   input >> helpString;

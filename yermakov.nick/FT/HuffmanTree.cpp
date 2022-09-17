@@ -4,7 +4,8 @@
 #include <functional>
 #include <algorithm>
 #include <numeric>
-#include <sstream>
+
+#include "BasedParseFunction.hpp"
 
 yermakov::HuffNode::HuffNode(char ch, std::size_t weight, NodePtr left, NodePtr right):
   ch_(ch),
@@ -92,10 +93,9 @@ yermakov::CharData yermakov::HuffmanTree::decompress(const CharData& text) const
 {
   std::string code = text.text_;
   std::string textString = std::string();
-  std::stringstream stream(code);
-  std::string instring = std::string();
-  while (stream >> instring)
+  while (!code.empty())
   {
+    std::string instring = getWord(code);
     textString += charDict_.at(instring);
   }
   CharData newText;

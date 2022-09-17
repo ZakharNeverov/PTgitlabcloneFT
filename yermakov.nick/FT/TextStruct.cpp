@@ -1,7 +1,6 @@
 #include "TextStruct.hpp"
 
 #include <fstream>
-#include <sstream>
 
 yermakov::Text::Text(CharData data, HuffmanTree tree):
   data_(data),

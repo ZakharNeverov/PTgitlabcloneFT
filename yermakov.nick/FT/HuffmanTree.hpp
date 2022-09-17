@@ -15,8 +15,8 @@ namespace yermakov
     HuffNode(char, std::size_t, std::shared_ptr< yermakov::HuffNode >, std::shared_ptr< yermakov::HuffNode >);
     char ch_;
     std::size_t weight_;
-    NodePtr right_;
-    NodePtr left_;
+    std::shared_ptr< yermakov::HuffNode > right_;
+    std::shared_ptr< yermakov::HuffNode > left_;
   };
 
   using NodePtr = std::shared_ptr< yermakov::HuffNode >;
