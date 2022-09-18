@@ -121,7 +121,7 @@ namespace
     auto it = args.begin();
     const std::string& varName = *it;
     ++it;
-    const std::string& decoded = strs[*it].getDecoded();
+    const std::string& decoded = strs.at(*it).getDecoded();
     strs.insert({varName, malakhov::HaffmanStringUnion{malakhov::Haffman::produce(decoded)}});
   }
 
@@ -134,7 +134,7 @@ namespace
     auto it = args.begin();
     const std::string& varName = *it;
     ++it;
-    const malakhov::Haffman& encoded = strs[*it].getEncoded();
+    const malakhov::Haffman& encoded = strs.at(*it).getEncoded();
     strs.insert({varName, malakhov::HaffmanStringUnion{encoded.decode()}});
   }
 
@@ -148,10 +148,10 @@ namespace
     const std::string& newVarName = *it;
     ++it;
     const std::string& aName = *it;
-    auto& a = strs[aName];
+    auto& a = strs.at(aName);
     ++it;
     const std::string& bName = *it;
-    auto b = strs[bName];
+    auto b = strs.at(bName);
     if (a.isEncoded() != b.isEncoded())
     {
       throw std::logic_error("Merging encoded with decoded is forbidden");
@@ -206,9 +206,9 @@ namespace
     const std::string& newVarName = *it;
     malakhov::HaffmanStringUnion toInsert;
     ++it;
-    const malakhov::HaffmanStringUnion& first = strs[*it];
+    const malakhov::HaffmanStringUnion& first = strs.at(*it);
     ++it;
-    const malakhov::HaffmanStringUnion& second = strs[*it];
+    const malakhov::HaffmanStringUnion& second = strs.at(*it);
 
     if (first.isEncoded() != second.isEncoded())
     {

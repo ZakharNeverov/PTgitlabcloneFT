@@ -226,7 +226,7 @@ malakhov::Haffman malakhov::Haffman::produce(const std::string& decoded)
   for (unsigned char&& letter: decoded)
   {
     encodedBits <<= bitsPerEncodedLetter;
-    encodedBits += bitmask[letter];
+    encodedBits += bitmask.at(letter);
     bitsUntilFlush -= bitsPerEncodedLetter;
     while (bitsUntilFlush <= 0)
     {
@@ -235,7 +235,7 @@ malakhov::Haffman malakhov::Haffman::produce(const std::string& decoded)
     }
   }
   encodedBits <<= bitsPerEncodedLetter;
-  encodedBits += bitmask['\0'];
+  encodedBits += bitmask.at('\0');
   bitsUntilFlush -= bitsPerEncodedLetter;
   if (bitsUntilFlush < 0)
   {
