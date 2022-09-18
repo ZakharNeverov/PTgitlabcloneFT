@@ -12,7 +12,7 @@ int main()
   try
   {
     malakhov::Commands::StrsDictT dataset;
-    malakhov::Commands commands{dataset, std::cout};
+    const malakhov::Commands commands{dataset, std::cout};
 
     std::string buf;
     std::string commandName;
@@ -22,7 +22,7 @@ int main()
       {
         continue;
       }
-      malakhov::ForwardList< std::string > args;
+      malakhov::Commands::ArgsListT args;
       malakhov::split(buf, commandName, args);
       commands.call(commandName, args);
     }

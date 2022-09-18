@@ -3,15 +3,14 @@
 
 #include <ostream>
 #include <string>
-
-#include "Dictionary.hpp"
+#include <map>
 
 namespace malakhov
 {
   class Haffman
   {
   public:
-    using BitmaskT = Dictionary< unsigned char, unsigned char >;
+    using BitmaskT = std::map< unsigned char, unsigned char >;
 
     Haffman(const BitmaskT& bitmask, const std::string& encoded);
     static Haffman produce(const std::string& decoded);

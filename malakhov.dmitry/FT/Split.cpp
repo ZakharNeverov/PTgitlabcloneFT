@@ -9,7 +9,7 @@ void malakhov::split(const std::string& input, std::string& commandName, Command
   getWord.toNext();
   while (!getWord.ended())
   {
-    args.pushBack(getWord.get());
+    args.push_back(getWord.get());
     getWord.toNext();
   }
 }

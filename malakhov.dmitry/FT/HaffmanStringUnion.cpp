@@ -1,6 +1,7 @@
 #include "HaffmanStringUnion.hpp"
 
 #include <sstream>
+#include <limits>
 
 namespace
 {
@@ -135,7 +136,7 @@ std::istream& malakhov::operator>>(std::istream& is, HaffmanStringUnion& instanc
     Haffman::BitmaskT bitmask;
     for (size_t i = 0; i < rawBitmask.length() / 2; ++i)
     {
-      bitmask.insert(rawBitmask[i * 2], rawBitmask[i * 2 + 1]);
+      bitmask.insert({rawBitmask[i * 2], rawBitmask[i * 2 + 1]});
     }
     const std::string str = text.substr(secondBrace + 2, str.length() - secondBrace - 2);
     instance.set({bitmask, str});

@@ -2,10 +2,10 @@
 #define COMMANDS_HPP
 
 #include <string>
+#include <map>
+#include <deque>
 
-#include "Dictionary.hpp"
 #include "HaffmanStringUnion.hpp"
-#include "ForwardList.hpp"
 
 namespace malakhov
 {
@@ -13,8 +13,8 @@ namespace malakhov
   {
   public:
     using StrT = std::string;
-    using StrsDictT = malakhov::Dictionary< StrT, HaffmanStringUnion >;
-    using ArgsListT = malakhov::ForwardList< StrT >;
+    using StrsDictT = std::map< StrT, HaffmanStringUnion >;
+    using ArgsListT = std::deque< StrT >;
 
     Commands(StrsDictT& strs, std::ostream& out);
     void call(const StrT& commandName, const ArgsListT& args) const noexcept;
@@ -23,8 +23,8 @@ namespace malakhov
     using CommandT = void (*)(StrsDictT&, const ArgsListT&);
     using ConstCommandT = void (*)(const StrsDictT&, const ArgsListT&, std::ostream&);
 
-    using CommandsDictT = Dictionary< StrT, CommandT >;
-    using ConstCommandsDictT = Dictionary< StrT, ConstCommandT >;
+    using CommandsDictT = std::map< StrT, CommandT >;
+    using ConstCommandsDictT = std::map< StrT, ConstCommandT >;
 
     StrsDictT& strs_;
     const CommandsDictT commands_;

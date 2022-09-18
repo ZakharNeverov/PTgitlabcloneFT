@@ -2,17 +2,13 @@
 
 #include <cmath>
 #include <iostream>
-
-#include "Stack.hpp"
-#include "Queue.hpp"
+#include <limits>
+#include <queue>
 
 namespace
 {
-  using malakhov::Dictionary;
-  using malakhov::Queue;
-
   using BitmaskT = malakhov::Haffman::BitmaskT;
-  using FrequencyT = malakhov::Dictionary< unsigned char, size_t >;
+  using FrequencyT = std::map< unsigned char, size_t >;
 
   const unsigned char BYTE_SIZE = 8;
 
@@ -73,27 +69,27 @@ namespace
 
     static HaffmanTree construct(const FrequencyT& frequency)
     {
-      Queue< Node* > nodes;
-      nodes.putIn(new Node{{std::string{} + '\0', 1}});
-      for (auto it = frequency.getBegin(); it != frequency.getEnd(); ++it)
+      std::queue< Node* > nodes;
+      nodes.push(new Node{{std::string{} + '\0', 1}});
+      for (auto it = frequency.begin(); it != frequency.begin(); ++it)
       {
         const std::string character = std::string{} + static_cast< char >(it->first);
-        nodes.putIn(new Node{{character, it->second}});
+        nodes.push(new Node{{character, it->second}});
       }
-      while (nodes.getUsedSpace() > 1)
+      while (nodes.size() > 1)
       {
-        Node* n1 = new Node{*nodes.getFirst(), nullptr};
+        Node* n1 = new Node{*nodes.front(), nullptr};
         const PairT& stored1 = n1->stored;
-        nodes.popOut();
+        nodes.pop();
 
-        Node* n2 = new Node{*nodes.getFirst(), nullptr};
+        Node* n2 = new Node{*nodes.front(), nullptr};
         const PairT& stored2 = n2->stored;
-        nodes.popOut();
+        nodes.pop();
 
         Node* n3 = new Node{{stored1.first + stored2.first, stored1.second + stored2.second}, nullptr, n2, n1};
-        nodes.putIn(n3);
+        nodes.push(n3);
       }
-      return HaffmanTree{nodes.getFirst()};
+      return HaffmanTree{nodes.front()};
     }
 
     BitmaskT getBitMask() const
@@ -123,7 +119,7 @@ namespace
       }
       else if (!n->left && !n->right)
       {
-        result.insert(n->stored.first[0], bitmask);
+        result.insert({n->stored.first[0], bitmask});
       }
     }
 
@@ -136,9 +132,9 @@ namespace
     for (auto&& letter : str)
     {
       auto it = result.find(letter);
-      if (it == result.getEnd())
+      if (it == result.end())
       {
-        result.insert(letter, 1);
+        result.insert({letter, 1});
       }
       else
       {
@@ -151,9 +147,9 @@ namespace
   BitmaskT getReversedMask(const BitmaskT& oldBitmask)
   {
     BitmaskT result;
-    for (auto it = oldBitmask.getBegin(); it != oldBitmask.getEnd(); ++it)
+    for (auto it = oldBitmask.begin(); it != oldBitmask.end(); ++it)
     {
-      result.insert(it->second, it->first);
+      result.insert({it->second, it->first});
     }
     return result;
   }
@@ -166,7 +162,7 @@ namespace
 
   size_t getBitsPerEncodedLetter(const BitmaskT& bitmask) noexcept
   {
-    return static_cast< size_t >(std::log2(bitmask.getSize()) + 1);
+    return static_cast< size_t >(std::log2(bitmask.size()) + 1);
   }
 
   void flush(const size_t buf, const unsigned char bitsNotToFlush, std::string& str)
@@ -185,7 +181,7 @@ namespace
       return os;
     }
     os << delim;
-    for (auto it = bitmask.getBegin(); it != bitmask.getEnd(); ++it)
+    for (auto it = bitmask.begin(); it != bitmask.end(); ++it)
     {
       os << it->first << static_cast< char >(it->second);
     }
@@ -194,12 +190,12 @@ namespace
 
   bool equals(const malakhov::Haffman::BitmaskT& op1, const malakhov::Haffman::BitmaskT& op2)
   {
-    if (op1.getSize() != op2.getSize())
+    if (op1.size() != op2.size())
     {
       return false;
     }
-    auto it1 = op1.getBegin();
-    for (auto it2 = op2.getBegin(); it2 != op2.getEnd(); ++it2)
+    auto it1 = op1.begin();
+    for (auto it2 = op2.begin(); it2 != op2.end(); ++it2)
     {
       if (*it1 != *it2)
       {
@@ -271,7 +267,7 @@ std::string malakhov::Haffman::decode() const
     {
       bitsCount -= bitsPerEncodedLetter;
       const unsigned char encodedLetter = getBits(encodedBits, bitsPerEncodedLetter, bitsCount);
-      const unsigned char decodedLetter = bitmask[encodedLetter];
+      const unsigned char decodedLetter = bitmask.at(encodedLetter);
       if (!decodedLetter)
       {
         endSymbolSpoted = true;
