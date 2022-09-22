@@ -33,7 +33,6 @@ namespace yermakov
 
 void yermakov::CharData::calculateFrequency()
 {
-
   FreqMap frequencyDict;
   DictCreator creator(frequencyDict);
   std::for_each(text_.begin(), text_.end(), creator);

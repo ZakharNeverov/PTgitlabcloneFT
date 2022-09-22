@@ -12,17 +12,17 @@ namespace yermakov
 {
   struct Text
   {
-    Text() = default;
+    Text();
     Text(const CharData&, const HuffmanTree&);
     CharData data_;
     HuffmanTree tree_;
-    bool isCompress_ = false;
+    bool isCompress_;
   };
 
-  Text compress(Text&);
-  Text decompress(Text&);
+  Text compress(const Text&);
+  Text decompress(const Text&);
   std::istream& operator>>(std::istream&, Text&);
-  std::ostream& operator<<(std::ostream&, Text&);
+  std::ostream& operator<<(std::ostream&, const Text&);
 }
 
 #endif

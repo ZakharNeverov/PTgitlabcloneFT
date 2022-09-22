@@ -5,7 +5,7 @@
 
 namespace yermakov
 {
-  std::string getWord(std::string& description);
+  std::string getAndEraseWord(std::string& description);
 }
 
 #endif

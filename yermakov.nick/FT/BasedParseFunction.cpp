@@ -1,6 +1,6 @@
 #include "BasedParseFunction.hpp"
 
-std::string yermakov::getWord(std::string& description)
+std::string yermakov::getAndEraseWord(std::string& description)
 {
   if (description.find_first_of(" ") == std::string::npos)
   {

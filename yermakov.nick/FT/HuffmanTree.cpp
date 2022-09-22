@@ -106,6 +106,7 @@ namespace
     {
       return std::move(a) + codeDict_.at(b) + " ";
     }
+    
     std::map< char, std::string > codeDict_;
   };
 }
@@ -126,7 +127,7 @@ yermakov::CharData yermakov::HuffmanTree::decompress(const CharData& text) const
   std::string textString = std::string();
   while (!code.empty())
   {
-    std::string instring = getWord(code);
+    std::string instring = getAndEraseWord(code);
     textString += charDict_.at(instring);
   }
   CharData newText;
