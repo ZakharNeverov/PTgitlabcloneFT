@@ -1,13 +1,13 @@
 #include "Commands.hpp"
 
-#include <ostream>
+#include <iostream>
 #include <fstream>
 #include <algorithm>
 
 #include "Messages.hpp"
 #include "BasedParseFunction.hpp"
 
-void yermakov::doGet(std::ostream& out, yermakov::TextDict& dict, std::string& description)
+void yermakov::doGet(yermakov::TextDict& dict, std::string& description)
 {
   std::string filename = getAndEraseWord(description);
   std::string textname = getAndEraseWord(description);
@@ -25,7 +25,7 @@ void yermakov::doGet(std::ostream& out, yermakov::TextDict& dict, std::string& d
   dict.insert({textname, inputText});
 }
 
-void yermakov::doWrite(std::ostream& out, yermakov::TextDict& dict, std::string& description)
+void yermakov::doWrite(const yermakov::TextDict& dict, std::string& description)
 {
   std::string filename = getAndEraseWord(description);
   std::string textname = getAndEraseWord(description);
@@ -46,7 +46,7 @@ void yermakov::doWrite(std::ostream& out, yermakov::TextDict& dict, std::string&
   input << (*toPrint).second;
 }
 
-void yermakov::doCalculateSize(std::ostream& out, yermakov::TextDict& dict, std::string& description)
+void yermakov::doCalculateSize(const yermakov::TextDict& dict, std::string& description)
 {
   std::string textname = getAndEraseWord(description);
   if (!description.empty())
@@ -58,10 +58,10 @@ void yermakov::doCalculateSize(std::ostream& out, yermakov::TextDict& dict, std:
   {
     throw std::invalid_argument("wrong args");
   }
-  out << (*toPrint).second.data_.text_.size();
+  std::cout << (*toPrint).second.data_.text_.size();
 }
 
-void yermakov::doPrint(std::ostream& out, yermakov::TextDict& dict, std::string& description)
+void yermakov::doPrint(const yermakov::TextDict& dict, std::string& description)
 {
   std::string textname = getAndEraseWord(description);
   if (!description.empty())
@@ -73,10 +73,10 @@ void yermakov::doPrint(std::ostream& out, yermakov::TextDict& dict, std::string&
   {
     throw std::invalid_argument("wrong args");
   }
-  out << (*toPrint).second;
+  std::cout << (*toPrint).second;
 }
 
-void yermakov::doCompress(std::ostream& out, yermakov::TextDict& dict, std::string& description)
+void yermakov::doCompress(yermakov::TextDict& dict, std::string& description)
 {
   std::string oldName = getAndEraseWord(description);
   std::string newName = getAndEraseWord(description);
@@ -87,7 +87,7 @@ void yermakov::doCompress(std::ostream& out, yermakov::TextDict& dict, std::stri
   dict.insert({newName, compress(dict.at(oldName))});
 }
 
-void yermakov::doDecompress(std::ostream& out, yermakov::TextDict& dict, std::string& description)
+void yermakov::doDecompress(yermakov::TextDict& dict, std::string& description)
 {
   std::string oldName = getAndEraseWord(description);
   std::string newName = getAndEraseWord(description);
@@ -109,7 +109,7 @@ namespace
   };
 }
 
-void yermakov::doEfficiency(std::ostream& out, yermakov::TextDict& dict, std::string& description)
+void yermakov::doEfficiency(const yermakov::TextDict& dict, std::string& description)
 {
   std::string firstTextName = getAndEraseWord(description);
   std::string secondTextName = getAndEraseWord(description);
@@ -125,12 +125,12 @@ void yermakov::doEfficiency(std::ostream& out, yermakov::TextDict& dict, std::st
   std::string str = (*secondText).second.data_.text_;
   std::size_t countStr = (std::count_if(str.begin(), str.end(), countSymb()) / 8);
   double eff = static_cast< double >((*firstText).second.data_.text_.size()) / countStr;
-  out << "BEFORE COMPRESS: " << (*firstText).second.data_.text_.size() << "\n";
-  out << "AFTER COMPRESS: " << countStr << "\n";
-  out << "EFFICIENCY: " << eff << "\n";
+  std::cout << "BEFORE COMPRESS: " << (*firstText).second.data_.text_.size() << "\n";
+  std::cout << "AFTER COMPRESS: " << countStr << "\n";
+  std::cout << "EFFICIENCY: " << eff << "\n";
 }
 
-void yermakov::doConcat(std::ostream& out, yermakov::TextDict& dict, std::string& description)
+void yermakov::doConcat(yermakov::TextDict& dict, std::string& description)
 {
   std::string newName = getAndEraseWord(description);
   std::string firstTextName = getAndEraseWord(description);
@@ -156,7 +156,7 @@ void yermakov::doConcat(std::ostream& out, yermakov::TextDict& dict, std::string
   dict.insert({newName, newText});
 }
 
-void yermakov::doCut(std::ostream& out, yermakov::TextDict& dict, std::string& description)
+void yermakov::doCut(yermakov::TextDict& dict, std::string& description)
 {
   std::string textname = getAndEraseWord(description);
   unsigned long first = std::stoul(getAndEraseWord(description));

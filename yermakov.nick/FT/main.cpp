@@ -7,7 +7,7 @@
 int main()
 {
   std::locale::global(std::locale(".utf8"));
-  using funcObj = std::function< void(std::ostream&, yermakov::TextDict&, std::string&) >;
+  using funcObj = std::function< void(yermakov::TextDict&, std::string&) >;
 
   std::map< std::string, funcObj > commandsArray
   {
@@ -36,7 +36,7 @@ int main()
       }
       std::string command = description.substr(0, description.find_first_of(" "));
       std::string argument = description.substr(description.find_first_of(" ") + 1);
-      commandsArray.at(command)(std::cout, texts, argument);
+      commandsArray.at(command)(texts, argument);
     }
     catch (...)
     {
