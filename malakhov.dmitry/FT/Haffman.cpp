@@ -1,5 +1,6 @@
 #include "Haffman.hpp"
 
+#include <memory>
 #include <cmath>
 #include <iostream>
 #include <limits>
@@ -69,27 +70,32 @@ namespace
 
     static HaffmanTree construct(const FrequencyT& frequency)
     {
-      std::queue< Node* > nodes;
-      nodes.push(new Node{{std::string{} + '\0', 1}});
+      std::queue< std::unique_ptr< Node > > nodes;
+      nodes.push(std::make_unique< Node >(PairT{std::string{} + '\0', 1}));
       for (auto it = frequency.begin(); it != frequency.begin(); ++it)
       {
         const std::string character = std::string{} + static_cast< char >(it->first);
-        nodes.push(new Node{{character, it->second}});
+        nodes.push(std::make_unique< Node >(PairT{character, it->second}));
       }
       while (nodes.size() > 1)
       {
-        Node* n1 = new Node{*nodes.front(), nullptr};
+        std::unique_ptr< Node > n1{nodes.front().release()};
         const PairT& stored1 = n1->stored;
         nodes.pop();
 
-        Node* n2 = new Node{*nodes.front(), nullptr};
+        std::unique_ptr< Node > n2{nodes.front().release()};
         const PairT& stored2 = n2->stored;
         nodes.pop();
 
-        Node* n3 = new Node{{stored1.first + stored2.first, stored1.second + stored2.second}, nullptr, n2, n1};
-        nodes.push(n3);
+        std::unique_ptr< Node > n3 = std::make_unique< Node >(
+          PairT{stored1.first + stored2.first, stored1.second + stored2.second},
+          nullptr,
+          n2.release(),
+          n1.release()
+        );
+        nodes.push(std::move(n3));
       }
-      return HaffmanTree{nodes.front()};
+      return HaffmanTree{nodes.front().release()};
     }
 
     BitmaskT getBitMask() const
