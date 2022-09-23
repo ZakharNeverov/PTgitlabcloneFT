@@ -9,15 +9,15 @@ namespace yermakov
 {
   using TextDict = std::map< std::string, yermakov::Text >;
 
-  void doGet(yermakov::TextDict&, std::string&);
-  void doWrite(const yermakov::TextDict&, std::string&);
-  void doCalculateSize(const yermakov::TextDict&, std::string&);
-  void doPrint(const yermakov::TextDict&, std::string&);
-  void doCompress(yermakov::TextDict&, std::string&);
-  void doDecompress(yermakov::TextDict&, std::string&);
-  void doEfficiency(const yermakov::TextDict&, std::string&);
-  void doConcat(yermakov::TextDict&, std::string&);
-  void doCut(yermakov::TextDict&, std::string&);
+  void doGet(std::ostream&, yermakov::TextDict&, std::string&);
+  void doWrite(std::ostream&, const yermakov::TextDict&, std::string&);
+  void doCalculateSize(std::ostream&, const yermakov::TextDict&, std::string&);
+  void doPrint(std::ostream&, const yermakov::TextDict&, std::string&);
+  void doCompress(std::ostream&, yermakov::TextDict&, std::string&);
+  void doDecompress(std::ostream&, yermakov::TextDict&, std::string&);
+  void doEfficiency(std::ostream&, const yermakov::TextDict&, std::string&);
+  void doConcat(std::ostream&, yermakov::TextDict&, std::string&);
+  void doCut(std::ostream&, yermakov::TextDict&, std::string&);
 }
 
 #endif
