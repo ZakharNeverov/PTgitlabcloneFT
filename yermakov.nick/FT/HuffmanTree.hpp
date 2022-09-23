@@ -22,6 +22,8 @@ namespace yermakov
     };
   }
   using NodePtr = std::shared_ptr< yermakov::HuffNode >;
+  using CharDict = std::map< std::string, char >;
+  using CodeDict = std::map< char, std::string >;
 
   class HuffmanTree
   {
@@ -32,12 +34,12 @@ namespace yermakov
     CharData decompress(const CharData&) const;
 
   private:
-    std::map< char, std::string > codeDict_;
-    std::map< std::string, char > charDict_;
-    void CreateRecursiveCodeDict(std::map< char, std::string >&, NodePtr, const std::string&);
+    CodeDict codeDict_;
+    CharDict charDict_;
+    void CreateRecursiveCodeDict(CodeDict&, NodePtr, const std::string&);
     NodePtr makeHuffTree(const CharData& text);
-    std::map< char, std::string > createCodeDict(NodePtr root);
-    std::map< std::string, char > createCharDict();
+    CodeDict createCodeDict(NodePtr root);
+    CharDict createCharDict();
   };
 }
 

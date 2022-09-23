@@ -12,8 +12,7 @@ yermakov::HuffNode::HuffNode(char ch, std::size_t weight, NodePtr left, NodePtr 
   weight_(weight),
   left_(left),
   right_(right)
-{
-}
+{}
 
 namespace
 {
@@ -52,16 +51,16 @@ yermakov::NodePtr yermakov::HuffmanTree::makeHuffTree(const CharData& text)
   return root;
 }
 
-std::map< char, std::string > yermakov::HuffmanTree::createCodeDict(NodePtr root)
+yermakov::CodeDict yermakov::HuffmanTree::createCodeDict(NodePtr root)
 {
-  std::map< char, std::string > codeDict;
+  CodeDict codeDict;
   this->CreateRecursiveCodeDict(codeDict, root, "");
   return codeDict;
 }
 
-std::map< std::string, char > yermakov::HuffmanTree::createCharDict()
+yermakov::CharDict yermakov::HuffmanTree::createCharDict()
 {
-  std::map< std::string, char > charDict;
+  CharDict charDict;
   auto iter = codeDict_.begin();
   while (iter != codeDict_.end())
   {
@@ -71,7 +70,7 @@ std::map< std::string, char > yermakov::HuffmanTree::createCharDict()
   return charDict;
 }
 
-void yermakov::HuffmanTree::CreateRecursiveCodeDict(std::map< char, std::string >& codeDict, NodePtr root, const std::string& previosBits)
+void yermakov::HuffmanTree::CreateRecursiveCodeDict(CodeDict& codeDict, NodePtr root, const std::string& previosBits)
 {
   if (!root->right_ && !root->left_)
   {
@@ -82,31 +81,25 @@ void yermakov::HuffmanTree::CreateRecursiveCodeDict(std::map< char, std::string 
   CreateRecursiveCodeDict(codeDict, root->right_, previosBits + "1");
 }
 
-yermakov::HuffmanTree::HuffmanTree():
-  codeDict_(),
-  charDict_()
-{
-}
+yermakov::HuffmanTree::HuffmanTree(): codeDict_(), charDict_()
+{}
 
 yermakov::HuffmanTree::HuffmanTree(const CharData& text):
-  codeDict_(createCodeDict(makeHuffTree(text))),
-  charDict_(createCharDict())
-{
-}
+    codeDict_(createCodeDict(makeHuffTree(text))), charDict_(createCharDict())
+{}
 
 namespace
 {
   struct CodeCreator
   {
-    CodeCreator(const std::map< char, std::string >& codeDict):
-      codeDict_(codeDict)
+    CodeCreator(const std::map< char, std::string >& codeDict): codeDict_(codeDict)
     {}
 
     std::string operator()(std::string a, const char b)
     {
       return std::move(a) + codeDict_.at(b) + " ";
     }
-    
+
     std::map< char, std::string > codeDict_;
   };
 }
