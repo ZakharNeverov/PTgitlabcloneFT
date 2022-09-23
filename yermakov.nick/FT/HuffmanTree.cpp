@@ -92,7 +92,8 @@ namespace
 {
   struct CodeCreator
   {
-    CodeCreator(const std::map< char, std::string >& codeDict): codeDict_(codeDict)
+    CodeCreator(const std::map< char, std::string >& codeDict):
+      codeDict_(codeDict)
     {}
 
     std::string operator()(std::string a, const char b)
