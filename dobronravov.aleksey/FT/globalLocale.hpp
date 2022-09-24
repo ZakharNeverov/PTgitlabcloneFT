@@ -3,7 +3,7 @@
 
 #include <locale>
 
-namespace kurzov
+namespace dobronravov
 {
   struct globalLocale
   {
@@ -11,7 +11,7 @@ namespace kurzov
     ~globalLocale();
 
   private:
-    std::locale m_prev_loc;
+    std::locale last_locale;
   };
 }
 

@@ -10,7 +10,7 @@
 
 int main(int argc, char**)
 {
-  auto local = kurzov::globalLocale(std::locale("ru_RU.utf8"));
+  auto local = dobronravov::globalLocale(std::locale("ru_RU.utf8"));
 
   if (argc != 1)
   {
