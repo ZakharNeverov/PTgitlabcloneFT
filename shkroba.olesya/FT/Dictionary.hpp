@@ -1,11 +1,12 @@
 #ifndef RGR_ENG_RUS_DICTIONARY_HPP
 #define RGR_ENG_RUS_DICTIONARY_HPP
+
 #include <map>
 #include <set>
 #include <memory>
-//#include <ostream>
 #include <string>
 #include <iosfwd>
+
 namespace shkroba
 {
   using setPointer = std::shared_ptr< std::set< std::string > >;
