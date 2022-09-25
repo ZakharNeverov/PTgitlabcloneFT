@@ -3,11 +3,12 @@
 #include <algorithm>
 #include <functional>
 #include <iterator>
-#include "Dictionary.hpp"
+#include <fstream>
 #include "userCommands.hpp"
 
 namespace shkroba
 {
+  using namespace std::placeholders;
   std::ostream& operator<<(std::ostream& out, std::set< std::string >& set)
   {
     for (auto& item: set)
@@ -18,103 +19,38 @@ namespace shkroba
     return out;
   }
 
+  bool isHere(const Dictionary& current, const pairER& pair, std::set< std::string >& set)
+  {
+    auto temp = current.search(pair.first);
+    if (temp != current.end())
+    {
+      auto begin1 = set.begin();
+      auto end1 = set.end();
+      auto begin2 = temp->second->begin();
+      auto end2 = temp->second->end();
+      std::set_intersection(begin1, end1, begin2, end2, std::inserter(set, set.begin()));
+      return true;
+    }
+    return false;
+  }
+
   Dictionary createCommonDictionary(std::vector< Dictionary >& common)
   {
     Dictionary result("result");
-    bool isCommon;
-
     std::map< std::string, size_t > translates;
-
     Dictionary dictionary = *common.begin();
     for (const auto& pair: dictionary)
     {
-      isCommon = true;
-      translates.clear();
-      for (const auto& dictionarySecond: common)
+      std::set< std::string > set = *pair.second;
+      auto number = std::count_if(common.begin(), common.end(), std::bind(isHere, _1, pair, set));
+      if (number == (common.size()))
       {
-        if (dictionarySecond.search(pair.first) == dictionarySecond.end())
-        {
-          isCommon = false;
-          break;
-        }
-        else
-        {
-          pairER item = *dictionarySecond.search(pair.first);
-          std::for_each(
-            item.second->begin(),
-            item.second->end(),
-            [&translates](const std::string& str)
-            {
-              translates[str]++;
-            }
-          );
-        }
-      }
-      if (isCommon)
-      {
-        std::set< std::string > set;
-        for (const auto& translate: translates)
-        {
-          if (translate.second == common.size())
-          {
-            set.insert(translate.first);
-          }
-        }
-        if (set.empty())
-        {
-          std::cout << "Write translate for " + pair.first << '\n';
-          std::cout << "Write \"Exit\" to escape\n";
-          std::string in;
-          while (true)
-          {
-            std::cin >> in;
-            if (in == "Exit" && set.empty())
-            {
-              continue;
-            }
-            if (in == "Exit")
-            {
-              break;
-            }
-            set.insert(in);
-          }
-        }
-        std::shared_ptr< std::set< std::string > > sharedPtr = std::make_shared< std::set< std::string > >(set);
-        result.insert({pair.first, sharedPtr});
+        setPointer ptr = std::make_shared< std::set< std::string > >(set);
+        pairER newItem = std::make_pair(pair.first, ptr);
+        result.insert(newItem);
       }
     }
     return result;
-  }
-
-  Dictionary createFromUniqueWords(const Dictionary& d1, const Dictionary& d2)
-  {
-    Dictionary common("common");
-    std::set_intersection(
-      d1.getDictionary().begin(),
-      d1.getDictionary().end(),
-      d2.getDictionary().begin(),
-      d2.getDictionary().end(),
-      std::inserter(common.getDictionary(), common.getDictionary().begin())
-    );
-    return common;
-  }
-
-  Dictionary createFromOneTranslate(const Dictionary& dictionary)
-  {
-    std::cout << "Input name of new dictionary" << '\n';
-    std::string name;
-    std::cin >> name;
-    Dictionary newDictionary(name);
-    std::copy_if(
-      dictionary.begin(),
-      dictionary.end(),
-      std::inserter(newDictionary.getDictionary(), newDictionary.begin()),
-      [](const std::pair< std::string, std::shared_ptr< std::set< std::string > > >& pair)
-      {
-        return pair.second->size() == 1;
-      }
-    );
-    return newDictionary;
   }
 
   void doPrintDictionary(const Dictionary& dictionary, std::ostream& out)
@@ -130,31 +66,6 @@ namespace shkroba
   void doFindWord(const Dictionary& dictionary, std::string letter, std::ostream& out)
   {
     dictionary.findWord(letter, std::cout);
-  }
-
-  void doCommonForTwo(const Dictionary& source, const Dictionary& extra, std::ostream& out)
-  {
-    Dictionary result;
-    std::merge(
-      source.getDictionary().begin(),
-      source.getDictionary().end(),
-      extra.getDictionary().begin(),
-      extra.getDictionary().end(),
-      std::inserter(result.getDictionary(), result.begin())
-    );
-    result.addWords(source);
-    result.addWords(extra);
-    result.printDictionary(out);
-  }
-
-  void doOneTranslate(const Dictionary& dictionary, std::ostream& out)
-  {
-    createFromOneTranslate(dictionary).printDictionary(out);
-  }
-
-  void doCreateFromUniqueWords(const Dictionary& first, const Dictionary& second, std::ostream& out)
-  {
-    createFromUniqueWords(first, second).printDictionary(out);
   }
 
   std::string nextWord(std::string& str)
@@ -188,5 +99,18 @@ namespace shkroba
       }
     }
     return resultVector;
+  }
+
+  void doPrintInFile(const Dictionary& dictionary, const std::string& fileName)
+  {
+    std::ofstream fout(fileName);
+    if (!fout.is_open())
+    {
+      throw std::invalid_argument("File is not open\n");
+    }
+    if (fout.is_open())
+    {
+      dictionary.printDictionary(fout);
+    }
   }
 }
