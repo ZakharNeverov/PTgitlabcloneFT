@@ -1,6 +1,5 @@
 #ifndef RGR_ENG_RUS_DICTIONARY_HPP
 #define RGR_ENG_RUS_DICTIONARY_HPP
-
 #include <map>
 #include <set>
 #include <memory>
