@@ -43,7 +43,8 @@ int main(int argc, char** argv)
   std::ifstream fin(argv[1]);
   if (!fin.is_open())
   {
-    throw std::invalid_argument("File is not open\n");
+    std::cerr << "File is not open\n");
+    return 1;
   }
   std::vector< shkroba::Dictionary > dictionaries = shkroba::createDictionariesFromFile(fin);
   auto myCommands = allCommands(std::cin, dictionaries, std::cout);
@@ -68,7 +69,7 @@ int main(int argc, char** argv)
       }
       catch (const std::exception& e)
       {
-        std::cout << e.what();
+        std::cerr << e.what();
         makeIstreamClean(std::cin);
       }
     }

@@ -37,7 +37,6 @@ namespace shkroba
   Dictionary createCommonDictionary(std::vector< Dictionary >& common)
   {
     Dictionary result("result");
-    std::map< std::string, size_t > translates;
     Dictionary dictionary = *common.begin();
     for (const auto& pair: dictionary)
     {
