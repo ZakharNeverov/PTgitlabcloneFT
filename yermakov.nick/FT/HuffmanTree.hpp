@@ -9,19 +9,6 @@
 
 namespace yermakov
 {
-  namespace
-  {
-    struct HuffNode
-    {
-      HuffNode() = default;
-      HuffNode(char, std::size_t, std::shared_ptr< yermakov::HuffNode >, std::shared_ptr< yermakov::HuffNode >);
-      char ch_;
-      std::size_t weight_;
-      std::shared_ptr< yermakov::HuffNode > right_;
-      std::shared_ptr< yermakov::HuffNode > left_;
-    };
-  }
-  using NodePtr = std::shared_ptr< yermakov::HuffNode >;
   using CharDict = std::map< std::string, char >;
   using CodeDict = std::map< char, std::string >;
 
@@ -36,9 +23,32 @@ namespace yermakov
   private:
     CodeDict codeDict_;
     CharDict charDict_;
+    struct HuffNode
+    {
+      HuffNode() = default;
+      HuffNode(char, std::size_t, std::shared_ptr< HuffNode >, std::shared_ptr< HuffNode >);
+      char ch_;
+      std::size_t weight_;
+      std::shared_ptr< HuffNode > right_;
+      std::shared_ptr< HuffNode > left_;
+    };
+    
+    using NodePtr = std::shared_ptr< HuffmanTree::HuffNode >;
+
+    struct MinFreq
+    {
+      bool operator()(NodePtr n1, NodePtr n2)
+      {
+        return n1->weight_ > n2->weight_;
+      }
+    };
+
+    using Queue = std::priority_queue< NodePtr, std::vector< NodePtr >, MinFreq >;
+
+    void pushNode(std::pair< char, std::size_t >, Queue&);
     void CreateRecursiveCodeDict(CodeDict&, NodePtr, const std::string&);
-    NodePtr makeHuffTree(const CharData& text);
-    CodeDict createCodeDict(NodePtr root);
+    NodePtr makeHuffTree(const CharData&);
+    CodeDict createCodeDict(NodePtr);
     CharDict createCharDict();
   };
 }

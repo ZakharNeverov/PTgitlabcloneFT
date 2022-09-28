@@ -7,36 +7,23 @@
 
 #include "BasedParseFunction.hpp"
 
-yermakov::HuffNode::HuffNode(char ch, std::size_t weight, NodePtr left, NodePtr right):
+yermakov::HuffmanTree::HuffNode::HuffNode(char ch, std::size_t weight, NodePtr left, NodePtr right):
   ch_(ch),
   weight_(weight),
   left_(left),
   right_(right)
 {}
 
-namespace
+void yermakov::HuffmanTree::pushNode(std::pair< char, std::size_t > pair, yermakov::HuffmanTree::Queue& pq)
 {
-  struct MinFreq
-  {
-    bool operator()(yermakov::NodePtr n1, yermakov::NodePtr n2)
-    {
-      return n1->weight_ > n2->weight_;
-    }
-  };
-
-  using Queue = std::priority_queue< yermakov::NodePtr, std::vector< yermakov::NodePtr >, MinFreq >;
-
-  void pushNode(std::pair< char, std::size_t > pair, Queue& pq)
-  {
-    pq.push(std::make_shared< yermakov::HuffNode >(pair.first, pair.second, nullptr, nullptr));
-  }
+  pq.push(std::make_shared< HuffmanTree::HuffNode >(pair.first, pair.second, nullptr, nullptr));
 }
 
-yermakov::NodePtr yermakov::HuffmanTree::makeHuffTree(const CharData& text)
+yermakov::HuffmanTree::NodePtr yermakov::HuffmanTree::makeHuffTree(const CharData& text)
 {
   Queue queue;
   using namespace std::placeholders;
-  std::for_each(text.freqDict_.begin(), text.freqDict_.end(), std::bind(pushNode, _1, std::ref(queue)));
+  std::for_each(text.freqDict_.begin(), text.freqDict_.end(), std::bind(&HuffmanTree::pushNode, this, _1, std::ref(queue)));
   while (queue.size() > 1)
   {
     NodePtr n1 = queue.top();
@@ -81,11 +68,13 @@ void yermakov::HuffmanTree::CreateRecursiveCodeDict(CodeDict& codeDict, NodePtr 
   CreateRecursiveCodeDict(codeDict, root->right_, previosBits + "1");
 }
 
-yermakov::HuffmanTree::HuffmanTree(): codeDict_(), charDict_()
+yermakov::HuffmanTree::HuffmanTree():
+  codeDict_(),
+  charDict_()
 {}
 
 yermakov::HuffmanTree::HuffmanTree(const CharData& text):
-    codeDict_(createCodeDict(makeHuffTree(text))), charDict_(createCharDict())
+  codeDict_(createCodeDict(makeHuffTree(text))), charDict_(createCharDict())
 {}
 
 namespace
