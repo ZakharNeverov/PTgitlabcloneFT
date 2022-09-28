@@ -109,7 +109,7 @@ void akimov::create(std::istream& input, vectorD& dicts)
   while (word != "<NONE>")
   {
     dict.insert(word);
-    word = getWord(text); 
+    word = getWord(text);
   }
   dicts.push_back(dict);
 }
