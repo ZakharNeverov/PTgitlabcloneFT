@@ -35,8 +35,6 @@ namespace malakhov
       std::string decoded;
     };
 
-    void deleteOld() noexcept;
-
     DecodedAndEncoded stored_;
     bool isEncoded_;
   };

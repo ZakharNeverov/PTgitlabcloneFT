@@ -50,7 +50,14 @@ malakhov::HaffmanStringUnion::HaffmanStringUnion() noexcept:
 
 malakhov::HaffmanStringUnion::~HaffmanStringUnion() noexcept
 {
-  deleteOld();
+  if (isEncoded_)
+  {
+    stored_.encoded.~Haffman();
+    return;
+  }
+
+  using std::string;
+  stored_.decoded.~string();
 }
 
 malakhov::HaffmanStringUnion::HaffmanStringUnion(const std::string& str):
@@ -92,14 +99,12 @@ const std::string& malakhov::HaffmanStringUnion::getDecoded() const
 
 void malakhov::HaffmanStringUnion::set(const std::string& str)
 {
-  deleteOld();
   stored_.decoded = str;
   isEncoded_ = false;
 }
 
 void malakhov::HaffmanStringUnion::set(const Haffman& haf)
 {
-  deleteOld();
   stored_.encoded = haf;
   isEncoded_ = true;
 }
@@ -169,16 +174,4 @@ bool malakhov::operator==(const HaffmanStringUnion& a, const HaffmanStringUnion&
     return a.getDecoded() == b.getDecoded();
   }
   return false;
-}
-
-void malakhov::HaffmanStringUnion::deleteOld() noexcept
-{
-  if (isEncoded_)
-  {
-    stored_.encoded.~Haffman();
-    return;
-  }
-
-  using std::string;
-  stored_.decoded.~string();
 }
