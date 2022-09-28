@@ -2,7 +2,7 @@
 
 #include "parser.hpp"
 
-alhimenko::User_interface::User_interface() :
+alhimenko::User_interface::User_interface():
   commands_({
   {"CREATE", detail::createGraph},
   {"PRINT", detail::printGraph},
@@ -12,7 +12,8 @@ alhimenko::User_interface::User_interface() :
   {"CHECK_EDGE", detail::checkEdge},
   {"DFS", detail::dfs}
     })
-{ }
+{
+}
 
 void alhimenko::User_interface::start(std::istream& in, std::ostream& out)
 {
@@ -22,5 +23,6 @@ void alhimenko::User_interface::start(std::istream& in, std::ostream& out)
     parser.start(in, std::cout, in, std::cout);
   }
   catch (...)
-  {	}
+  {
+  }
 }

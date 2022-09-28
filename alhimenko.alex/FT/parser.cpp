@@ -13,7 +13,7 @@ std::istream& skipblank(std::istream& in)
 }
 
 void skipcommand(std::istream& in)
-{ 
+{
   std::cerr << "\n<INCORRECT COMMAND>\n";
   in.clear();
   in.ignore(std::numeric_limits<std::streamsize>::max(), ';');

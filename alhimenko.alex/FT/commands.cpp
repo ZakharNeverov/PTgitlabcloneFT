@@ -337,7 +337,7 @@ alhimenko::Vertex_t alhimenko::detail::readVertex(std::istream& in, bool& last_v
       last_vertex = true;
       break;
     }
-  } 
+  }
 
   return Vertex_t{ num, edges };
 }

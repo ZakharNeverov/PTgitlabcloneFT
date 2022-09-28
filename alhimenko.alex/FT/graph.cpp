@@ -116,7 +116,7 @@ bool alhimenko::Graph::empty() const
 
 bool alhimenko::Graph::find(const int32_t v_num) const
 {
-  return std::find_if(vertexes_.begin(), vertexes_.end(), 
+  return std::find_if(vertexes_.begin(), vertexes_.end(),
     [&](Vertex_t x)
     {
       return x.num_ == v_num;
@@ -144,7 +144,7 @@ void alhimenko::Graph::insert(const Vertex_t v)
 {
   try
   {
-    if (std::find_if(vertexes_.begin(), vertexes_.end(), 
+    if (std::find_if(vertexes_.begin(), vertexes_.end(),
       [&](Vertex_t x)
       {
         return x.num_ == v.num_;
@@ -186,7 +186,7 @@ void alhimenko::Graph::erase(const int32_t v)
     }
   ), vertexes_.end());
 
-  std::for_each(vertexes_.begin(), vertexes_.end(), 
+  std::for_each(vertexes_.begin(), vertexes_.end(),
     [&](Vertex_t& x)
     {
       x.edges_.erase(std::remove(x.edges_.begin(), x.edges_.end(), v), x.edges_.end());
