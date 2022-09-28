@@ -44,7 +44,7 @@ void alhimenko::detail::createGraph(std::istream& in, std::ostream& out)
     graphs.emplace(name, std::make_unique<Graph>(vertexes));
   }
   catch (std::runtime_error& ex)
-  {	
+  {
     std::cerr << ex.what() << '\n';
   }
 }
