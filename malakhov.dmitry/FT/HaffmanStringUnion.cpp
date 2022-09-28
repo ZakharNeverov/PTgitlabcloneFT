@@ -9,28 +9,38 @@ namespace
 }
 
 malakhov::HaffmanStringUnion::DecodedAndEncoded::DecodedAndEncoded() noexcept:
-  decoded(nullptr)
+  decoded()
+{}
+
+malakhov::HaffmanStringUnion::DecodedAndEncoded::~DecodedAndEncoded() noexcept
 {}
 
 malakhov::HaffmanStringUnion::HaffmanStringUnion(const HaffmanStringUnion& instance):
   stored_(),
   isEncoded_(instance.isEncoded_)
 {
-  if (!isEncoded_ && instance.stored_.decoded)
+  if (isEncoded_)
   {
-    stored_.decoded = new std::string{*instance.stored_.decoded};
+    stored_.encoded = instance.stored_.encoded;
   }
-  else if (isEncoded_ && instance.stored_.encoded)
+  else
   {
-    stored_.encoded = new Haffman{*instance.stored_.encoded};
+    stored_.decoded = instance.stored_.decoded;
   }
 }
 
 malakhov::HaffmanStringUnion::HaffmanStringUnion(HaffmanStringUnion&& instance) noexcept:
-  stored_(instance.stored_),
+  stored_(),
   isEncoded_(instance.isEncoded_)
 {
-  instance.stored_.decoded = nullptr;
+  if (isEncoded_)
+  {
+    stored_.encoded = std::move(instance.stored_.encoded);
+  }
+  else
+  {
+    stored_.decoded = std::move(instance.stored_.decoded);
+  }
 }
 
 malakhov::HaffmanStringUnion::HaffmanStringUnion() noexcept:
@@ -47,14 +57,14 @@ malakhov::HaffmanStringUnion::HaffmanStringUnion(const std::string& str):
   stored_(),
   isEncoded_(false)
 {
-  stored_.decoded = new std::string{str};
+  stored_.decoded = str;
 }
 
 malakhov::HaffmanStringUnion::HaffmanStringUnion(const Haffman& haf):
   stored_(),
   isEncoded_(true)
 {
-  stored_.encoded = new Haffman{haf};
+  stored_.encoded = haf;
 }
 
 bool malakhov::HaffmanStringUnion::isEncoded() const noexcept
@@ -68,7 +78,7 @@ const malakhov::Haffman& malakhov::HaffmanStringUnion::getEncoded() const
   {
     throw std::logic_error(WRONG_TYPE_ERR);
   }
-  return *stored_.encoded;
+  return stored_.encoded;
 }
 
 const std::string& malakhov::HaffmanStringUnion::getDecoded() const
@@ -77,20 +87,20 @@ const std::string& malakhov::HaffmanStringUnion::getDecoded() const
   {
     throw std::logic_error(WRONG_TYPE_ERR);
   }
-  return *stored_.decoded;
+  return stored_.decoded;
 }
 
 void malakhov::HaffmanStringUnion::set(const std::string& str)
 {
   deleteOld();
-  stored_.decoded = new std::string{str};
+  stored_.decoded = str;
   isEncoded_ = false;
 }
 
 void malakhov::HaffmanStringUnion::set(const Haffman& haf)
 {
   deleteOld();
-  stored_.encoded = new Haffman{haf};
+  stored_.encoded = haf;
   isEncoded_ = true;
 }
 
@@ -165,17 +175,10 @@ void malakhov::HaffmanStringUnion::deleteOld() noexcept
 {
   if (isEncoded_)
   {
-    if (stored_.encoded)
-    {
-      delete stored_.encoded;
-      stored_.encoded = nullptr;
-    }
+    stored_.encoded.~Haffman();
     return;
   }
 
-  if (stored_.decoded)
-  {
-    delete stored_.decoded;
-    stored_.decoded = nullptr;
-  }
+  using std::string;
+  stored_.decoded.~string();
 }

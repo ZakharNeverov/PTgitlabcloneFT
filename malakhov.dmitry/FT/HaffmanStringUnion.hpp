@@ -30,8 +30,9 @@ namespace malakhov
     {
     public:
       DecodedAndEncoded() noexcept;
-      Haffman* encoded;
-      std::string* decoded;
+      ~DecodedAndEncoded() noexcept;
+      Haffman encoded;
+      std::string decoded;
     };
 
     void deleteOld() noexcept;
