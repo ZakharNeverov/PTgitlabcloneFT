@@ -32,7 +32,7 @@ namespace yermakov
       std::shared_ptr< HuffNode > right_;
       std::shared_ptr< HuffNode > left_;
     };
-    
+
     using NodePtr = std::shared_ptr< HuffmanTree::HuffNode >;
 
     struct MinFreq
