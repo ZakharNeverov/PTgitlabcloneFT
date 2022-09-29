@@ -5,105 +5,51 @@
 
 #include <stdexcept>
 
-alhimenko::Graph::Graph(std::initializer_list<Vertex_t> vertexes)
-{
-  std::list<Vertex_t> temp;
-  temp.insert(temp.begin(), vertexes.begin(), vertexes.end());
-
-  try
-  {
-    for (auto i : temp)
-    {
-      std::for_each(i.edges_.begin(), i.edges_.end(),
-        [&](int32_t x)
-        {
-          if (std::find_if(temp.begin(), temp.end(),
-            [&](Vertex_t y)
-            {
-              return y.num_ == x;
-            }
-          ) == temp.end())
-          {
-            temp.erase(std::remove_if(temp.begin(), temp.end(),
-              [&](Vertex_t x)
-              {
-                return x.num_ == i.num_;
-              }
-            ), temp.end());
-
-            std::for_each(temp.begin(), temp.end(),
-              [&](Vertex_t& x)
-              {
-                x.edges_.erase(std::remove(x.edges_.begin(), x.edges_.end(), i.num_), x.edges_.end());
-              }
-            );
-          }
-        });
-    }
-  }
-  catch (std::runtime_error& ex)
-  {
-    std::cerr << ex.what();
-    return;
-  }
-  for (auto i : temp)
-  {
-    if (i.num_ > visited_max_size) visited_max_size = i.num_ + 1;
-  }
-  vertexes_.insert(vertexes_.begin(), temp.begin(), temp.end());
-  for (auto i : vertexes_)
-  {
-    visited_.emplace(i.num_, 0);
-  }
-}
-
-alhimenko::Graph::Graph(std::list<Vertex_t>& vertexes)
+alhimenko::Graph::Graph(std::list<Vertex_t> vertexes)
 {
   std::list<Vertex_t> temp;
   temp = std::move(vertexes);
 
   try
   {
-    for (auto i : temp)
+    auto i = temp.begin();
+    while (i != temp.end())
     {
-      std::for_each(i.edges_.begin(), i.edges_.end(),
-        [&](int32_t x)
+      auto num = i->num_;
+      bool isErase = false;
+      for(auto&& x : i->edges_)
+      {
+        if (std::find(temp.begin(), temp.end(), x) == temp.end())
         {
-          if (std::find_if(temp.begin(), temp.end(),
-            [&](Vertex_t y)
-            {
-              return y.num_ == x;
-            }
-          ) == temp.end())
+          auto deleteAllEdgesToVertexI = [&num](Vertex_t& y)
           {
-            temp.erase(std::remove_if(temp.begin(), temp.end(),
-              [&](Vertex_t x)
-              {
-                return x.num_ == i.num_;
-              }
-            ), temp.end());
+             y.edges_.erase(
+              std::remove(y.edges_.begin(), y.edges_.end(), num),
+              y.edges_.end());
+          };
 
-            std::for_each(temp.begin(), temp.end(),
-              [&](Vertex_t& x)
-              {
-                x.edges_.erase(std::remove(x.edges_.begin(), x.edges_.end(), i.num_), x.edges_.end());
-              }
-            );
-          }
-        });
+          std::for_each(temp.begin(), temp.end(), deleteAllEdgesToVertexI);
+
+          i = temp.erase(std::remove(temp.begin(), temp.end(), num), temp.end());
+          isErase = true;
+
+          break;
+        }
+      }
+      if (!isErase) ++i;
     }
   }
-  catch (std::runtime_error& ex)
+  catch (std::exception& ex)
   {
     std::cerr << ex.what();
     return;
   }
-  for (auto i : temp)
+  for (auto&& i : temp)
   {
     if (i.num_ > visited_max_size) visited_max_size = i.num_ + 1;
   }
   vertexes_ = std::move(temp);
-  for (auto i : vertexes_)
+  for (auto&& i : vertexes_)
   {
     visited_.emplace(i.num_, 0);
   }
@@ -116,14 +62,7 @@ bool alhimenko::Graph::empty() const
 
 bool alhimenko::Graph::find(const int32_t v_num) const
 {
-  return std::find_if(vertexes_.begin(), vertexes_.end(),
-    [&](Vertex_t x)
-    {
-      return x.num_ == v_num;
-    }
-  ) != vertexes_.end();
-
-  return true;
+  return std::find(vertexes_.begin(), vertexes_.end(), v_num) != vertexes_.end();
 }
 
 bool alhimenko::Graph::isEdge(const int32_t v1, const int32_t v2) const
@@ -144,21 +83,12 @@ void alhimenko::Graph::insert(const Vertex_t v)
 {
   try
   {
-    if (std::find_if(vertexes_.begin(), vertexes_.end(),
-      [&](Vertex_t x)
-      {
-        return x.num_ == v.num_;
-      }) == vertexes_.end())
+    if (std::find(vertexes_.begin(), vertexes_.end(),v.num_) == vertexes_.end())
     {
       std::for_each(v.edges_.begin(), v.edges_.end(),
         [&](int32_t x)
         {
-          if (std::find_if(vertexes_.begin(), vertexes_.end(),
-            [&](Vertex_t y)
-            {
-              return y.num_ == x;
-            }
-          ) == vertexes_.end())
+          if (std::find(vertexes_.begin(), vertexes_.end(), x) == vertexes_.end())
           {
             throw std::runtime_error("Insert error");
           }
@@ -171,7 +101,7 @@ void alhimenko::Graph::insert(const Vertex_t v)
     else throw std::runtime_error("Insert error");
 
   }
-  catch (std::runtime_error& ex)
+  catch (std::exception& ex)
   {
     std::cerr << ex.what();
   }
@@ -179,12 +109,7 @@ void alhimenko::Graph::insert(const Vertex_t v)
 
 void alhimenko::Graph::erase(const int32_t v)
 {
-  vertexes_.erase(std::remove_if(vertexes_.begin(), vertexes_.end(),
-    [&](Vertex_t x)
-    {
-      return x.num_ == v;
-    }
-  ), vertexes_.end());
+  vertexes_.erase(std::remove(vertexes_.begin(), vertexes_.end(), v), vertexes_.end());
 
   std::for_each(vertexes_.begin(), vertexes_.end(),
     [&](Vertex_t& x)
@@ -193,12 +118,16 @@ void alhimenko::Graph::erase(const int32_t v)
     }
   );
 
-  for (auto it = visited_.begin(); it != visited_.end();)
+  for (auto&& it = visited_.begin(); it != visited_.end();)
   {
     if (it->first == v)
+    {
       it = visited_.erase(it);
+    }
     else
+    {
       ++it;
+    }
   }
 }
 
@@ -215,9 +144,12 @@ void alhimenko::Graph::print(std::ostream& out) const
 
 void alhimenko::Graph::dfs(std::ostream& out) const
 {
-  for (auto i : vertexes_)
+  for (auto&& i : vertexes_)
   {
-    if (visited_.at(i.num_) == 0) dfs_supply(i.num_, out);
+    if (visited_.at(i.num_) == 0)
+    {
+      dfs_supply(i.num_, out);
+    }
   }
 }
 
@@ -225,15 +157,24 @@ void alhimenko::Graph::dfs_supply(const uint32_t& v_num, std::ostream& out) cons
 {
   visited_.at(v_num) = 1;
 
-  for (auto i : std::find_if(vertexes_.begin(), vertexes_.end(),
-    [&](Vertex_t x)
-    {
-      return x.num_ == v_num;
-    }
-  )->edges_)
+  auto edges = std::find(vertexes_.begin(), vertexes_.end(), v_num)->edges_;
+  for (auto&& i : edges)
   {
-    if (visited_.at(i) == 0) dfs_supply(i, out);
+    if (visited_.at(i) == 0)
+    {
+      dfs_supply(i, out);
+    }
   }
 
   out << v_num << " ";
+}
+
+alhimenko::Vertex_t::Vertex_t(uint32_t num, std::initializer_list<uint32_t> vertexes):
+  num_(num), edges_(std::move(vertexes))
+{
+}
+
+alhimenko::Vertex_t::Vertex_t(uint32_t num, std::list<uint32_t>& vertexes):
+  num_(num), edges_(std::move(vertexes))
+{
 }

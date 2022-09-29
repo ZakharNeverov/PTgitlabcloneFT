@@ -4,13 +4,13 @@
 
 alhimenko::User_interface::User_interface():
   commands_({
-  {"CREATE", detail::createGraph},
-  {"PRINT", detail::printGraph},
-  {"INSERT", detail::insertVertex},
-  {"DELETE", detail::deleteVertex},
-  {"FIND", detail::findVertex},
-  {"CHECK_EDGE", detail::checkEdge},
-  {"DFS", detail::dfs}
+  {"CREATE", createGraph},
+  {"PRINT", printGraph},
+  {"INSERT", insertVertex},
+  {"DELETE", deleteVertex},
+  {"FIND", findVertex},
+  {"CHECK_EDGE", checkEdge},
+  {"DFS", dfs}
     })
 {
 }

@@ -1,12 +1,12 @@
+#ifndef GRAPH_HPP
+#define GRAPH_HPP
+
 #include <vector>
 #include <list>
 #include <cstdint>
 #include <initializer_list>
 #include <iosfwd>
 #include <map>
-
-#ifndef GRAPH_HPP
-#define GRAPH_HPP
 
 namespace alhimenko
 {
@@ -16,10 +16,18 @@ namespace alhimenko
     std::list<uint32_t> edges_;
 
     Vertex_t() = default;
-    Vertex_t(uint32_t num, std::initializer_list<uint32_t> vertexes) :
-      num_(num), edges_(std::move(vertexes)) {}
-    Vertex_t(uint32_t num, std::list<uint32_t>& vertexes) :
-      num_(num), edges_(std::move(vertexes)) {}
+    explicit Vertex_t(uint32_t num, std::initializer_list<uint32_t> vertexes);
+    explicit Vertex_t(uint32_t num, std::list<uint32_t>& vertexes);
+
+    inline bool operator==(const Vertex_t& rhs) const
+    {
+      return this->num_ == rhs.num_;
+    }
+
+    inline bool operator==(const int32_t& rhs) const
+    {
+      return this->num_ == rhs;
+    }
 
     ~Vertex_t() = default;
   };
@@ -28,8 +36,7 @@ namespace alhimenko
   {
   public:
     Graph() = default;
-    Graph(std::initializer_list<Vertex_t>);
-    Graph(std::list<Vertex_t>&);
+    explicit Graph(std::list<Vertex_t>);
     ~Graph() = default;
 
     bool empty() const;

@@ -1,7 +1,7 @@
-#include <functional>
-
 #ifndef USER_INTERFACE_HPP
 #define USER_INTERFACE_HPP
+
+#include <functional>
 
 #include "commands.hpp"
 
@@ -17,7 +17,7 @@ namespace alhimenko
     ~User_interface() = default;
 
   private:
-    using command = std::function<decltype(alhimenko::detail::createGraph)>;
+    using command = std::function<decltype(alhimenko::createGraph)>;
 
     std::map<std::string, command> commands_;
   };

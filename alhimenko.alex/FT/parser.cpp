@@ -5,7 +5,7 @@
 
 std::istream& skipblank(std::istream& in)
 {
-  while (isblank(in.peek()))
+  while (std::isblank(in.peek()))
   {
     in.ignore();
   }

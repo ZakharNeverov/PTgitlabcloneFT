@@ -1,12 +1,12 @@
+#ifndef PARSER_HPP
+#define PARSER_HPP
+
 #include <map>
 #include <string>
 #include <stdexcept>
 #include <iostream>
 #include <fstream>
 #include <utility>
-
-#ifndef PARSER_HPP
-#define PARSER_HPP
 
 std::istream& skipblank(std::istream&);
 void skipcommand(std::istream&);
@@ -27,7 +27,7 @@ class Parser
 {
 
 public:
-  explicit Parser(const std::map<std::string, Function>& commands) :
+  explicit Parser(const std::map<std::string, Function>& commands):
     commands_(commands) {}
 
   template<typename... Args>

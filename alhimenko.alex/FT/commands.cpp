@@ -5,8 +5,9 @@
 
 #include "parser.hpp"
 #include "graph.hpp"
+#include "graph_list.hpp"
 
-bool alhimenko::detail::correctInput(std::istream& in)
+bool alhimenko::correctInput(std::istream& in)
 {
   std::istream::sentry sentry(in);
   if (!in && !in.eof())
@@ -17,7 +18,7 @@ bool alhimenko::detail::correctInput(std::istream& in)
   return true;
 }
 
-void alhimenko::detail::createGraph(std::istream& in, std::ostream& out)
+void alhimenko::createGraph(std::istream& in, std::ostream& out)
 {
   SkipWsFlagSaver saver(in);
 
@@ -30,10 +31,10 @@ void alhimenko::detail::createGraph(std::istream& in, std::ostream& out)
     return;
   }
 
-  std::list<Vertex_t> vertexes;
-  Vertex_t v;
   try
   {
+    std::list<Vertex_t> vertexes;
+    Vertex_t v;
     bool last_vertex = false;
     while (!last_vertex)
     {
@@ -43,18 +44,17 @@ void alhimenko::detail::createGraph(std::istream& in, std::ostream& out)
 
     graphs.emplace(name, std::make_unique<Graph>(vertexes));
   }
-  catch (std::runtime_error& ex)
+  catch (std::exception& ex)
   {
     std::cerr << ex.what() << '\n';
   }
 }
 
-void alhimenko::detail::printGraph(std::istream& in, std::ostream& out)
+void alhimenko::printGraph(std::istream& in, std::ostream& out)
 {
   SkipWsFlagSaver saver(in);
 
   std::string name;
-  char separator;
   in >> skipblank >> name;
   if (!correctInput(in)) return;
   if (!checkName(name))
@@ -63,6 +63,7 @@ void alhimenko::detail::printGraph(std::istream& in, std::ostream& out)
     return;
   }
 
+  char separator;
   in >> skipblank >> separator;
   if (separator != ';')
   {
@@ -82,12 +83,11 @@ void alhimenko::detail::printGraph(std::istream& in, std::ostream& out)
   }
 }
 
-void alhimenko::detail::insertVertex(std::istream& in, std::ostream& out)
+void alhimenko::insertVertex(std::istream& in, std::ostream& out)
 {
   SkipWsFlagSaver saver(in);
 
   std::string name;
-
   in >> skipblank >> name;
   if (!correctInput(in)) return;
   if (!checkName(name))
@@ -102,27 +102,25 @@ void alhimenko::detail::insertVertex(std::istream& in, std::ostream& out)
     skipcommand(in);
   }
 
-  Vertex_t v;
   try
   {
+    Vertex_t v;
     bool unuse = false;
     v = readVertex(in, unuse);
 
     it->second->insert(v);
   }
-  catch (std::runtime_error& ex)
+  catch (std::exception& ex)
   {
     std::cerr << ex.what() << '\n';
   }
 }
 
-void alhimenko::detail::deleteVertex(std::istream& in, std::ostream& out)
+void alhimenko::deleteVertex(std::istream& in, std::ostream& out)
 {
   SkipWsFlagSaver saver(in);
 
   std::string name;
-  char separator;
-
   in >> skipblank >> name;
   if (!correctInput(in)) return;
   if (!checkName(name))
@@ -137,12 +135,13 @@ void alhimenko::detail::deleteVertex(std::istream& in, std::ostream& out)
     skipcommand(in);
   }
 
-  uint32_t v_num;
   try
   {
+    uint32_t v_num;
     in >> skipblank >> v_num;
     if (!correctInput(in)) return;
 
+    char separator;
     in >> skipblank >> separator;
     if (separator != ';')
     {
@@ -152,19 +151,17 @@ void alhimenko::detail::deleteVertex(std::istream& in, std::ostream& out)
 
     it->second->erase(v_num);
   }
-  catch (std::runtime_error& ex)
+  catch (std::exception& ex)
   {
     std::cerr << ex.what() << '\n';
   }
 }
 
-void alhimenko::detail::findVertex(std::istream& in, std::ostream& out)
+void alhimenko::findVertex(std::istream& in, std::ostream& out)
 {
   SkipWsFlagSaver saver(in);
 
   std::string name;
-  char separator;
-
   in >> skipblank >> name;
   if (!correctInput(in)) return;
   if (!checkName(name))
@@ -180,12 +177,13 @@ void alhimenko::detail::findVertex(std::istream& in, std::ostream& out)
     return;
   }
 
-  uint32_t v_num;
   try
   {
+    uint32_t v_num;
     in >> skipblank >> v_num;
     if (!correctInput(in)) return;
 
+    char separator;
     in >> skipblank >> separator;
     if (separator != ';')
     {
@@ -195,19 +193,17 @@ void alhimenko::detail::findVertex(std::istream& in, std::ostream& out)
 
     out << '\n' << std::boolalpha << it->second->find(v_num) << '\n';
   }
-  catch (std::runtime_error& ex)
+  catch (std::exception& ex)
   {
     std::cerr << ex.what() << '\n';
   }
 }
 
-void alhimenko::detail::checkEdge(std::istream& in, std::ostream& out)
+void alhimenko::checkEdge(std::istream& in, std::ostream& out)
 {
   SkipWsFlagSaver saver(in);
 
   std::string name;
-  char separator;
-
   in >> skipblank >> name;
   if (!correctInput(in)) return;
   if (!checkName(name))
@@ -223,16 +219,17 @@ void alhimenko::detail::checkEdge(std::istream& in, std::ostream& out)
     return;
   }
 
-  uint32_t v_num1;
-  uint32_t v_num2;
   try
   {
+    uint32_t v_num1;
     in >> skipblank >> v_num1;
     if (!correctInput(in)) return;
 
+    uint32_t v_num2;
     in >> skipblank >> v_num2;
     if (!correctInput(in)) return;
 
+    char separator;
     in >> skipblank >> separator;
     if (separator != ';')
     {
@@ -242,18 +239,17 @@ void alhimenko::detail::checkEdge(std::istream& in, std::ostream& out)
 
     out << '\n' << std::boolalpha << it->second->isEdge(v_num1, v_num2) << '\n';
   }
-  catch (std::runtime_error& ex)
+  catch (std::exception& ex)
   {
     std::cerr << ex.what() << '\n';
   }
 }
 
-void alhimenko::detail::dfs(std::istream& in, std::ostream& out)
+void alhimenko::dfs(std::istream& in, std::ostream& out)
 {
   SkipWsFlagSaver saver(in);
 
   std::string name;
-  char separator;
   in >> skipblank >> name;
   if (!correctInput(in)) return;
   if (!checkName(name))
@@ -262,6 +258,7 @@ void alhimenko::detail::dfs(std::istream& in, std::ostream& out)
     return;
   }
 
+  char separator;
   in >> skipblank >> separator;
   if (separator != ';')
   {
@@ -282,19 +279,15 @@ void alhimenko::detail::dfs(std::istream& in, std::ostream& out)
   }
 }
 
-alhimenko::Vertex_t alhimenko::detail::readVertex(std::istream& in, bool& last_vertex)
+alhimenko::Vertex_t alhimenko::readVertex(std::istream& in, bool& last_vertex)
 {
   SkipWsFlagSaver saver(in);
 
   uint32_t num;
-  uint32_t edge_to;
-  Vertex_t v;
-  std::list<uint32_t> edges;
-  char separator;
-
   in >> skipblank >> num;
   if (!correctInput(in)) throw std::runtime_error("");
 
+  char separator;
   in >> skipblank >> separator;
   if (separator != ':')
   {
@@ -303,6 +296,10 @@ alhimenko::Vertex_t alhimenko::detail::readVertex(std::istream& in, bool& last_v
   }
 
   separator = ',';
+
+  uint32_t edge_to;
+  Vertex_t v;
+  std::list<uint32_t> edges;
   while (separator == ',')
   {
     in >> skipblank >> edge_to;
@@ -342,12 +339,21 @@ alhimenko::Vertex_t alhimenko::detail::readVertex(std::istream& in, bool& last_v
   return Vertex_t{ num, edges };
 }
 
-bool alhimenko::detail::checkName(const std::string& name)
+bool alhimenko::checkName(const std::string& name)
 {
-  for (auto i = 0; i < name.size(); ++i)
+  for (auto&& i = 0; i < name.size(); ++i)
   {
-    if (i == 0) if (!isalpha(name[i])) return false;
-    else if (!isalpha(name[i]) && !isdigit(name[i])) return false;
+    if (i == 0)
+    {
+      if (!std::isalpha(name[i]))
+      {
+        return false;
+      }
+    }
+    else if (!std::isalpha(name[i]) && !std::isdigit(name[i]))
+    {
+      return false;
+    }
   }
 
   return true;
