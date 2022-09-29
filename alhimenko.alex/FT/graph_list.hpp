@@ -9,7 +9,6 @@
 
 namespace alhimenko
 {
-  std::map<std::string, std::unique_ptr<Graph>> graphs;
+  std::map< std::string, std::unique_ptr< Graph > > graphs;
 }
-
 #endif
