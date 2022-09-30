@@ -39,7 +39,7 @@ alhimenko::Graph::Graph(std::list<Vertex_t> vertexes)
       if (!isErase) ++i;
     }
   }
-  catch (std::exception& ex)
+  catch (const std::exception& ex)
   {
     std::cerr << ex.what();
     return;
