@@ -22,15 +22,15 @@ private:
   bool worked_ = false;
 };
 
-template <class Function>
+template < class Function >
 class Parser
 {
 
 public:
-  explicit Parser(const std::map<std::string, Function>& commands):
+  explicit Parser(const std::map< std::string, Function >& commands):
     commands_(commands) {}
 
-  template<typename... Args>
+  template< typename... Args >
   void start(std::istream& in, std::ostream& out, Args&&... args)
   {
     std::string cmd;
@@ -41,14 +41,14 @@ public:
 
       if (commands_.find(cmd) != commands_.end())
       {
-        commands_.at(cmd)(std::forward<Args>(args)...);
+        commands_.at(cmd)(std::forward< Args >(args)...);
       }
       else std::cerr << "\n<INCORRECT COMMAND>\n";
     }
   }
 
 private:
-  std::map<std::string, Function> commands_;
+  std::map< std::string, Function > commands_;
 
 };
 #endif

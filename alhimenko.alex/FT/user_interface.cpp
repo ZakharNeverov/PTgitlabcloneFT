@@ -19,10 +19,10 @@ void alhimenko::User_interface::start(std::istream& in, std::ostream& out)
 {
   try
   {
-    Parser<command> parser(commands_);
+    Parser< command > parser(commands_);
     parser.start(in, std::cout, in, std::cout);
   }
-  catch (...)
+  catch (const std::exception& ex)
   {
   }
 }

@@ -13,11 +13,11 @@ namespace alhimenko
   struct Vertex_t
   {
     uint32_t num_;
-    std::list<uint32_t> edges_;
+    std::list< uint32_t > edges_;
 
     Vertex_t() = default;
-    explicit Vertex_t(uint32_t num, std::initializer_list<uint32_t> vertexes);
-    explicit Vertex_t(uint32_t num, std::list<uint32_t>& vertexes);
+    explicit Vertex_t(uint32_t num, std::initializer_list< uint32_t > vertexes);
+    explicit Vertex_t(uint32_t num, std::list< uint32_t >& vertexes);
 
     inline bool operator==(const Vertex_t& rhs) const
     {
@@ -36,7 +36,7 @@ namespace alhimenko
   {
   public:
     Graph() = default;
-    explicit Graph(std::list<Vertex_t>);
+    explicit Graph(std::list< Vertex_t >);
     ~Graph() = default;
 
     bool empty() const;
@@ -48,8 +48,8 @@ namespace alhimenko
     void dfs(std::ostream&) const;
 
   private:
-    std::list<Vertex_t> vertexes_;
-    mutable std::map<uint32_t, int8_t> visited_;
+    std::list< Vertex_t > vertexes_;
+    mutable std::map< uint32_t, int8_t > visited_;
 
     uint32_t visited_max_size = 0;
 

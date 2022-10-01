@@ -5,10 +5,9 @@
 
 #include <stdexcept>
 
-alhimenko::Graph::Graph(std::list<Vertex_t> vertexes)
+alhimenko::Graph::Graph(std::list< Vertex_t > vertexes)
 {
-  std::list<Vertex_t> temp;
-  temp = std::move(vertexes);
+  std::list< Vertex_t > temp = std::move(vertexes);
 
   try
   {
@@ -101,7 +100,7 @@ void alhimenko::Graph::insert(const Vertex_t v)
     else throw std::runtime_error("Insert error");
 
   }
-  catch (std::exception& ex)
+  catch (const std::exception& ex)
   {
     std::cerr << ex.what();
   }
@@ -169,12 +168,12 @@ void alhimenko::Graph::dfs_supply(const uint32_t& v_num, std::ostream& out) cons
   out << v_num << " ";
 }
 
-alhimenko::Vertex_t::Vertex_t(uint32_t num, std::initializer_list<uint32_t> vertexes):
+alhimenko::Vertex_t::Vertex_t(uint32_t num, std::initializer_list< uint32_t > vertexes):
   num_(num), edges_(std::move(vertexes))
 {
 }
 
-alhimenko::Vertex_t::Vertex_t(uint32_t num, std::list<uint32_t>& vertexes):
+alhimenko::Vertex_t::Vertex_t(uint32_t num, std::list< uint32_t >& vertexes):
   num_(num), edges_(std::move(vertexes))
 {
 }

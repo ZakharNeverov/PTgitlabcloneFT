@@ -33,7 +33,7 @@ void alhimenko::createGraph(std::istream& in, std::ostream& out)
 
   try
   {
-    std::list<Vertex_t> vertexes;
+    std::list< Vertex_t > vertexes;
     Vertex_t v;
     bool last_vertex = false;
     while (!last_vertex)
@@ -42,9 +42,9 @@ void alhimenko::createGraph(std::istream& in, std::ostream& out)
       vertexes.push_back(v);
     }
 
-    graphs.emplace(name, std::make_unique<Graph>(vertexes));
+    graphs.emplace(name, std::make_unique< Graph >(vertexes));
   }
-  catch (std::exception& ex)
+  catch (const std::exception& ex)
   {
     std::cerr << ex.what() << '\n';
   }
@@ -104,13 +104,12 @@ void alhimenko::insertVertex(std::istream& in, std::ostream& out)
 
   try
   {
-    Vertex_t v;
     bool unuse = false;
-    v = readVertex(in, unuse);
+    Vertex_t v = readVertex(in, unuse);
 
     it->second->insert(v);
   }
-  catch (std::exception& ex)
+  catch (const std::exception& ex)
   {
     std::cerr << ex.what() << '\n';
   }
@@ -139,7 +138,10 @@ void alhimenko::deleteVertex(std::istream& in, std::ostream& out)
   {
     uint32_t v_num;
     in >> skipblank >> v_num;
-    if (!correctInput(in)) return;
+    if (!correctInput(in))
+    {
+      return;
+    }
 
     char separator;
     in >> skipblank >> separator;
@@ -151,7 +153,7 @@ void alhimenko::deleteVertex(std::istream& in, std::ostream& out)
 
     it->second->erase(v_num);
   }
-  catch (std::exception& ex)
+  catch (const std::exception& ex)
   {
     std::cerr << ex.what() << '\n';
   }
@@ -193,7 +195,7 @@ void alhimenko::findVertex(std::istream& in, std::ostream& out)
 
     out << '\n' << std::boolalpha << it->second->find(v_num) << '\n';
   }
-  catch (std::exception& ex)
+  catch (const std::exception& ex)
   {
     std::cerr << ex.what() << '\n';
   }
@@ -205,7 +207,10 @@ void alhimenko::checkEdge(std::istream& in, std::ostream& out)
 
   std::string name;
   in >> skipblank >> name;
-  if (!correctInput(in)) return;
+  if (!correctInput(in))
+  {
+    return;
+  }
   if (!checkName(name))
   {
     skipcommand(in);
@@ -223,11 +228,17 @@ void alhimenko::checkEdge(std::istream& in, std::ostream& out)
   {
     uint32_t v_num1;
     in >> skipblank >> v_num1;
-    if (!correctInput(in)) return;
+    if (!correctInput(in))
+    {
+      return;
+    }
 
     uint32_t v_num2;
     in >> skipblank >> v_num2;
-    if (!correctInput(in)) return;
+    if (!correctInput(in))
+    {
+      return;
+    }
 
     char separator;
     in >> skipblank >> separator;
@@ -239,7 +250,7 @@ void alhimenko::checkEdge(std::istream& in, std::ostream& out)
 
     out << '\n' << std::boolalpha << it->second->isEdge(v_num1, v_num2) << '\n';
   }
-  catch (std::exception& ex)
+  catch (const std::exception& ex)
   {
     std::cerr << ex.what() << '\n';
   }
@@ -251,7 +262,11 @@ void alhimenko::dfs(std::istream& in, std::ostream& out)
 
   std::string name;
   in >> skipblank >> name;
-  if (!correctInput(in)) return;
+  if (!correctInput(in))
+  {
+    return;
+  }
+
   if (!checkName(name))
   {
     skipcommand(in);

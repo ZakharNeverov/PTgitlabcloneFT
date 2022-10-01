@@ -17,9 +17,9 @@ namespace alhimenko
     ~User_interface() = default;
 
   private:
-    using command = std::function<decltype(alhimenko::createGraph)>;
+    using command = std::function< decltype(alhimenko::createGraph) >;
 
-    std::map<std::string, command> commands_;
+    std::map< std::string, command > commands_;
   };
 }
 #endif
