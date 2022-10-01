@@ -21,7 +21,7 @@ namespace mitkov {
     void addFirst(const std::list< std::string >& args);
   public:
     Command(std::map< std::string, mitkov::orientedGraph< int > >& allGraphs, std::ostream& stream);
-    
+
     void operator()(std::list< std::string >& cmdList);
   };
 }

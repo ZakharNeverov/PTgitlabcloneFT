@@ -45,7 +45,7 @@ namespace mitkov {
       graph < T, isOriented >* attachedGraph;
       std::vector< bool > visited = {};
       std::queue< int > nextSteps = {};
-      
+
       iterator(int index, graph < T, isOriented >* attachedGraph):
         index(index),
         attachedGraph(attachedGraph)
@@ -57,7 +57,7 @@ namespace mitkov {
         nextSteps.push(index);
         visited[index] = true;
       }
-      
+
       bool operator==(const iterator& other) {
         return attachedGraph == other.attachedGraph && index == other.index;
       }
@@ -154,7 +154,12 @@ namespace mitkov {
   }
 
   template< typename T, bool isOriented >
-  inline std::stack< int > graph< T, isOriented >::searchCycle(int index, std::vector< short >& visited, int cameFrom, int& cycleIndex, bool& cycleFormed) const
+  inline std::stack< int > graph< T, isOriented >::searchCycle(
+  int index,
+  std::vector< short >& visited,
+  int cameFrom,
+  int& cycleIndex,
+  bool& cycleFormed) const
   {
     if (visited[index] == 1) {
       cycleIndex = index;
@@ -355,7 +360,7 @@ namespace mitkov {
     }
     std::copy(temp.begin(), temp.end(), result.arr.begin());
 
-    
+
     result.matrix.resize(result.arr.size());
     for (auto& x: result.matrix) {
       x.resize(result.matrix.size());
