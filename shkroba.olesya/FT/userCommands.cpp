@@ -2,7 +2,6 @@
 #include <algorithm>
 #include <functional>
 #include <iostream>
-#include <string>
 #include "Utilities.hpp"
 #include "iofmtguard.hpp"
 #include "Dictionary.hpp"
@@ -32,12 +31,27 @@ namespace
       return dictionary.getName() == name;
     }
   };
+
+  using mapHelpCommands =  std::map< std::string, std::string >;
+  mapHelpCommands defineHelpCommands()
+  {
+    mapHelpCommands mapHelp =
+      {
+        {"PRINT", "Print words from the selected dictionary."},
+        {"SIZE", "Print size of selected dictionary."},
+        {"START", "Print words beginning with input letter from the selected dictionary."},
+        {"ONETRANSLATE", "Create the dictionary and print words from it with one translation."},
+        {"FROMTWO", "Make dictionary from the current dictionary and test dictionary from program."},
+        {"UNIQUE", "Create common dictionary from nonrepeating words from current and test dictionaries from program."},
+        {"COMMON", "Create common dictionary with input number of dictionaries and print it."},
+      };
+    return mapHelp;
+  }
 }
 
 namespace shkroba
 {
   using namespace std::placeholders;
-
   void makePrint(std::istream& in, std::vector< Dictionary >& base, std::ostream& out)
   {
     std::string word;
@@ -56,8 +70,7 @@ namespace shkroba
     }
     else
     {
-      shkroba::iofmtguard iofmtguard(out);
-      out << "No dictionaries with such name" << '\n';
+      throw std::logic_error("<INCORRECT NAME>");
     }
   }
 
@@ -79,8 +92,7 @@ namespace shkroba
     }
     else
     {
-      shkroba::iofmtguard iofmtguard(out);
-      out << "No dictionaries with such name" << '\n';
+      throw std::logic_error("<INCORRECT NAME>");
     }
   }
 
@@ -105,8 +117,7 @@ namespace shkroba
     }
     else
     {
-      shkroba::iofmtguard iofmtguard(out);
-      out << "No dictionaries with such name" << '\n';
+      throw std::logic_error("<INCORRECT NAME>");
     }
   }
 
@@ -123,13 +134,12 @@ namespace shkroba
     if (iter != base.end())
     {
       shkroba::iofmtguard iofmtguard(out);
-      shkroba::doOneTranslate(*iter, out);
+      Dictionary::createFromOneTranslate(*iter).printDictionary(out);
       out << '\n';
     }
     else
     {
-      shkroba::iofmtguard iofmtguard(out);
-      out << "No dictionaries with such name" << '\n';
+      throw std::logic_error("<INCORRECT NAME>");
     }
   }
 
@@ -148,13 +158,12 @@ namespace shkroba
     if (iter != base.end())
     {
       shkroba::iofmtguard iofmtguard(out);
-      shkroba::doCreateFromUniqueWords(*iter, test, std::cout);
+      Dictionary::createFromUniqueWords(*iter, test).printDictionary(out);
       out << '\n';
     }
     else
     {
-      shkroba::iofmtguard iofmtguard(out);
-      out << "No dictionaries with such name" << '\n';
+      throw std::logic_error("<INCORRECT NAME>");
     }
   }
 
@@ -173,22 +182,21 @@ namespace shkroba
     if (iter != base.end())
     {
       shkroba::iofmtguard iofmtguard(out);
-      shkroba::doCommonForTwo(*iter, test, std::cout);
+      Dictionary::commonForTwo(*iter, test, std::cout);
       out << '\n';
     }
     else
     {
-      shkroba::iofmtguard iofmtguard(out);
-      out << "No dictionaries with such name" << '\n';
+      throw std::logic_error("<INCORRECT NAME>");
     }
   }
 
   void makeCommonDictionary(std::istream& in, std::vector< Dictionary >& base, std::ostream& out)
   {
     std::string string;
-    std::getline(in >> std::ws, string);
+    std::getline(in >> std::ws , string);
     std::vector< Dictionary > dictionaries;
-    while(string != "")
+    while (string != "")
     {
       std::string current;
       getNextWord(string, current);
@@ -197,55 +205,60 @@ namespace shkroba
       {
         dictionaries.push_back(*iter);
       }
+      else
+      {
+        throw std::logic_error("<INCORRECT NAME>");
+      }
     }
     shkroba::iofmtguard iofmtguard(out);
+    if (dictionaries.size() == 1)
+    {
+      throw std::logic_error("<INCORRECT NUMBER OF ARGUMENTS>");
+    }
     createCommonDictionary(dictionaries).printDictionary(std::cout);
     out << '\n';
   }
 
-  void makeHelp(std::istream& in, std::ostream& out)
+  void makePrintFile(std::istream& in, std::vector< Dictionary >& base, std::ostream& out)
   {
     std::string word;
-    in >> word;
+    in  >> word;
     iofmtguard guard(out);
     if (!isTwoWordsInCommand(in))
     {
       throw std::logic_error("<INVALID COMMAND>");
     }
-    if (word == "PRINT")
+    auto iter = std::find_if(base.begin(), base.end(), std::bind(isName(), _1, word));
+    if (iter != base.end())
     {
-      out << "Print words from the selected dictionary." << '\n';
-    }
-    else if (word == "SIZE")
-    {
-      out << "Print size of selected dictionary." << '\n';
-    }
-    else if (word == "ONETRANSLATE")
-    {
-      out << "Create the dictionary and print words from the selected dictionary that have one translation.";
+      std::cout << "Write the name of the output file" << '\n';
+      std::string fileName;
+      std::cin >> fileName;
+      shkroba::iofmtguard iofmtguard(out);
+      shkroba::doPrintInFile(*iter, fileName);
       out << '\n';
-    }
-    else if (word == "START")
-    {
-      out << "Print words beginning with input letter from the selected dictionary."<< '\n';
-    }
-    else if (word == "ADDANOTHER")
-    {
-      out << "Make dictionary from the current dictionary and test dictionary from program." << '\n';
-      out << "Print it." << '\n';
-    }
-    else if (word == "UNIQUE")
-    {
-      out << "Create common dictionary from words that do not repeat in current dictionary and in test dictionary from program.";
-      out << "Print it." << '\n';
-    }
-    else if (word == "COMMON")
-    {
-      out << "Create common dictionary with input number of dictionaries and print it." << '\n';
     }
     else
     {
+      throw std::logic_error("<INCORRECT NAME>");
+    }
+  }
+
+  void makeHelp(std::istream& in, std::ostream& out)
+  {
+    std::string command;
+    in >> command;
+    iofmtguard guard(out);
+    if (!isTwoWordsInCommand(in))
+    {
       throw std::logic_error("<INVALID COMMAND>");
     }
+    auto commandsHelp = defineHelpCommands();
+    auto iter = commandsHelp.find(command);
+    if (iter == commandsHelp.end())
+    {
+      throw std::logic_error("<INVALID COMMAND>");
+    }
+    std::cout << iter->second;
   }
 }
