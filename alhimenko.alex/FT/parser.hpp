@@ -8,53 +8,55 @@
 #include <fstream>
 #include <utility>
 
-std::istream& skipblank(std::istream&);
-void skipcommand(std::istream&);
-
-class SkipWsFlagSaver
+namespace alhimenko
 {
-
-public:
-  explicit SkipWsFlagSaver(std::istream& in);
-  ~SkipWsFlagSaver();
-private:
-  std::istream* in_;
-  bool worked_ = false;
-};
-
-template < class Function >
-class Parser
-{
-
-public:
-  explicit Parser(const std::map< std::string, Function >& commands):
-    commands_(commands) {}
-
-  template< typename... Args >
-  void start(std::istream& in, std::ostream& out, Args&&... args)
+  std::istream& skipblank(std::istream&);
+  void skipcommand(std::istream&);
+  class SkipWsFlagSaver
   {
-    std::string cmd;
-    while (in >> cmd)
+
+  public:
+    explicit SkipWsFlagSaver(std::istream& in);
+    ~SkipWsFlagSaver();
+  private:
+    std::istream* in_;
+    bool worked_ = false;
+  };
+
+  template < class Function >
+  class Parser
+  {
+
+  public:
+    explicit Parser(const std::map< std::string, Function >& commands) :
+      commands_(commands) {}
+
+    template< typename... Args >
+    void start(std::istream& in, std::ostream& out, Args&&... args)
     {
-      if (in.bad())
+      std::string cmd;
+      while (in >> cmd)
       {
-        throw std::runtime_error("Stream was broken");
-      }
-      if (in.fail())
-      {
-        throw std::invalid_argument("\n<INCORRECT COMMAND>\n");
-      }
+        if (in.bad())
+        {
+          throw std::runtime_error("Stream was broken");
+        }
+        if (in.fail())
+        {
+          throw std::invalid_argument("\n<INCORRECT COMMAND>\n");
+        }
 
-      if (commands_.find(cmd) != commands_.end())
-      {
-        commands_.at(cmd)(std::forward< Args >(args)...);
+        if (commands_.find(cmd) != commands_.end())
+        {
+          commands_.at(cmd)(std::forward< Args >(args)...);
+        }
+        else std::cerr << "\n<INCORRECT COMMAND>\n";
       }
-      else std::cerr << "\n<INCORRECT COMMAND>\n";
     }
-  }
 
-private:
-  std::map< std::string, Function > commands_;
+  private:
+    std::map< std::string, Function > commands_;
 
-};
+  };
+}
 #endif

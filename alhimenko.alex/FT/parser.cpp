@@ -3,7 +3,7 @@
 #include <iostream>
 #include <fstream>
 
-std::istream& skipblank(std::istream& in)
+std::istream& alhimenko::skipblank(std::istream& in)
 {
   while (std::isblank(in.peek()))
   {
@@ -12,7 +12,7 @@ std::istream& skipblank(std::istream& in)
   return in;
 }
 
-void skipcommand(std::istream& in)
+void alhimenko::skipcommand(std::istream& in)
 {
   std::cerr << "\n<INCORRECT COMMAND>\n";
   in.clear();
@@ -20,7 +20,7 @@ void skipcommand(std::istream& in)
   in.ignore();
 }
 
-SkipWsFlagSaver::SkipWsFlagSaver(std::istream& in)
+alhimenko::SkipWsFlagSaver::SkipWsFlagSaver(std::istream& in)
 {
   if (in.flags() & std::ios_base::skipws)
   {
@@ -30,7 +30,7 @@ SkipWsFlagSaver::SkipWsFlagSaver(std::istream& in)
   in_ = &in;
 }
 
-SkipWsFlagSaver::~SkipWsFlagSaver()
+alhimenko::SkipWsFlagSaver::~SkipWsFlagSaver()
 {
   if (worked_)
   {

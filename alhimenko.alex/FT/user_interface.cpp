@@ -20,7 +20,7 @@ void alhimenko::User_interface::start(std::istream& in, std::ostream& out)
 {
   try
   {
-    Parser< command > parser(commands_);
+    alhimenko::Parser< command > parser(commands_);
     parser.start(in, std::cout, in, std::cout);
   }
   catch (const std::exception& ex)
