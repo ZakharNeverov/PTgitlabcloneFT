@@ -35,7 +35,10 @@ alhimenko::Graph::Graph(std::list< Vertex_t > vertexes)
           break;
         }
       }
-      if (!isErase) ++i;
+      if (!isErase)
+      {
+        ++i;
+      }
     }
   }
   catch (const std::exception& ex)
@@ -45,7 +48,10 @@ alhimenko::Graph::Graph(std::list< Vertex_t > vertexes)
   }
   for (auto&& i : temp)
   {
-    if (i.num_ > visited_max_size) visited_max_size = i.num_ + 1;
+    if (i.num_ > visited_max_size)
+    {
+      visited_max_size = i.num_ + 1;
+    }
   }
   vertexes_ = std::move(temp);
   for (auto&& i : vertexes_)
@@ -97,7 +103,10 @@ void alhimenko::Graph::insert(const Vertex_t v)
       vertexes_.push_back(v);
       visited_.emplace(v.num_, 0);
     }
-    else throw std::runtime_error("Insert error");
+    else
+    {
+      throw std::runtime_error("Insert error");
+    }
 
   }
   catch (const std::exception& ex)
@@ -169,11 +178,13 @@ void alhimenko::Graph::dfs_supply(const uint32_t& v_num, std::ostream& out) cons
 }
 
 alhimenko::Vertex_t::Vertex_t(uint32_t num, std::initializer_list< uint32_t > vertexes):
-  num_(num), edges_(std::move(vertexes))
+  num_(num),
+  edges_(std::move(vertexes))
 {
 }
 
 alhimenko::Vertex_t::Vertex_t(uint32_t num, std::list< uint32_t >& vertexes):
-  num_(num), edges_(std::move(vertexes))
+  num_(num),
+  edges_(std::move(vertexes))
 {
 }

@@ -36,8 +36,14 @@ public:
     std::string cmd;
     while (in >> cmd)
     {
-      if (in.bad()) throw std::runtime_error("Stream was broken");
-      if (in.fail()) throw std::invalid_argument("\n<INCORRECT COMMAND>\n");
+      if (in.bad())
+      {
+        throw std::runtime_error("Stream was broken");
+      }
+      if (in.fail())
+      {
+        throw std::invalid_argument("\n<INCORRECT COMMAND>\n");
+      }
 
       if (commands_.find(cmd) != commands_.end())
       {

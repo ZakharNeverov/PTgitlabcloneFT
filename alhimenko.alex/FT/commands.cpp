@@ -24,7 +24,10 @@ void alhimenko::createGraph(std::istream& in, std::ostream& out)
 
   std::string name;
   in >> skipblank >> name;
-  if (!correctInput(in)) return;
+  if (!correctInput(in))
+  {
+    return;
+  }
   if (!checkName(name))
   {
     skipcommand(in);
@@ -56,7 +59,10 @@ void alhimenko::printGraph(std::istream& in, std::ostream& out)
 
   std::string name;
   in >> skipblank >> name;
-  if (!correctInput(in)) return;
+  if (!correctInput(in))
+  {
+    return;
+  }
   if (!checkName(name))
   {
     skipcommand(in);
@@ -89,7 +95,10 @@ void alhimenko::insertVertex(std::istream& in, std::ostream& out)
 
   std::string name;
   in >> skipblank >> name;
-  if (!correctInput(in)) return;
+  if (!correctInput(in))
+  {
+    return;
+  }
   if (!checkName(name))
   {
     skipcommand(in);
@@ -121,7 +130,10 @@ void alhimenko::deleteVertex(std::istream& in, std::ostream& out)
 
   std::string name;
   in >> skipblank >> name;
-  if (!correctInput(in)) return;
+  if (!correctInput(in))
+  {
+    return;
+  }
   if (!checkName(name))
   {
     skipcommand(in);
@@ -165,7 +177,10 @@ void alhimenko::findVertex(std::istream& in, std::ostream& out)
 
   std::string name;
   in >> skipblank >> name;
-  if (!correctInput(in)) return;
+  if (!correctInput(in))
+  {
+    return;
+  }
   if (!checkName(name))
   {
     skipcommand(in);
@@ -183,7 +198,10 @@ void alhimenko::findVertex(std::istream& in, std::ostream& out)
   {
     uint32_t v_num;
     in >> skipblank >> v_num;
-    if (!correctInput(in)) return;
+    if (!correctInput(in))
+    {
+      return;
+    }
 
     char separator;
     in >> skipblank >> separator;
@@ -300,7 +318,10 @@ alhimenko::Vertex_t alhimenko::readVertex(std::istream& in, bool& last_vertex)
 
   uint32_t num;
   in >> skipblank >> num;
-  if (!correctInput(in)) throw std::runtime_error("");
+  if (!correctInput(in))
+  {
+    throw std::runtime_error("");
+  }
 
   char separator;
   in >> skipblank >> separator;
@@ -323,13 +344,19 @@ alhimenko::Vertex_t alhimenko::readVertex(std::istream& in, bool& last_vertex)
       in.clear();
       in >> skipblank >> separator;
 
-      if (separator == '|') break;
-      else if (separator == ';')
+      if (separator == '|')
+      {
+        break;
+      }
+      else if(separator == ';')
       {
         last_vertex = true;
         break;
       }
-      else skipcommand(in);
+      else
+      {
+        skipcommand(in);
+      }
     }
 
     edges.push_back(edge_to);
@@ -350,7 +377,6 @@ alhimenko::Vertex_t alhimenko::readVertex(std::istream& in, bool& last_vertex)
       break;
     }
   }
-
   return Vertex_t{ num, edges };
 }
 

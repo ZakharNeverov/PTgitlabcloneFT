@@ -3,15 +3,16 @@
 #include "parser.hpp"
 
 alhimenko::User_interface::User_interface():
-  commands_({
-  {"CREATE", createGraph},
-  {"PRINT", printGraph},
-  {"INSERT", insertVertex},
-  {"DELETE", deleteVertex},
-  {"FIND", findVertex},
-  {"CHECK_EDGE", checkEdge},
-  {"DFS", dfs}
-    })
+  commands_(
+  {
+    {"CREATE", createGraph},
+    {"PRINT", printGraph},
+    {"INSERT", insertVertex},
+    {"DELETE", deleteVertex},
+    {"FIND", findVertex},
+    {"CHECK_EDGE", checkEdge},
+    {"DFS", dfs}
+  })
 {
 }
 

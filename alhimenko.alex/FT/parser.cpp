@@ -22,12 +22,18 @@ void skipcommand(std::istream& in)
 
 SkipWsFlagSaver::SkipWsFlagSaver(std::istream& in)
 {
-  if (in.flags() & std::ios_base::skipws) worked_ = true;
+  if (in.flags() & std::ios_base::skipws)
+  {
+    worked_ = true;
+  }
   std::noskipws(in);
   in_ = &in;
 }
 
 SkipWsFlagSaver::~SkipWsFlagSaver()
 {
-  if (worked_) std::skipws(*in_);
+  if (worked_)
+  {
+    std::skipws(*in_);
+  }
 }
