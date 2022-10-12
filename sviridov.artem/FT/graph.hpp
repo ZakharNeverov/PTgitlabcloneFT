@@ -24,7 +24,7 @@ namespace sviridov
     void removeCycles(bool onlyHamiltonian);
     void print(std::ostream& out);
   private:
-    std::vector<std::vector<int>> matrixGraph;
+    std::vector<std::vector<int>> matrixGraph_;
     int inVertexDegree(size_t vertex);
     int outVertexDegree(size_t vertex);
     void doRemovingCycles(size_t row, std::vector<std::string>& colors);

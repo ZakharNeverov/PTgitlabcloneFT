@@ -41,6 +41,10 @@ void sviridov::Command::operator()(CommandArgs& args)
 
 void sviridov::Command::getGraphs(CommandArgs& args)
 {
+  if (args.size() != 3)
+  {
+    throw std::logic_error("Error! Number of arguments is invalid!");
+  }
   std::string fileName = args.front();
   args.pop_front();
   std::ifstream fin;
@@ -82,15 +86,7 @@ void sviridov::Command::print(CommandArgs& args)
   }
   std::string nameOfGraph = args.front();
   args.pop_front();
-  try
-  {
-    mapOfGraphs_.at(nameOfGraph).print(out_);
-  }
-  catch (const std::out_of_range&)
-  {
-    throw std::logic_error("Error! No such graph!");
-  }
-  
+  mapOfGraphs_.at(nameOfGraph).print(out_);
 }
 
 void sviridov::Command::inVertexesDegrees(CommandArgs& args)
@@ -101,17 +97,10 @@ void sviridov::Command::inVertexesDegrees(CommandArgs& args)
   }
   std::string nameOfGraph = args.front();
   args.pop_front();
-  try
+  std::vector< int > inVertexesDegrees = mapOfGraphs_.at(nameOfGraph).inVertexesDegrees();
+  for (size_t i = 0; i < inVertexesDegrees.size(); i++)
   {
-    std::vector< int > inVertexesDegrees = mapOfGraphs_.at(nameOfGraph).inVertexesDegrees();
-    for (size_t i = 0; i < inVertexesDegrees.size(); i++)
-    {
-      out_ << inVertexesDegrees[i] << ' ';
-    }
-  }
-  catch (const std::out_of_range&)
-  {
-    throw std::logic_error("Error! No such graph!");
+    out_ << inVertexesDegrees[i] << ' ';
   }
 }
 
@@ -123,17 +112,10 @@ void sviridov::Command::outVertexesDegrees(CommandArgs& args)
   }
   std::string nameOfGraph = args.front();
   args.pop_front();
-  try
+  std::vector< int > outVertexesDegrees = mapOfGraphs_.at(nameOfGraph).outVertexesDegrees();
+  for (size_t i = 0; i < outVertexesDegrees.size(); i++)
   {
-    std::vector< int > outVertexesDegrees = mapOfGraphs_.at(nameOfGraph).outVertexesDegrees();
-    for (size_t i = 0; i < outVertexesDegrees.size(); i++)
-    {
-      out_ << outVertexesDegrees[i] << ' ';
-    }
-  }
-  catch (const std::out_of_range&)
-  {
-    throw std::logic_error("Error! No such graph!");
+    out_ << outVertexesDegrees[i] << ' ';
   }
 }
 
@@ -145,14 +127,7 @@ void sviridov::Command::vertexWithMaxDegree(CommandArgs& args)
   }
   std::string nameOfGraph = args.front();
   args.pop_front();
-  try
-  {
-    out_ << mapOfGraphs_.at(nameOfGraph).findVertexWithMaxDegree();
-  }
-  catch (const std::out_of_range&)
-  {
-    throw std::logic_error("Error! No such graph!");
-  }
+  out_ << mapOfGraphs_.at(nameOfGraph).findVertexWithMaxDegree();
 }
 
 void sviridov::Command::removeMultipleArcs(CommandArgs& args)
@@ -163,16 +138,9 @@ void sviridov::Command::removeMultipleArcs(CommandArgs& args)
   }
   std::string nameOfGraph = args.front();
   args.pop_front();
-  try
-  {
-    MatrixGraph currentGraph = mapOfGraphs_.at(nameOfGraph);
-    currentGraph.removeMultipleArcs();
-    currentGraph.print(out_);
-  }
-  catch (const std::out_of_range&)
-  {
-    throw std::logic_error("Error! No such graph!");
-  }
+  MatrixGraph currentGraph = mapOfGraphs_.at(nameOfGraph);
+  currentGraph.removeMultipleArcs();
+  currentGraph.print(out_);
 }
 
 void sviridov::Command::removeCycles(CommandArgs& args)
@@ -183,17 +151,10 @@ void sviridov::Command::removeCycles(CommandArgs& args)
   }
   std::string nameOfGraph = args.front();
   args.pop_front();
-  try
-  {
-    MatrixGraph currentGraph = mapOfGraphs_.at(nameOfGraph);
-    bool onlyHamiltonian = false;
-    currentGraph.removeCycles(onlyHamiltonian);
-    currentGraph.print(out_);
-  }
-  catch (const std::out_of_range&)
-  {
-    throw std::logic_error("Error! No such graph!");
-  }
+  MatrixGraph currentGraph = mapOfGraphs_.at(nameOfGraph);
+  bool onlyHamiltonian = false;
+  currentGraph.removeCycles(onlyHamiltonian);
+  currentGraph.print(out_);
 }
 
 void sviridov::Command::removeHamiltonianCycles(CommandArgs& args)
@@ -204,17 +165,10 @@ void sviridov::Command::removeHamiltonianCycles(CommandArgs& args)
   }
   std::string nameOfGraph = args.front();
   args.pop_front();
-  try
-  {
-    MatrixGraph currentGraph = mapOfGraphs_.at(nameOfGraph);
-    bool onlyHamiltonian = true;
-    currentGraph.removeCycles(onlyHamiltonian);
-    currentGraph.print(out_);
-  }
-  catch (const std::out_of_range&)
-  {
-    throw std::logic_error("Error! No such graph!");
-  }
+  MatrixGraph currentGraph = mapOfGraphs_.at(nameOfGraph);
+  bool onlyHamiltonian = true;
+  currentGraph.removeCycles(onlyHamiltonian);
+  currentGraph.print(out_);
 }
 
 void sviridov::Command::sourceVertexes(CommandArgs& args)
@@ -225,17 +179,10 @@ void sviridov::Command::sourceVertexes(CommandArgs& args)
   }
   std::string nameOfGraph = args.front();
   args.pop_front();
-  try
+  std::vector< size_t > sourceVertexes = mapOfGraphs_.at(nameOfGraph).findSourceVertexes();
+  for (size_t i = 0; i < sourceVertexes.size(); i++)
   {
-    std::vector< size_t > sourceVertexes = mapOfGraphs_.at(nameOfGraph).findSourceVertexes();
-    for (size_t i = 0; i < sourceVertexes.size(); i++)
-    {
-      out_ << sourceVertexes[i] << ' ';
-    }
-  }
-  catch (const std::out_of_range&)
-  {
-    throw std::logic_error("Error! No such graph!");
+    out_ << sourceVertexes[i] << ' ';
   }
 }
 
@@ -247,17 +194,10 @@ void sviridov::Command::sinkVertexes(CommandArgs& args)
   }
   std::string nameOfGraph = args.front();
   args.pop_front();
-  try
+  std::vector< size_t > sinkVertexes = mapOfGraphs_.at(nameOfGraph).findSinkVertexes();
+  for (size_t i = 0; i < sinkVertexes.size(); i++)
   {
-    std::vector< size_t > sinkVertexes = mapOfGraphs_.at(nameOfGraph).findSinkVertexes();
-    for (size_t i = 0; i < sinkVertexes.size(); i++)
-    {
-      out_ << sinkVertexes[i] << ' ';
-    }
-  }
-  catch (const std::out_of_range&)
-  {
-    throw std::logic_error("Error! No such graph!");
+    out_ << sinkVertexes[i] << ' ';
   }
 }
 
@@ -276,17 +216,10 @@ void sviridov::Command::adjacentVertexes(CommandArgs& args)
   {
     throw std::invalid_argument("Error! Invalid vertex number!");
   }
-  try
+  std::vector< size_t > adjecentVertexes = mapOfGraphs_.at(nameOfGraph).findAdjecentVertexes(vertexNumber);
+  for (size_t i = 0; i < adjecentVertexes.size(); i++)
   {
-    std::vector< size_t > adjecentVertexes = mapOfGraphs_.at(nameOfGraph).findAdjecentVertexes(vertexNumber);
-    for (size_t i = 0; i < adjecentVertexes.size(); i++)
-    {
-      out_ << adjecentVertexes[i] << ' ';
-    }
-  }
-  catch (const std::out_of_range&)
-  {
-    throw std::logic_error("Error! No such graph!");
+    out_ << adjecentVertexes[i] << ' ';
   }
 }
 
@@ -312,17 +245,10 @@ void sviridov::Command::path(CommandArgs& args)
   {
     throw std::invalid_argument("Error! Invalid vertex number!");
   }
-  try
+  std::vector< size_t > path = mapOfGraphs_.at(nameOfGraph).findPath(vertexFrom, vertexTo);
+  for (size_t i = 0; i < path.size(); i++)
   {
-    std::vector< size_t > path = mapOfGraphs_.at(nameOfGraph).findPath(vertexFrom, vertexTo);
-    for (size_t i = 0; i < path.size(); i++)
-    {
-      out_ << path[i] << ' ';
-    }
-  }
-  catch (const std::out_of_range&)
-  {
-    throw std::logic_error("Error! No such graph!");
+    out_ << path[i] << ' ';
   }
 }
 
@@ -338,14 +264,7 @@ void sviridov::Command::saveGraph(CommandArgs& args)
   {
     throw std::logic_error("Error! File is not opened!");
   }
-  try
-  {
-    mapOfGraphs_.at(nameOfGraph).print(fout);
-  }
-  catch (const std::out_of_range&)
-  {
-    throw std::logic_error("Error! No such graph!");
-  }
+  mapOfGraphs_.at(nameOfGraph).print(fout);
 }
 
 bool sviridov::getNumber(std::string str, size_t number)

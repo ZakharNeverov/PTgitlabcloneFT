@@ -1,13 +1,13 @@
 #ifndef COMMANDS_HPP
 #define COMMANDS_HPP
 
-#include "graph.hpp"
-
 #include <string>
 #include <map>
 #include <list>
 #include <functional>
 #include <set>
+
+#include "graph.hpp"
 
 namespace sviridov
 {
