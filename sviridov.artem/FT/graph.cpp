@@ -232,7 +232,7 @@ void sviridov::MatrixGraph::doRemovingHamiltonianCycles(size_t row, std::vector<
     {
       doRemovingHamiltonianCycles(col, colors);
     }
-    else if (matrixGraph_[row][col] != 0 && colors[col] == "grey" 
+    else if (matrixGraph_[row][col] != 0 && colors[col] == "grey"
       && std::equal(colors.begin() + 1, colors.end(), colors.begin()))
     {
       removeArc(row, col);
