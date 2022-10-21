@@ -13,7 +13,6 @@ namespace matyushenko
     using ListOfArgs = std::deque< StrT >;
     Commands(StrsDictT& strs, std::ostream& out);
     void call(const StrT& commandName, const ListOfArgs& args) const noexcept;
-  
   private:
     using CommandT = void (*)(StrsDictT&, const ListOfArgs&);
     using ConstCommandT = void (*)(const StrsDictT&, const ListOfArgs&, std::ostream&);
