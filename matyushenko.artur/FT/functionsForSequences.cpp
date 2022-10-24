@@ -1,6 +1,5 @@
 #include "functionsForSequences.hpp"
-namespace matyushenko
-{
+namespace matyushenko {
   std::string findLongestSub(str &name1, str &name2)
   {
     std::string result;
@@ -9,14 +8,10 @@ namespace matyushenko
     auto memory = name2.begin();
     auto first = name1.begin();
     size_t size_ = 0;
-    while (name1.size() != size_)
-    {
-      while (first != name1.end())
-      {
-        for (auto second = memory; second != name2.end(); second++)
-        {
-          if (*first == *second)
-          {
+    while (name1.size() != size_) {
+      while (first != name1.end()) {
+        for (auto second = memory; second != name2.end(); second++) {
+          if (*first == *second) {
             memory = ++second;
             result += *first;
             break;
@@ -24,8 +19,7 @@ namespace matyushenko
         }
         first++;
       }
-      if (finalResult.length() <= result.length())
-      {
+      if (finalResult.length() <= result.length()) {
         finalResult = result;
       }
       result = "";
@@ -33,8 +27,7 @@ namespace matyushenko
       size_++;
       first = name1.begin() + size_;
     }
-    if (finalResult.length() <= result.length())
-    {
+    if (finalResult.length() <= result.length()) {
       finalResult = result;
     }
     finalResult = "*" + finalResult;

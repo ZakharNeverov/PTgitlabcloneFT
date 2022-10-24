@@ -1,8 +1,7 @@
 #ifndef PRINTINFORMATION_HPP
 #define PRINTINFORMATION_HPP
 #include <ostream>
-namespace matyushenko
-{
+namespace matyushenko {
   std::ostream &printEmpty(std::ostream &out);
   std::ostream &printTrue(std::ostream &out);
   std::ostream &printFalse(std::ostream &out);

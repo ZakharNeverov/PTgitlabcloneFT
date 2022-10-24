@@ -1,6 +1,5 @@
 #include "printInformation.hpp"
-namespace matyushenko
-{
+namespace matyushenko {
   std::ostream &printEmpty(std::ostream &out)
   {
     out << "<EMPTY>";
