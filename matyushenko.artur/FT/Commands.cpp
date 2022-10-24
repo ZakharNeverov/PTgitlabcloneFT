@@ -191,25 +191,19 @@ namespace matyushenko {
   {}
   void matyushenko::Commands::call(const std::string& commandName, const ListOfArgs& args) const noexcept
   {
-    try
-    {
+    try {
       auto command = constCommands_.find(commandName);
-      if (command != constCommands_.end())
-      {
+      if (command != constCommands_.end()) {
         (*(*command).second)(strs_, args, out_);
-      } else
-      {
+      } else {
         auto command = commands_.find(commandName);
-        if (command != commands_.end())
-        {
+        if (command != commands_.end()) {
           (*(*command).second)(strs_, args);
-        } else
-        {
+        } else {
           throw std::logic_error("No such command");
         }
       }
-    } catch (const std::logic_error& e)
-    {
+    } catch (const std::logic_error& e) {
       printInvalidCommand(out_) << '\n';
     }
   }
