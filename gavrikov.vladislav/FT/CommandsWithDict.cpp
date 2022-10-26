@@ -52,7 +52,7 @@ void gavrikov::insertWord(dict_t& nowDict, std::istream& in)
     std::string nameDict = getWord(inputStr);
     if (isUniqueName(nameDict, nowDict))
     {
-      throw std::logic_error("A dictionary by that name was not created!");
+      errorNameMessage(std::cout);
       return;
     }
     dict_t::iterator iter = nowDict.find(nameDict);
@@ -125,16 +125,13 @@ void gavrikov::countPref(const dict_t& ourDict, std::istream& in, std::ostream& 
   size_t countPref = 0;
   while (nowWord >= prefix)
   {
-    if (hasPrefix(nowWord, prefix))
-    {
-      countPref++;
-      collIter++;
-      nowWord = *collIter;
-    }
-    else
+    if (!hasPrefix(nowWord, prefix))
     {
       break;
     }
+    countPref++;
+    collIter++;
+    nowWord = *collIter;
     if (collIter == collection.end())
     {
       break;
@@ -148,7 +145,8 @@ void gavrikov::dropDict(dict_t& ourDict, std::istream& in)
   in >> nameDict;
   if (ourDict.find(nameDict) != ourDict.end())
   {
-    ourDict.erase(nameDict);
+    gavrikov::dict_t::iterator clearIt = ourDict.find(nameDict);
+    clearIt->second.clear();
   }
 }
 void gavrikov::unload(dict_t& ourDict, std::istream& in)
@@ -164,22 +162,20 @@ void gavrikov::unload(dict_t& ourDict, std::istream& in)
   }
   std::string inputStr{};
   std::ifstream inFile(fileOutput);
-  if (inFile.is_open())
-  {
-    gavrikov::enWords collection{};
-    while (getline(inFile, inputStr))
-    {
-      while (!inputStr.empty())
-      {
-        collection.insert(getWord(inputStr));
-      }
-    }
-    ourDict.insert(std::make_pair(newNameDict, collection));
-  }
-  else
+  if (!inFile.is_open())
   {
     errorOpenFile(std::cout);
+    return;
   }
+  gavrikov::enWords collection{};
+  while (getline(inFile, inputStr))
+  {
+    while (!inputStr.empty())
+    {
+      collection.insert(getWord(inputStr));
+    }
+  }
+  ourDict.insert(std::make_pair(newNameDict, collection));
 }
 void gavrikov::load(dict_t& ourDict, std::istream& in)
 {
@@ -193,15 +189,13 @@ void gavrikov::load(dict_t& ourDict, std::istream& in)
     return;
   }
   std::ofstream outFile(fileInput);
-  if (outFile.is_open())
-  {
-    dict_t::const_iterator constIter = ourDict.find(oldNameDict);
-    auto cbegin = constIter->second.begin();
-    auto cend = constIter->second.end();
-    std::copy(cbegin, cend, std::ostream_iterator<std::string>(outFile, " "));
-  }
-  else
+  if (!outFile.is_open())
   {
     errorOpenFile(std::cout);
+    return;
   }
+  dict_t::const_iterator constIter = ourDict.find(oldNameDict);
+  auto cbegin = constIter->second.begin();
+  auto cend = constIter->second.end();
+  std::copy(cbegin, cend, std::ostream_iterator<std::string>(outFile, " "));
 }

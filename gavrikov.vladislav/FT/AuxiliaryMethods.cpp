@@ -2,7 +2,26 @@
 #include <iostream>
 #include "ErrorMessages.hpp"
 
-void gavrikov::doInter(dict_t& dict, std::string first, std::string second, std::string newName)
+void gavrikov::doInter(dict_t& dict, std::string& first, std::string& second, std::string& newName)
+{
+  if (!isUniqueName(newName, dict))
+  {
+    nameRedefinitionMessage(std::cout);
+    return;
+  }
+  gavrikov::cIterDict constIter1 = dict.find(first);
+  gavrikov::cIterDict constIter2 = dict.find(second);
+  if ((constIter1 == dict.cend()) || constIter2 == dict.cend())
+  {
+    errorNameMessage(std::cout);
+    return;
+  }
+  gavrikov::enWords collection{};
+  bool isUnique = true;
+  doCycle(constIter1, constIter2, collection, isUnique);
+  dict.insert(std::make_pair(newName, collection));
+}
+void gavrikov::doCompl(dict_t& dict, std::string& first, std::string& second, std::string& newName)
 {
   if (!isUniqueName(newName, dict))
   {
@@ -17,49 +36,19 @@ void gavrikov::doInter(dict_t& dict, std::string first, std::string second, std:
     return;
   }
   gavrikov::enWords collection{};
-  auto pointer1 = constIter1->second.cbegin();
-  while (pointer1 != constIter1->second.cend())
-  {
-    auto pointer2 = constIter2->second.cbegin();
-    bool isUnique = false;
-    while (pointer2 != constIter2->second.cend())
-    {
-      if (*pointer1 == *pointer2)
-      {
-        isUnique = true;
-        break;
-      }
-      pointer2++;
-    }
-    if (isUnique)
-    {
-      collection.insert(*pointer1);
-    }
-    pointer1++;
-  }
+  bool isUnique = false;
+  doCycle(constIter1, constIter2, collection, isUnique);
+  doCycle(constIter2, constIter1, collection, isUnique);
   dict.insert(std::make_pair(newName, collection));
 }
-void gavrikov::doCompl(dict_t& dict, std::string first, std::string second, std::string newName)
+void gavrikov::doCycle(cIterDict& iter1, cIterDict& iter2, enWords& res, bool flag)
 {
-  if (!isUniqueName(newName, dict))
+  auto pointer1 = iter1->second.cbegin();
+  while (pointer1 != iter1->second.cend())
   {
-    nameRedefinitionMessage(std::cout);
-    return;
-  }
-  dict_t::const_iterator constIter1 = dict.find(first);
-  dict_t::const_iterator constIter2 = dict.find(second);
-  if ((constIter1 == dict.cend()) || constIter2 == dict.cend())
-  {
-    errorNameMessage(std::cout);
-    return;
-  }
-  gavrikov::enWords result;
-  auto pointer1 = constIter1->second.cbegin();
-  while (pointer1 != constIter1->second.cend())
-  {
-    auto pointer2 = constIter2->second.cbegin();
+    auto pointer2 = iter2->second.cbegin();
     bool isUnique = false;
-    while (pointer2 != constIter2->second.cend())
+    while (pointer2 != iter2->second.cend())
     {
       if (*pointer1 == *pointer2)
       {
@@ -68,33 +57,12 @@ void gavrikov::doCompl(dict_t& dict, std::string first, std::string second, std:
       }
       pointer2++;
     }
-    if (!isUnique)
+    if (isUnique == flag)
     {
-      result.insert(*pointer1);
+      res.insert(*pointer1);
     }
     pointer1++;
   }
-  auto pointer2 = constIter2->second.cbegin();
-  while (pointer2 != constIter2->second.cend())
-  {
-    auto pointer1 = constIter1->second.cbegin();
-    bool isUnique = false;
-    while (pointer1 != constIter1->second.cend())
-    {
-      if (*pointer1 == *pointer2)
-      {
-        isUnique = true;
-        break;
-      }
-      pointer1++;
-    }
-    if (!isUnique)
-    {
-      result.insert(*pointer2);
-    }
-    pointer2++;
-  }
-  dict.insert(std::make_pair(newName, result));
 }
 std::string gavrikov::getWord(std::string& inputStr)
 {
@@ -122,7 +90,7 @@ bool gavrikov::hasPrefix(const std::string& inputStr, const std::string& prefix)
   }
   return true;
 }
-bool gavrikov::isUniqueName(std::string str, const dict_t& name)
+bool gavrikov::isUniqueName(std::string& str, const dict_t& name)
 {
   dict_t::const_iterator constIter = name.find(str);
   if (constIter == name.cend())
