@@ -119,23 +119,24 @@ void gavrikov::countPref(const dict_t& ourDict, std::istream& in)
   gavrikov::enWords collection = dictIter->second;
   std::string prefix{};
   in >> prefix;
-  gavrikov::enWords::const_iterator collIter = collection.begin();
+  gavrikov::enWords::const_iterator collIter{};
   collIter = lower_bound(collection.begin(), collection.end(),prefix);
-  std::string nowWord = *collIter;
   size_t countPref = 0;
+  if (collIter == collection.end())
+  {
+    std::cout << countPref;
+    return;
+  }
+  std::string nowWord = *collIter;
   while (nowWord >= prefix)
   {
-    if (!hasPrefix(nowWord, prefix))
+    if (collIter == collection.end() || !hasPrefix(nowWord, prefix))
     {
       break;
     }
     countPref++;
     collIter++;
     nowWord = *collIter;
-    if (collIter == collection.end())
-    {
-      break;
-    }
   }
   std::cout << countPref;
 }
@@ -160,7 +161,6 @@ void gavrikov::unload(dict_t& ourDict, std::istream& in)
     nameRedefinitionMessage(std::cout);
     return;
   }
-  std::string inputStr{};
   std::ifstream inFile(fileOutput);
   if (!inFile.is_open())
   {
@@ -168,6 +168,7 @@ void gavrikov::unload(dict_t& ourDict, std::istream& in)
     return;
   }
   gavrikov::enWords collection{};
+  std::string inputStr{};
   while (getline(inFile, inputStr))
   {
     while (!inputStr.empty())
