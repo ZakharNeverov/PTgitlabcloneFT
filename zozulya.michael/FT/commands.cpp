@@ -28,9 +28,17 @@ void zozulya::printCodeDifferenceCMD(std::istream& in)
   std::string input;
   in >> input;
   getInputPath(input);
-  Huffman huffman(input);
-  huffman.compress(input);
-  huffman.printCodeDifference();
+  std::ifstream file(input);
+  if (file.fail())
+  {
+    std::cerr << "Error in file name\n";
+  }
+  else
+  {
+    Huffman huffman(input);
+    huffman.compress(input);
+    huffman.printCodeDifference();
+  }
 }
 
 void zozulya::getPath(std::string& from, std::string& to)
@@ -133,10 +141,10 @@ void zozulya::isFileEncrypted(std::istream& in)
   iff.open(file);
   if (!iff)
   {
-    std::cout << "Such a file was not encoded or you named the encoded file differently\n";
+    std::cout << "False\n";
   }
   else
   {
-    std::cout << "The code is in the file: " << file << std::endl;
+    std::cout << "True\n";
   }
 }

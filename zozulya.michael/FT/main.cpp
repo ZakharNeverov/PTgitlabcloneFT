@@ -40,15 +40,3 @@ int main()
   }
   return 0;
 }
-//README
-/*
-Пример команд:
-1)readFile file1
-2)fillFreq file2
-3)printCodeDiff file3
-4)toCode inputFile outputFile
-5)compressionFiles nameFile1 nameFile2
-6)compressionAllFiles file1 file2
-7)delta file
-8)isFileEncrypted FileToCode
-*/

@@ -18,7 +18,7 @@ void zozulya::Huffman::fillFrequency()
   {
     if (frequency[i] != 0)
     {
-        std::cout << "[" << i << "] = " << frequency[i] << " \n";
+        std::cout << "[" << (char) i << "] = " << frequency[i] << " \n";
     }
   }
   std::cout << std::endl;
