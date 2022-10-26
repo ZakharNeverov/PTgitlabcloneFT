@@ -33,7 +33,7 @@ int main()
     {
       shell[mainCommandName]();
     }
-    catch (const std::exception& ex)
+    catch (const std::exception& e)
     {
       std::cerr << "INVALID COMMAND\n\n";
       std::cin.clear();
