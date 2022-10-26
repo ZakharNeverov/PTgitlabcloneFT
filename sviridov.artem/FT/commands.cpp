@@ -4,6 +4,8 @@
 #include <stdexcept>
 #include <vector>
 
+#include "ioGraph.hpp"
+
 sviridov::Command::Command(MapOfGraphs& mapOfGraphs, std::ostream& out):
   mapOfGraphs_(mapOfGraphs),
   out_(out),
@@ -57,23 +59,8 @@ void sviridov::Command::getGraphs(CommandArgs& args)
   {
     std::string graphName;
     std::getline(fin, graphName);
-    size_t rows = 0;
-    fin >> rows;
-    size_t cols = 0;
-    fin >> cols;
-    std::vector<std::vector<int>> matrix;
-    for (size_t i = 0; i < rows; i++)
-    {
-      std::vector<int> temp;
-      for (size_t j = 0; j < cols; j++)
-      {
-        int item = 0;
-        fin >> item;
-        temp.push_back(item);
-      }
-      matrix.push_back(temp);
-    }
-    MatrixGraph graph(matrix);
+    MatrixGraph graph;
+    fin >> graph;
     mapOfGraphs_.insert(std::make_pair(graphName, graph));
   }
 }
@@ -86,7 +73,7 @@ void sviridov::Command::print(CommandArgs& args)
   }
   std::string nameOfGraph = args.front();
   args.pop_front();
-  mapOfGraphs_.at(nameOfGraph).print(out_);
+  out_ << mapOfGraphs_.at(nameOfGraph);
 }
 
 void sviridov::Command::inVertexesDegrees(CommandArgs& args)
@@ -140,7 +127,7 @@ void sviridov::Command::removeMultipleArcs(CommandArgs& args)
   args.pop_front();
   MatrixGraph currentGraph = mapOfGraphs_.at(nameOfGraph);
   currentGraph.removeMultipleArcs();
-  currentGraph.print(out_);
+  out_ << currentGraph;
 }
 
 void sviridov::Command::removeCycles(CommandArgs& args)
@@ -154,7 +141,7 @@ void sviridov::Command::removeCycles(CommandArgs& args)
   MatrixGraph currentGraph = mapOfGraphs_.at(nameOfGraph);
   bool onlyHamiltonian = false;
   currentGraph.removeCycles(onlyHamiltonian);
-  currentGraph.print(out_);
+  out_ << currentGraph;
 }
 
 void sviridov::Command::removeHamiltonianCycles(CommandArgs& args)
@@ -168,7 +155,7 @@ void sviridov::Command::removeHamiltonianCycles(CommandArgs& args)
   MatrixGraph currentGraph = mapOfGraphs_.at(nameOfGraph);
   bool onlyHamiltonian = true;
   currentGraph.removeCycles(onlyHamiltonian);
-  currentGraph.print(out_);
+  out_ << currentGraph;
 }
 
 void sviridov::Command::sourceVertexes(CommandArgs& args)
@@ -211,11 +198,7 @@ void sviridov::Command::adjacentVertexes(CommandArgs& args)
   args.pop_front();
   std::string strVertexNumber = args.front();
   args.pop_front();
-  size_t vertexNumber = 0;
-  if (!getNumber(strVertexNumber, vertexNumber))
-  {
-    throw std::invalid_argument("Error! Invalid vertex number!");
-  }
+  size_t vertexNumber = std::stoi(strVertexNumber);
   std::vector< size_t > adjecentVertexes = mapOfGraphs_.at(nameOfGraph).findAdjecentVertexes(vertexNumber);
   for (size_t i = 0; i < adjecentVertexes.size(); i++)
   {
@@ -235,16 +218,8 @@ void sviridov::Command::path(CommandArgs& args)
   args.pop_front();
   std::string strVertexTo = args.front();
   args.pop_front();
-  size_t vertexFrom = 0;
-  size_t vertexTo = 0;
-  if (!getNumber(strVertexFrom, vertexFrom))
-  {
-    throw std::invalid_argument("Error! Invalid vertex number!");
-  }
-  if (!getNumber(strVertexTo, vertexTo))
-  {
-    throw std::invalid_argument("Error! Invalid vertex number!");
-  }
+  size_t vertexFrom = std::stoi(strVertexFrom);
+  size_t vertexTo = std::stoi(strVertexTo);
   std::vector< size_t > path = mapOfGraphs_.at(nameOfGraph).findPath(vertexFrom, vertexTo);
   for (size_t i = 0; i < path.size(); i++)
   {
@@ -264,15 +239,5 @@ void sviridov::Command::saveGraph(CommandArgs& args)
   {
     throw std::logic_error("Error! File is not opened!");
   }
-  mapOfGraphs_.at(nameOfGraph).print(fout);
-}
-
-bool sviridov::getNumber(std::string str, size_t number)
-{
-  if (str.find_first_not_of("0123456789") != str.npos)
-  {
-    return false;
-  }
-  number = std::stoi(str);
-  return true;
+  fout << mapOfGraphs_.at(nameOfGraph);
 }

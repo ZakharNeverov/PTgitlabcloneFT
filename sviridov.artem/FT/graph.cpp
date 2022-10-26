@@ -1,8 +1,10 @@
 #include "graph.hpp"
 
 #include <stdexcept>
+#include <iostream>
 
-sviridov::MatrixGraph::MatrixGraph(std::vector<std::vector<int>>& matrixGraph):
+
+sviridov::MatrixGraph::MatrixGraph(std::vector< std::vector< int > >& matrixGraph):
   matrixGraph_(matrixGraph)
 {
   for (size_t row = 0; row < matrixGraph_.size(); row++)
@@ -19,6 +21,11 @@ sviridov::MatrixGraph::MatrixGraph(std::vector<std::vector<int>>& matrixGraph):
       }
     }
   }
+}
+
+sviridov::MatrixGraph::MatrixGraph()
+{
+  matrixGraph_;
 }
 
 bool sviridov::MatrixGraph::hasVertex(size_t vertex)
@@ -56,9 +63,9 @@ void sviridov::MatrixGraph::removeArc(size_t vertexFrom, size_t vertexTo)
   matrixGraph_[vertexFrom][vertexTo] = 0;
 }
 
-std::vector<int> sviridov::MatrixGraph::inVertexesDegrees()
+std::vector< int > sviridov::MatrixGraph::inVertexesDegrees()
 {
-  std::vector<int> out(matrixGraph_.size(), 0);
+  std::vector< int > out(matrixGraph_.size(), 0);
   for (size_t col = 0; col < matrixGraph_.size(); col++)
   {
     out[col] += inVertexDegree(col);
@@ -66,9 +73,9 @@ std::vector<int> sviridov::MatrixGraph::inVertexesDegrees()
   return out;
 }
 
-std::vector<int> sviridov::MatrixGraph::outVertexesDegrees()
+std::vector< int > sviridov::MatrixGraph::outVertexesDegrees()
 {
-  std::vector<int> out(matrixGraph_.size(), 0);
+  std::vector< int > out(matrixGraph_.size(), 0);
   for (size_t row = 0; row < matrixGraph_.size(); row++)
   {
     out[row] += outVertexDegree(row);
@@ -106,9 +113,9 @@ void sviridov::MatrixGraph::removeMultipleArcs()
   }
 }
 
-std::vector<size_t> sviridov::MatrixGraph::findSourceVertexes()
+std::vector< size_t > sviridov::MatrixGraph::findSourceVertexes()
 {
-  std::vector<size_t> out(0);
+  std::vector< size_t > out(0);
   for (size_t vertex = 0; vertex < matrixGraph_.size(); vertex++)
   {
     if (inVertexDegree(vertex) == 0)
@@ -119,9 +126,9 @@ std::vector<size_t> sviridov::MatrixGraph::findSourceVertexes()
   return out;
 }
 
-std::vector<size_t> sviridov::MatrixGraph::findSinkVertexes()
+std::vector< size_t > sviridov::MatrixGraph::findSinkVertexes()
 {
-  std::vector<size_t> out(0);
+  std::vector< size_t > out(0);
   for (size_t vertex = 0; vertex < matrixGraph_.size(); vertex++)
   {
 
@@ -133,13 +140,13 @@ std::vector<size_t> sviridov::MatrixGraph::findSinkVertexes()
   return out;
 }
 
-std::vector<size_t> sviridov::MatrixGraph::findAdjecentVertexes(size_t vertex)
+std::vector< size_t > sviridov::MatrixGraph::findAdjecentVertexes(size_t vertex)
 {
   if (!hasVertex(vertex))
   {
     throw std::invalid_argument("Error! Invalid vertex number!");
   }
-  std::vector<size_t> out;
+  std::vector< size_t > out;
   for (size_t col = 0; col < matrixGraph_.size(); col++)
   {
     if (matrixGraph_[vertex][col] != 0)
@@ -150,19 +157,19 @@ std::vector<size_t> sviridov::MatrixGraph::findAdjecentVertexes(size_t vertex)
   return out;
 }
 
-std::vector<size_t> sviridov::MatrixGraph::findPath(size_t from, size_t to)
+std::vector< size_t > sviridov::MatrixGraph::findPath(size_t from, size_t to)
 {
   if (!hasVertex(from) || !hasVertex(to))
   {
     throw std::invalid_argument("Error! Invalid vertex number!");
   }
-  std::vector<size_t> out;
-  std::vector<std::string> colors(matrixGraph_.size(), "white");
+  std::vector< size_t > out;
+  std::vector< std::string > colors(matrixGraph_.size(), "white");
   doFindingPath(from, to, out, colors);
   return out;
 }
 
-void sviridov::MatrixGraph::doFindingPath(size_t row, const size_t to, std::vector<size_t>& out, std::vector<std::string>& colors)
+void sviridov::MatrixGraph::doFindingPath(size_t row, const size_t to, std::vector< size_t >& out, std::vector< std::string >& colors)
 {
   colors[row] = "grey";
   out.push_back(row);
@@ -188,7 +195,7 @@ void sviridov::MatrixGraph::removeCycles(bool onlyHamiltonian)
   {
     throw std::invalid_argument("Error! Graph is empty!");
   }
-  std::vector<std::string> colors(matrixGraph_.size(), "white");
+  std::vector< std::string > colors(matrixGraph_.size(), "white");
   if (onlyHamiltonian)
   {
     doRemovingHamiltonianCycles(0, colors);
@@ -199,7 +206,7 @@ void sviridov::MatrixGraph::removeCycles(bool onlyHamiltonian)
   }
 }
 
-void sviridov::MatrixGraph::doRemovingCycles(size_t row, std::vector<std::string>& colors)
+void sviridov::MatrixGraph::doRemovingCycles(size_t row, std::vector< std::string >& colors)
 {
   colors[row] = "grey";
   for (size_t col = 0; col < matrixGraph_.size(); col++)
@@ -223,7 +230,7 @@ void sviridov::MatrixGraph::doRemovingCycles(size_t row, std::vector<std::string
   }
 }
 
-void sviridov::MatrixGraph::doRemovingHamiltonianCycles(size_t row, std::vector<std::string>& colors)
+void sviridov::MatrixGraph::doRemovingHamiltonianCycles(size_t row, std::vector< std::string >& colors)
 {
   colors[row] = "grey";
   for (size_t col = 0; col < matrixGraph_.size(); col++)
@@ -276,14 +283,12 @@ int sviridov::MatrixGraph::outVertexDegree(size_t vertex)
   return count;
 }
 
-void sviridov::MatrixGraph::print(std::ostream& out)
+size_t sviridov::MatrixGraph::getMatrixSize()
 {
-  for (size_t i = 0; i < matrixGraph_.size(); i++)
-  {
-    for (size_t j = 0; j < matrixGraph_.size(); j++)
-    {
-      out << matrixGraph_[i][j] << ' ';
-    }
-    out << '\n';
-  }
+  return matrixGraph_.size();
+}
+
+const std::vector< std::vector< int > >& sviridov::MatrixGraph::getData()
+{
+  return matrixGraph_;
 }

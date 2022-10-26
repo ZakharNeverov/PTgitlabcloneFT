@@ -38,8 +38,6 @@ namespace sviridov
     void path(CommandArgs& args);
     void saveGraph(CommandArgs& args);
   };
-
-  bool getNumber(std::string str, size_t res);
 }
 
 #endif
