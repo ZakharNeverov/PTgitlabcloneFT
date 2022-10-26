@@ -2,7 +2,7 @@
 #include <iostream>
 #include "ErrorMessages.hpp"
 
-void gavrikov::doInter(dict_t& dict, std::string& first, std::string& second, std::string& newName)
+void gavrikov::doInter(dict_t& dict, constStr& first, constStr& second, constStr& newName)
 {
   if (!isUniqueName(newName, dict))
   {
@@ -21,7 +21,7 @@ void gavrikov::doInter(dict_t& dict, std::string& first, std::string& second, st
   doCycle(constIter1, constIter2, collection, isUnique);
   dict.insert(std::make_pair(newName, collection));
 }
-void gavrikov::doCompl(dict_t& dict, std::string& first, std::string& second, std::string& newName)
+void gavrikov::doCompl(dict_t& dict, constStr& first, constStr& second, constStr& newName)
 {
   if (!isUniqueName(newName, dict))
   {
@@ -90,7 +90,7 @@ bool gavrikov::hasPrefix(const std::string& inputStr, const std::string& prefix)
   }
   return true;
 }
-bool gavrikov::isUniqueName(std::string& str, const dict_t& name)
+bool gavrikov::isUniqueName(constStr& str, const dict_t& name)
 {
   dict_t::const_iterator constIter = name.find(str);
   if (constIter == name.cend())

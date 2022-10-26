@@ -13,11 +13,11 @@ namespace gavrikov
   using dict_t = std::map< dictName, enWords >;
 
   void createDict(dict_t&, std::istream&);
-  void printDict(const dict_t&, std::istream&, std::ostream&);
+  void printDict(const dict_t&, std::istream&);
   void insertWord(dict_t&, std::istream&);
   void intersection(dict_t&, std::istream&);
   void complement(dict_t&, std::istream&);
-  void countPref(const dict_t&, std::istream&, std::ostream&);
+  void countPref(const dict_t&, std::istream&);
   void dropDict(dict_t&, std::istream&);
   void unload(dict_t&, std::istream&);
   void load(dict_t&, std::istream&);

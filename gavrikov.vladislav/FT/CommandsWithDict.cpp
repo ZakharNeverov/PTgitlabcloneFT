@@ -24,7 +24,7 @@ void gavrikov::createDict(dict_t& newDict, std::istream& in)
     newDict.insert(std::make_pair(inputName, collection));
   }
 }
-void gavrikov::printDict(const dict_t& outDict, std::istream& in, std::ostream& out)
+void gavrikov::printDict(const dict_t& outDict, std::istream& in)
 {
   std::string namePrintDict{};
   in >> namePrintDict;
@@ -40,8 +40,8 @@ void gavrikov::printDict(const dict_t& outDict, std::istream& in, std::ostream& 
     emptyCollectionMessage(std::cout);
     return;
   }
-  out << namePrintDict << ": ";
-  std::copy(words.cbegin(), words.cend(), std::ostream_iterator< std::string >(out, " "));
+  std::cout << namePrintDict << ": ";
+  std::copy(words.cbegin(), words.cend(), std::ostream_iterator< std::string >(std::cout, " "));
 }
 void gavrikov::insertWord(dict_t& nowDict, std::istream& in)
 {
@@ -106,7 +106,7 @@ void gavrikov::complement(dict_t& ourDict, std::istream& in)
     doCompl(ourDict, firstOldDict, secondOldDict, newNameDict);
   }
 }
-void gavrikov::countPref(const dict_t& ourDict, std::istream& in, std::ostream& out)
+void gavrikov::countPref(const dict_t& ourDict, std::istream& in)
 {
   std::string nameDict{};
   in >> nameDict;
@@ -137,7 +137,7 @@ void gavrikov::countPref(const dict_t& ourDict, std::istream& in, std::ostream& 
       break;
     }
   }
-  out << countPref;
+  std::cout << countPref;
 }
 void gavrikov::dropDict(dict_t& ourDict, std::istream& in)
 {
