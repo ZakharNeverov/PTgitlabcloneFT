@@ -82,7 +82,6 @@ void zozulya::compressionAllFiles(std::istream& in)
   std::string file2;
   std::string mergeMessage;
   std::string outputMergeMsgFile = "C:\\archive\\mergeMessageCode.txt";
-  
   in >> file1 >> file2;
   getInputPath(file1);
   getInputPath(file2);
@@ -103,7 +102,6 @@ void zozulya::delta(std::istream& in)
   getInputPath(originFile);
   Huffman huffman(originFile);
   huffman.compress(originFile);
-
   std::ifstream file1(originFile);
   if (file1.fail())
   {
@@ -124,7 +122,6 @@ void zozulya::delta(std::istream& in)
 
     std::cout << "File size after encoding: " << sizeAfterCode << " байт" << std::endl;
   }
-  
 }
 
 void zozulya::isFileEncrypted(std::istream& in)
