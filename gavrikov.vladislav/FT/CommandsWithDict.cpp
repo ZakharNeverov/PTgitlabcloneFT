@@ -154,17 +154,17 @@ void gavrikov::unload(dict_t& ourDict, std::istream& in)
 {
   std::string fileOutput{};
   in >> fileOutput;
+  std::ifstream inFile(fileOutput);
+  if (!inFile.is_open())
+  {
+    errorOpenFile(std::cout);
+    return;
+  }
   std::string newNameDict{};
   in >> newNameDict;
   if (!isUniqueName(newNameDict, ourDict))
   {
     nameRedefinitionMessage(std::cout);
-    return;
-  }
-  std::ifstream inFile(fileOutput);
-  if (!inFile.is_open())
-  {
-    errorOpenFile(std::cout);
     return;
   }
   gavrikov::enWords collection{};
@@ -182,17 +182,17 @@ void gavrikov::load(dict_t& ourDict, std::istream& in)
 {
   std::string fileInput{};
   in >> fileInput;
+  std::ofstream outFile(fileInput);
+  if (!outFile.is_open())
+  {
+    errorOpenFile(std::cout);
+    return;
+  }
   std::string oldNameDict{};
   in >> oldNameDict;
   if (isUniqueName(oldNameDict, ourDict))
   {
     errorNameMessage(std::cout);
-    return;
-  }
-  std::ofstream outFile(fileInput);
-  if (!outFile.is_open())
-  {
-    errorOpenFile(std::cout);
     return;
   }
   dict_t::const_iterator constIter = ourDict.find(oldNameDict);
