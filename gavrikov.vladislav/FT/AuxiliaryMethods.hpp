@@ -11,8 +11,8 @@ namespace gavrikov
   using enWords = std::set< std::string >;
   using dict_t = std::map< dictName, enWords >;
   using cIterDict = dict_t::const_iterator;
-
   using constStr = const std::string;
+
   void doInter(dict_t&, constStr&, constStr&, constStr&);
   void doCompl(dict_t&, constStr&, constStr&, constStr&);
   void doCycle(cIterDict&, cIterDict&, enWords&, bool);
