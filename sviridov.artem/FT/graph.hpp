@@ -11,7 +11,6 @@ namespace sviridov
   {
   public:
     explicit MatrixGraph(std::vector< std::vector< int > >& matrixGraph);
-    MatrixGraph();
     bool hasVertex(size_t vertex);
     bool hasArc(size_t vertexFrom, size_t vertexTo);
     void removeArc(size_t vertexFrom, size_t vertexTo);

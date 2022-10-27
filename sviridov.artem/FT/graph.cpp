@@ -23,11 +23,6 @@ sviridov::MatrixGraph::MatrixGraph(std::vector< std::vector< int > >& matrixGrap
   }
 }
 
-sviridov::MatrixGraph::MatrixGraph()
-{
-  matrixGraph_;
-}
-
 bool sviridov::MatrixGraph::hasVertex(size_t vertex)
 {
   if (this->matrixGraph_.empty() || vertex > this->matrixGraph_.size() - 1)

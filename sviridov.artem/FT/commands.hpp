@@ -38,6 +38,8 @@ namespace sviridov
     void path(CommandArgs& args);
     void saveGraph(CommandArgs& args);
   };
+
+  std::vector< std::vector< int > >& getEmptyMatrix();
 }
 
 #endif

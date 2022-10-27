@@ -59,7 +59,7 @@ void sviridov::Command::getGraphs(CommandArgs& args)
   {
     std::string graphName;
     std::getline(fin, graphName);
-    MatrixGraph graph;
+    MatrixGraph graph(sviridov::getEmptyMatrix());
     fin >> graph;
     mapOfGraphs_.insert(std::make_pair(graphName, graph));
   }
@@ -240,4 +240,21 @@ void sviridov::Command::saveGraph(CommandArgs& args)
     throw std::logic_error("Error! File is not opened!");
   }
   fout << mapOfGraphs_.at(nameOfGraph);
+}
+
+std::vector< std::vector< int > >& sviridov::getEmptyMatrix()
+{
+  std::vector< std::vector< int > > emptyMatrix;
+  size_t size = 2;
+  for (size_t i = 0; i < size; i++)
+  {
+    std::vector< int > temp;
+    for (size_t j = 0; j < size; j++)
+    {
+      int item = 0;
+      temp.push_back(item);
+    }
+    emptyMatrix.push_back(std::move(temp));
+  }
+  return emptyMatrix;
 }
