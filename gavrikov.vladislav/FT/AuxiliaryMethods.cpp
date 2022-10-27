@@ -9,8 +9,8 @@ void gavrikov::doInter(dict_t& dict, constStr& first, constStr& second, constStr
     nameRedefinitionMessage(std::cout);
     return;
   }
-  gavrikov::cIterDict constIter1 = dict.find(first);
-  gavrikov::cIterDict constIter2 = dict.find(second);
+  dict_t::const_iterator constIter1 = dict.find(first);
+  dict_t::const_iterator constIter2 = dict.find(second);
   if ((constIter1 == dict.cend()) || constIter2 == dict.cend())
   {
     errorNameMessage(std::cout);
