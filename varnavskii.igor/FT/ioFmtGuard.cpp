@@ -16,3 +16,4 @@ namespace varnavskii
     s_.flags(fmt_);
   }
 }
+
