@@ -18,7 +18,7 @@ namespace gavrikov
   void doCycle(cIterDict&, cIterDict&, enWords&, bool);
   std::string getWord(std::string&);
 
-  bool hasPrefix(const std::string&, const std::string&);
+  bool hasPrefix(constStr&, constStr&);
   bool isUniqueName(constStr&, const dict_t&);
 }
 #endif

@@ -75,7 +75,7 @@ std::string gavrikov::getWord(std::string& inputStr)
   inputStr = inputStr.erase(0, inputStr.find(" "));
   return result;
 }
-bool gavrikov::hasPrefix(const std::string& inputStr, const std::string& prefix)
+bool gavrikov::hasPrefix(constStr& inputStr, constStr& prefix)
 {
   for (size_t i = 0; i < inputStr.length(); ++i)
   {

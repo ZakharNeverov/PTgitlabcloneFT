@@ -130,12 +130,16 @@ void gavrikov::countPref(const dict_t& ourDict, std::istream& in)
   std::string nowWord = *collIter;
   while (nowWord >= prefix)
   {
-    if (collIter == collection.end() || !hasPrefix(nowWord, prefix))
+    if (!hasPrefix(nowWord, prefix))
     {
       break;
     }
     countPref++;
     collIter++;
+    if (collIter == collection.end())
+    {
+      break;
+    }
     nowWord = *collIter;
   }
   std::cout << countPref;
