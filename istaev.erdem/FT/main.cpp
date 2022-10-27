@@ -34,3 +34,4 @@ int main(int argv, char** argc)
     std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
   }
 }
+

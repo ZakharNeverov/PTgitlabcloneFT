@@ -352,7 +352,7 @@ void istaev::Bfs::operator()(istaev::storage& graphs)
     return;
   }
   auto paths = graph->second.findShortPathsForVertex(v);
-  for (auto& it : paths)
+  for (auto& it: paths)
   {
     out_ << it.first << " - " << it.second << '\n';
   }
@@ -382,3 +382,4 @@ void istaev::CalcDiameter::operator()(istaev::storage& graphs)
     out_ << "Graph is not a tree!" << '\n';
   }
 }
+

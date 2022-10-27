@@ -1,4 +1,5 @@
 #include "Graph.h"
+
 #include <algorithm>
 #include <functional>
 #include <iostream>
@@ -7,28 +8,28 @@
 
 bool istaev::Graph::isEmpty()
 {
-  return vertexes.empty();
+  return vertexes_.empty();
 }
 
 bool istaev::Graph::isNodeInGraph(int vertex)
 {
-  return vertexes.find(vertex) != vertexes.end();
+  return vertexes_.find(vertex) != vertexes_.end();
 }
 
 bool istaev::Graph::isEdgeBetweenNodes(int v1, int v2)
 {
-  auto it = vertexes.find(v1);
-  return !(it == vertexes.end()) && std::find(it->second.begin(), it->second.end(), v2) != it->second.end();
+  auto it = vertexes_.find(v1);
+  return !(it == vertexes_.end()) && std::find(it->second.begin(), it->second.end(), v2) != it->second.end();
 }
 
 std::map< int, std::list< int > >::iterator istaev::Graph::insertNode(int v, std::list< int >&& nodes)
 {
-  for (auto it : nodes)
+  for (auto it: nodes)
   {
     insertEdgeBetweenNodes(v, it);
   }
-  auto result = vertexes.insert(std::make_pair(v, std::move(nodes)));
-  paths.emplace(v, -1);
+  auto result = vertexes_.insert(std::make_pair(v, std::move(nodes)));
+  paths_.emplace(v, -1);
   return result.first;
 }
 
@@ -39,8 +40,8 @@ istaev::adjacencyList::iterator istaev::Graph::insertNode(int v)
 
 void istaev::Graph::removeVertex(int v)
 {
-  vertexes.erase(v);
-  for (auto it = vertexes.begin(); it != vertexes.end(); ++it)
+  vertexes_.erase(v);
+  for (auto it = vertexes_.begin(); it != vertexes_.end(); ++it)
   {
     auto elem = std::find(it->second.begin(), it->second.end(), v);
     if (elem != it->second.end())
@@ -63,7 +64,7 @@ void istaev::Graph::insertEdgeBetweenNodes(int v1, int v2)
 
 void istaev::Graph::printGraph(std::ostream& out)
 {
-  for (auto it : vertexes)
+  for (auto it: vertexes_)
   {
     out << it.first << " -> ";
     std::copy(it.second.begin(), it.second.end(), std::ostream_iterator< int >(out, " "));
@@ -74,18 +75,18 @@ void istaev::Graph::printGraph(std::ostream& out)
 void istaev::Graph::bfs(int s)
 {
   clearPaths();
-  paths[s] = 0;
+  paths_[s] = 0;
   std::queue< int > q;
   q.push(s);
   while (!q.empty())
   {
     int v = q.front();
     q.pop();
-    for (int to : vertexes[v])
+    for (int to: vertexes_[v])
     {
-      if (paths[to] == -1)
+      if (paths_[to] == -1)
       {
-        paths[to] = paths[v] + 1;
+        paths_[to] = paths_[v] + 1;
         q.push(to);
       }
     }
@@ -98,8 +99,8 @@ void istaev::Graph::clearPaths()
   {
     return;
   }
-  auto it = paths.begin();
-  while (it != paths.end())
+  auto it = paths_.begin();
+  while (it != paths_.end())
   {
     it->second = -1;
     ++it;
@@ -109,15 +110,15 @@ void istaev::Graph::clearPaths()
 std::map< int, int > istaev::Graph::findShortPathsForVertex(int v)
 {
   bfs(v);
-  return paths;
+  return paths_;
 }
 
 bool istaev::Graph::dfs(int s, int parent)
 {
-  paths[s] = 1;
-  for (int v : vertexes[s])
+  paths_[s] = 1;
+  for (int v: vertexes_[s])
   {
-    if (paths[v] == -1)
+    if (paths_[v] == -1)
     {
       if (!dfs(v, s))
       {
@@ -135,9 +136,9 @@ bool istaev::Graph::dfs(int s, int parent)
 bool istaev::Graph::isTree()
 {
   clearPaths();
-  if (!isEmpty() && dfs(vertexes.begin()->first, -1))
+  if (!isEmpty() && dfs(vertexes_.begin()->first, -1))
   {
-    for (auto& it : paths)
+    for (auto& it: paths_)
     {
       if (it.second == -1)
       {
@@ -155,10 +156,10 @@ int istaev::Graph::calculateDiameter()
   {
     return 0;
   }
-  int v = vertexes.begin()->first;
+  int v = vertexes_.begin()->first;
   bfs(v);
   int maxPath = 0;
-  for (auto& el : paths)
+  for (auto& el: paths_)
   {
     if (el.second > maxPath)
     {
@@ -168,7 +169,7 @@ int istaev::Graph::calculateDiameter()
   }
   bfs(v);
   maxPath = 0;
-  for (auto& el : paths)
+  for (auto& el: paths_)
   {
     if (el.second > maxPath)
     {
@@ -178,3 +179,4 @@ int istaev::Graph::calculateDiameter()
   }
   return maxPath;
 }
+

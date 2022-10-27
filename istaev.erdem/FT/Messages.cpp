@@ -1,4 +1,5 @@
 #include "Messages.h"
+
 #include <iostream>
 
 std::ostream& istaev::printInvalidCommand(std::ostream& out)
@@ -30,3 +31,4 @@ std::ostream& istaev::vertexIsAbsent(std::ostream& out)
 {
   return out << "Vertex is absent!";
 }
+

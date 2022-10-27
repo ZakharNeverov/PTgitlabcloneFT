@@ -24,11 +24,12 @@ namespace istaev
     int calculateDiameter();
 
   private:
-    std::map< int, std::list< int > > vertexes;
-    std::map< int, int > paths;
+    std::map< int, std::list< int > > vertexes_;
+    std::map< int, int > paths_;
     void clearPaths();
     void bfs(int s);
     bool dfs(int s, int parent);
   };
 }
 #endif
+

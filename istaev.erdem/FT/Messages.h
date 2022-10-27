@@ -1,5 +1,6 @@
 #ifndef MESSAGES_H
 #define MESSAGES_H
+
 #include "iosfwd"
 
 namespace istaev
@@ -12,3 +13,4 @@ namespace istaev
   std::ostream& vertexIsAbsent(std::ostream& out);
 }
 #endif
+
