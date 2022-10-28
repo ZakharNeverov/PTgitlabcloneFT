@@ -63,10 +63,10 @@ void gavrikov::doInterCycle(cIterDict& iter1, cIterDict& iter2, enWords& res)
 }
 void gavrikov::doComplCycle(cIterDict& iter1, cIterDict& iter2, enWords& res)
 {
-  doCycle(iter1, iter2, res);
-  doCycle(iter2, iter1, res);
+  doCycleDirect(iter1, iter2, res);
+  doCycleReverse(iter1, iter2, res);
 }
-void gavrikov::doCycle(cIterDict& iter1, cIterDict& iter2, enWords& res)
+void gavrikov::doCycleDirect(cIterDict& iter1, cIterDict& iter2, enWords& res)
 {
   auto pointer1 = iter1->second.cbegin();
   while (pointer1 != iter1->second.cend())
@@ -87,6 +87,29 @@ void gavrikov::doCycle(cIterDict& iter1, cIterDict& iter2, enWords& res)
       res.insert(*pointer1);
     }
     pointer1++;
+  }
+}
+void gavrikov::doCycleReverse(cIterDict& iter1, cIterDict& iter2, enWords& res)
+{
+  auto pointer2 = iter2->second.cbegin();
+  while (pointer2 != iter2->second.cend())
+  {
+    auto pointer1 = iter1->second.cbegin();
+    bool isUnique = false;
+    while (pointer1 != iter1->second.cend())
+    {
+      if (*pointer1 == *pointer2)
+      {
+        isUnique = true;
+        break;
+      }
+      pointer1++;
+    }
+    if (!isUnique)
+    {
+      res.insert(*pointer2);
+    }
+    pointer2++;
   }
 }
 std::string gavrikov::getWord(std::string& inputStr)

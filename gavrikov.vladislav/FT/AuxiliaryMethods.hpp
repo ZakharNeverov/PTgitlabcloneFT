@@ -17,7 +17,8 @@ namespace gavrikov
   void doCompl(dict_t&, cRefStr, cRefStr, cRefStr);
   void doInterCycle(cIterDict&, cIterDict&, enWords&);
   void doComplCycle(cIterDict&, cIterDict&, enWords&);
-  void doCycle(cIterDict&, cIterDict&, enWords&);
+  void doCycleDirect(cIterDict&, cIterDict&, enWords&);
+  void doCycleReverse(cIterDict&, cIterDict&, enWords&);
   std::string getWord(std::string&);
 
   bool hasPrefix(cRefStr, cRefStr);
