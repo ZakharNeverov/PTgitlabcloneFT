@@ -34,7 +34,7 @@ int main()
     }
     catch (const std::exception& e)
     {
-      std::cerr << "INVALID COMMAND\n\n";
+      zozulya::printInvalidCommand(std::cout);
       std::cin.clear();
     }
   }

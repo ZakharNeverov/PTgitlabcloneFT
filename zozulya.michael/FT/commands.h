@@ -14,8 +14,6 @@ namespace zozulya
   void delta(std::istream& in);
   void isFileEncrypted(std::istream& in);
 
-  void getPath(std::string& from, std::string& to);
   std::string getMsg(std::string& message);
-  void getInputPath(std::string& input);
 }
 #endif

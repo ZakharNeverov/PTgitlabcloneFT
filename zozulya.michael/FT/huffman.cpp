@@ -2,7 +2,6 @@
 #include <iostream>
 #include <fstream>
 #include <bitset>
-#include <sstream>
 #include <limits>
 
 zozulya::Huffman::Huffman()
@@ -14,11 +13,11 @@ zozulya::Huffman::Huffman(const std::string name):
 
 void zozulya::Huffman::fillFrequency()
 {
-  for (int i = 0; i < frequency.size(); i++)
+  for (unsigned short i = 0; i < frequency.size(); i++)
   {
     if (frequency[i] != 0)
     {
-      std::cout << "[" << (char) i << "] = " << frequency[i] << " \n";
+      std::cout << "[" << static_cast< char >(i) << "] = " << frequency[i] << " \n";
     }
   }
   std::cout << std::endl;
@@ -30,123 +29,92 @@ void zozulya::Huffman::readFile()
   inputFile.open(file_name);
   if (!inputFile)
   {
-    std::cerr << "Error in name of file." << std::endl;
+    throw std::logic_error("File opening error\n");
   }
-  else
+  std::string message;
+  while (!inputFile.eof())
   {
-    std::cout << inputFile.rdbuf();
-    std::cout << std::endl;
+    std::getline(inputFile, message);
   }
-  std::cout << std::endl;
+  std::cout << message << std::endl;
 }
 
 void zozulya::Huffman::printCodeDifference()
 {
   readFile();
-  std::cout << "[" << std::ifstream(out_file_name).rdbuf() << "]";
-  std::cout << std::endl;
-  std::cout << std::endl;
+  std::ifstream codeFile;
+  codeFile.open(out_file_name);
+  std::string message;
+  while (!codeFile.eof())
+  {
+    std::getline(codeFile, message);
+  }
+  std::cout << "[" << message << "]\n";
 }
 
-int zozulya::Huffman::compress(std::string& path)
+void zozulya::Huffman::compress(std::string& path)
 {
-  int ret = encode_file();
-  if (ret == -1)
+  try
   {
-    std::cerr << "Error in encode file." << std::endl;
-    return -1;
+    encode_file();
+    fill_queue();
+    build_tree();
+    root = queue.top();
+    recursive_get_nodes(root, "");
+    write_encoding_file(path);
   }
-
-  ret = fill_queue();
-  if (ret == -1)
+  catch (const std::logic_error& e)
   {
-    std::cerr << "Error in fill queue." << std::endl;
-    return -1;
+    std::cout << e.what() << std::endl;
   }
-
-  build_tree();
-  root = queue.top();
-  recursive_get_nodes(root, "");
-  ret = write_encoding_file(path);
-  if (ret == -1)
-  {
-    std::cerr << "Error in write encoding file." << std::endl;
-    return -1;
-  }
-  return 0;
 }
 
-int zozulya::Huffman::decompress()
+void zozulya::Huffman::decompress()
 {
   check_file_name();
-
   decode_message = "";
-  int ret = read_decoding_file();
-  if (ret == -1)
+  try
   {
-    std::cerr << "Error in read decoding file." << std::endl;
-    return -1;
+    read_decoding_file();
+    fill_queue();
+    build_tree();
+    root = queue.top();
+    codes_of_nodes();
+    write_decoding_file();
   }
-
-  ret = fill_queue();
-  if (ret == -1)
+  catch (const std::logic_error& e)
   {
-    std::cerr << "Error in fill queue." << std::endl;
-    return -1;
+    std::cout << e.what() << std::endl;
   }
-
-
-  build_tree();
-  root = queue.top();
-
-  codes_of_nodes();
-
-  ret = write_decoding_file();
-  if (ret == -1)
-  {
-    std::cerr << "Error in writing decoding file." << std::endl;
-    return -1;
-  }
-  return 0;
 }
 
 
 
-int zozulya::Huffman::encode_file()
+void zozulya::Huffman::encode_file()
 {
   std::ifstream is(file_name, std::ifstream::binary);
   if (!is)
   {
-    std::cerr << "File opening error: " << file_name << std::endl;
-    return -1;
+    throw std::logic_error("File opening error\n");
   }
-
-  int i = 0;
-  while (true)
+  while (!is.eof())
   {
     char ch;
     is.read(&ch, 1);
-    ++i;
-    if (is.eof())
-    {
-      break;
-    }
-    ++frequency[static_cast<unsigned char>(ch)];
+    ++frequency[ch];
   }
-  return 0;
 }
 
-int zozulya::Huffman::fill_queue()
+void zozulya::Huffman::fill_queue()
 {
   for (size_t i = 0; i < frequency.size(); ++i)
   {
     if (frequency[i] != 0)
     {
-      zozulya::pointer n = std::make_shared< zozulya::Node >(static_cast<zozulya::uchar>(i), frequency[i]);
+      zozulya::pointer n = std::make_shared< zozulya::Node >(i % 256, frequency[i]);
       queue.push(n);
     }
   }
-  return 0;
 }
 
 void zozulya::Huffman::build_tree()
@@ -177,16 +145,11 @@ void zozulya::Huffman::build_tree()
 
 void zozulya::Huffman::message2code(std::ifstream& ifs)
 {
-  while (true)
+  while (!ifs.eof())
   {
     char ch;
     ifs.read(&ch, 1);
-
-    if (ifs.eof())
-    {
-      break;
-    }
-    encode_message += codes[static_cast< zozulya::uchar >(ch)];
+    encode_message += codes[ch];
   }
 }
 
@@ -216,61 +179,58 @@ void zozulya::Huffman::write_frequency(std::ofstream& output_file)
   {
     if (frequency[j])
     {
-      output_file.write((char*)&j, sizeof(zozulya::uchar));
-      output_file.write((char*)&frequency[j], sizeof(int));
+      output_file << static_cast< char >(j % 256);
+      output_file << static_cast< char >(frequency[j] % 256);
     }
   }
 }
 
 void zozulya::Huffman::write_raw_message(std::ofstream& output_file)
 {
-  int byte_round = encode_message.size() / CHAR_BIT;
-  zozulya::uchar modulo = encode_message.size() % CHAR_BIT;
+  size_t byte_round = encode_message.size() / 8u;
+  size_t modulo = encode_message.size() % 8u;
 
-  output_file.write((char*)&byte_round, sizeof(byte_round));
-  output_file.write((char*)&modulo, sizeof(zozulya::uchar));
+  output_file << static_cast< char >(byte_round % 256);
+  output_file << static_cast< char >(modulo % 256);
 
-  int i;
-  for (i = 0; i < byte_round * CHAR_BIT; i += CHAR_BIT)
+  size_t i;
+  for (i = 0u; i < byte_round * 8u; i += 8u)
   {
-    std::bitset< CHAR_BIT > b(encode_message.substr(i, CHAR_BIT));
-    zozulya::uchar value = b.to_ulong();
-    output_file.write((char*)&value, sizeof(zozulya::uchar));
+    std::bitset< 8 > b(encode_message.substr(i, 8u));
+    zozulya::uchar value = static_cast< unsigned char >(b.to_ulong());
+    output_file << value;
   }
 
-  if (modulo > 0)
+  if (modulo > 0u)
   {
-    std::bitset< CHAR_BIT > b(encode_message.substr(i, modulo));
-    zozulya::uchar value = b.to_ulong();
-    output_file.write((char*)&value, sizeof(char));
+    std::bitset< 8 > b(encode_message.substr(i, modulo));
+    zozulya::uchar value = static_cast< unsigned char >(b.to_ulong());
+    output_file << value;
   }
 }
 
-int zozulya::Huffman::write_encoding_file(std::string& path)
+void zozulya::Huffman::write_encoding_file(std::string& path)
 {
   out_file_name = path + ".hff";
 
   std::ifstream input_file(file_name, std::ifstream::binary);
   std::ofstream output_file(out_file_name, std::ofstream::binary);
 
-  if (!input_file)
+  if (!input_file || !output_file)
   {
-    std::cerr << "File opening error: " << file_name << std::endl;
-    return -1;
+    throw std::logic_error("File opening error\n");
   }
 
   message2code(input_file);
   zozulya::uchar count = count_if(frequency.begin(), frequency.end(), [](const auto& value) { return value != 0; });
 
-  output_file.write((char*)&count, sizeof(count));
+  output_file << count;
 
   write_frequency(output_file);
-
   write_raw_message(output_file);
 
   input_file.close();
   output_file.close();
-  return 0;
 }
 
 void zozulya::Huffman::read_frequency(std::ifstream& input_file, zozulya::uchar& count)
@@ -279,42 +239,40 @@ void zozulya::Huffman::read_frequency(std::ifstream& input_file, zozulya::uchar&
   while (i < count)
   {
     char index;
-    input_file.read(&index, sizeof(index));
+    input_file >> std::noskipws >> index >> std::skipws;
 
-    int f;
-    input_file.read(reinterpret_cast<char*>(&f), sizeof(int));
+    char f;
+    input_file >> f >> std::skipws;
 
-    frequency[static_cast< zozulya::uchar >(index)] = f;
+    frequency[static_cast< size_t >(index)] = static_cast< int >(f);
     ++i;
   }
 }
 
 void zozulya::Huffman::read_raw_message(std::ifstream& input_file)
 {
-  int byte_round = 0;
-  input_file.read(reinterpret_cast<char*>(&byte_round), sizeof(int));
+  char byte_round = 0;
+  input_file >> std::noskipws >> byte_round;
   char modulo;
-  input_file.read(&modulo, sizeof(modulo));
+  input_file >> modulo;
 
-  std::stringstream ss;
-  size_t entire_block_size = byte_round * CHAR_BIT;
+  size_t entire_block_size = static_cast< size_t >(byte_round) * 8u;
   while (decode_message.size() < entire_block_size + modulo)
   {
     while (decode_message.size() < entire_block_size)
     {
       char ch;
-      input_file.read(&ch, sizeof(ch));
+      input_file >> ch;
 
-      std::bitset< CHAR_BIT > b(ch);
+      std::bitset< 8 > b(ch);
 
       decode_message += b.to_string();
     }
     char ch;
-    input_file.read(&ch, sizeof(ch));
-    std::bitset< CHAR_BIT > b(ch);
-    decode_message += (b.to_string()).substr(CHAR_BIT - modulo, CHAR_BIT);
+    input_file >> ch >> std::skipws;
+    std::bitset< 8 > b(ch);
+    decode_message += (b.to_string()).substr(8 - modulo, 8);
   }
-  std::cout << std::endl;
 }
 
 void zozulya::Huffman::check_file_name()
@@ -324,21 +282,18 @@ void zozulya::Huffman::check_file_name()
   std::cout << "Output file: " << out_file_name << std::endl;
 }
 
-int zozulya::Huffman::read_decoding_file()
+void zozulya::Huffman::read_decoding_file()
 {
   std::ifstream input_file(file_name, std::ifstream::binary);
   if (!input_file)
   {
-    std::cerr << "File opening error: " << file_name << std::endl;
-    return -1;
+    throw std::logic_error("File opening error\n");
   }
 
   zozulya::uchar count = 0;
-  input_file.read(reinterpret_cast<char*>(&count), sizeof(count));
-
+  input_file >> std::noskipws >> count >> std::skipws;
   read_frequency(input_file, count);
   read_raw_message(input_file);
-  return 0;
 }
 
 
@@ -380,15 +335,13 @@ void zozulya::Huffman::codes_of_nodes()
   }
 }
 
-int zozulya::Huffman::write_decoding_file()
+void zozulya::Huffman::write_decoding_file()
 {
   std::ofstream output_file(out_file_name);
   if (!output_file)
   {
-    std::cerr << "Error in opening output file." << std::endl;
-    return -1;
+    throw std::logic_error("File opening error\n");
   }
   output_file << message;
   output_file.close();
-  return 0;
 }
