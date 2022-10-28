@@ -121,7 +121,7 @@ void gavrikov::countPref(const dict_t& ourDict, std::istream& in)
   in >> prefix;
   gavrikov::enWords::const_iterator collIter{};
   collIter = lower_bound(collection.begin(), collection.end(), prefix);
-  size_t countPref = 0;
+  std::size_t countPref = 0;
   if (collIter == collection.end())
   {
     std::cout << countPref;

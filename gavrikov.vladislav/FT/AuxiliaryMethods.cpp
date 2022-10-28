@@ -67,7 +67,7 @@ void gavrikov::doCycle(cIterDict& iter1, cIterDict& iter2, enWords& res, bool fl
 std::string gavrikov::getWord(std::string& inputStr)
 {
   std::string result{};
-  if (inputStr[0] == ' ')
+  while (inputStr[0] == ' ')
   {
     inputStr.erase(0, 1);
   }
@@ -77,7 +77,7 @@ std::string gavrikov::getWord(std::string& inputStr)
 }
 bool gavrikov::hasPrefix(constStr& inputStr, constStr& prefix)
 {
-  for (size_t i = 0; i < inputStr.length(); ++i)
+  for (std::size_t i = 0; i < inputStr.length(); ++i)
   {
     if (i >= prefix.length())
     {
