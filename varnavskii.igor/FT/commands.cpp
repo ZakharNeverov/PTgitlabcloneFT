@@ -16,7 +16,7 @@ void varnavskii::add(texts_t& texts, dicts_t& dictionaries, std::istream& in)
   std::string fileName = "";
   std::string textKey = "";
   {
-    IoFmtGuard guard(in);
+    IoFmtGuard fmtGuard(in);
     in >> std::noskipws;
     in >> DelimeterIO{' '};
     in >> fileIO{fileName};
@@ -39,7 +39,7 @@ void varnavskii::code(texts_t& texts, dicts_t& dictionaries, std::istream& in)
   std::string textKey = "";
   std::string codeKey = "";
   {
-    IoFmtGuard guard(in);
+    IoFmtGuard fmtGuard(in);
     in >> std::noskipws;
     in >> DelimeterIO{' '};
     in >> textKey;
@@ -61,7 +61,7 @@ void varnavskii::encode(texts_t& texts, dicts_t& dictionaries, std::istream& in)
   std::string codeKey;
   std::string textKey2;
   {
-    IoFmtGuard guard(in);
+    IoFmtGuard fmtGuard(in);
     in >> std::noskipws;
     in >> DelimeterIO{' '};
     in >> textKey1;
@@ -85,7 +85,7 @@ void varnavskii::decode(texts_t& texts, dicts_t& dictionaries, std::istream& in)
   std::string codeKey = "";
   std::string textKey2 = "";
   {
-    IoFmtGuard guard(in);
+    IoFmtGuard fmtGuard(in);
     in >> std::noskipws;
     in >> DelimeterIO{' '};
     in >> textKey1;
@@ -107,7 +107,7 @@ void varnavskii::frequency(texts_t& texts, std::istream& in, std::ostream& out)
 {
   std::string textKey = "";
   {
-    IoFmtGuard guard(in);
+    IoFmtGuard fmtGuard(in);
     in >> std::noskipws;
     in >> DelimeterIO{' '};
     in >> textKey;
@@ -128,7 +128,7 @@ void varnavskii::print(texts_t& texts, dicts_t& dictionaries, std::istream& in, 
 {
   std::string key = "";
   {
-    IoFmtGuard gusard(in);
+    IoFmtGuard fmtGuard(in);
     in >> std::noskipws;
     in >> DelimeterIO{' '};
     in >> key;
@@ -161,7 +161,7 @@ void varnavskii::merge(texts_t& texts, dicts_t& dictionaries, std::istream& in)
   std::string codeKey3 = "";
 
   {
-    IoFmtGuard gusard(in);
+    IoFmtGuard fmtGuard(in);
     in >> std::noskipws;
     in >> DelimeterIO{' '};
     in >> textKey1;

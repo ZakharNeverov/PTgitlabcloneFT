@@ -33,7 +33,7 @@ int main()
         {
           std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
           std::cin.clear();
-          throw std::invalid_argument("incorrect input");
+          throw std::invalid_argument("Incorrect input");
         }
       }
     }
