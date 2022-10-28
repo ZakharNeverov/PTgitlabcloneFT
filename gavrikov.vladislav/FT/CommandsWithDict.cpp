@@ -202,5 +202,5 @@ void gavrikov::load(dict_t& ourDict, std::istream& in)
   dict_t::const_iterator constIter = ourDict.find(oldNameDict);
   auto cbegin = constIter->second.begin();
   auto cend = constIter->second.end();
-  std::copy(cbegin, cend, std::ostream_iterator<std::string>(outFile, " "));
+  std::copy(cbegin, cend, std::ostream_iterator< std::string >(outFile, " "));
 }
