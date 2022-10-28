@@ -3,14 +3,12 @@
 zozulya::Node::Node(uchar uch, int f):
   ch(uch),
   frequency(f)
-{
-}
+{}
 
 zozulya::Node::Node(const std::string& n, int f):
   name(n),
   frequency(f)
-{
-}
+{}
 
 int zozulya::Node::operator+(const Node& rth) const
 {
