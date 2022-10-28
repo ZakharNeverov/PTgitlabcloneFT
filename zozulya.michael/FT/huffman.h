@@ -6,7 +6,7 @@
 
 namespace zozulya
 {
-  using priority_queue_t = std::priority_queue<zozulya::pointer, std::vector<zozulya::pointer>, zozulya::Greater>;
+  using priority_queue_t = std::priority_queue< zozulya::pointer, std::vector< zozulya::pointer >, zozulya::Greater >;
 
   class Huffman
   {

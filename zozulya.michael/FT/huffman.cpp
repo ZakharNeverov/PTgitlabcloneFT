@@ -8,7 +8,7 @@
 zozulya::Huffman::Huffman()
 {}
 
-zozulya::Huffman::Huffman(const std::string name) :
+zozulya::Huffman::Huffman(const std::string name):
   file_name(name), frequency(0x100, 0), codes(0x100, "")
 {}
 
@@ -18,7 +18,7 @@ void zozulya::Huffman::fillFrequency()
   {
     if (frequency[i] != 0)
     {
-        std::cout << "[" << (char) i << "] = " << frequency[i] << " \n";
+      std::cout << "[" << (char) i << "] = " << frequency[i] << " \n";
     }
   }
   std::cout << std::endl;
@@ -142,8 +142,8 @@ int zozulya::Huffman::fill_queue()
   {
     if (frequency[i] != 0)
     {
-      zozulya::pointer node = std::make_shared<zozulya::Node>(static_cast<zozulya::uchar>(i), frequency[i]);
-      queue.push(node);
+      zozulya::pointer n = std::make_shared< zozulya::Node >(static_cast<zozulya::uchar>(i), frequency[i]);
+      queue.push(n);
     }
   }
   return 0;
@@ -164,7 +164,7 @@ void zozulya::Huffman::build_tree()
     name += x->get_name();
     name += y->get_name();
 
-    zozulya::Node::pointer z = std::make_shared<zozulya::Node>(name, *x + *y);
+    zozulya::Node::pointer z = std::make_shared< zozulya::Node >(name, *x + *y);
     z->left = x;
     z->right = y;
 
@@ -186,7 +186,7 @@ void zozulya::Huffman::message2code(std::ifstream& ifs)
     {
       break;
     }
-    encode_message += codes[static_cast<zozulya::uchar>(ch)];
+    encode_message += codes[static_cast< zozulya::uchar >(ch)];
   }
 }
 
@@ -233,14 +233,14 @@ void zozulya::Huffman::write_raw_message(std::ofstream& output_file)
   int i;
   for (i = 0; i < byte_round * CHAR_BIT; i += CHAR_BIT)
   {
-    std::bitset<CHAR_BIT> b(encode_message.substr(i, CHAR_BIT));
+    std::bitset< CHAR_BIT > b(encode_message.substr(i, CHAR_BIT));
     zozulya::uchar value = b.to_ulong();
     output_file.write((char*)&value, sizeof(zozulya::uchar));
   }
 
   if (modulo > 0)
   {
-    std::bitset<CHAR_BIT> b(encode_message.substr(i, modulo));
+    std::bitset< CHAR_BIT > b(encode_message.substr(i, modulo));
     zozulya::uchar value = b.to_ulong();
     output_file.write((char*)&value, sizeof(char));
   }
@@ -284,7 +284,7 @@ void zozulya::Huffman::read_frequency(std::ifstream& input_file, zozulya::uchar&
     int f;
     input_file.read(reinterpret_cast<char*>(&f), sizeof(int));
 
-    frequency[static_cast<zozulya::uchar>(index)] = f;
+    frequency[static_cast< zozulya::uchar >(index)] = f;
     ++i;
   }
 }
@@ -305,13 +305,13 @@ void zozulya::Huffman::read_raw_message(std::ifstream& input_file)
       char ch;
       input_file.read(&ch, sizeof(ch));
 
-      std::bitset<CHAR_BIT> b(ch);
+      std::bitset< CHAR_BIT > b(ch);
 
       decode_message += b.to_string();
     }
     char ch;
     input_file.read(&ch, sizeof(ch));
-    std::bitset<CHAR_BIT> b(ch);
+    std::bitset< CHAR_BIT > b(ch);
     decode_message += (b.to_string()).substr(CHAR_BIT - modulo, CHAR_BIT);
   }
   std::cout << std::endl;
