@@ -15,8 +15,8 @@ namespace zozulya
     pointer left{ nullptr };
     pointer right{ nullptr };
     Node() = default;
-    Node(uchar uch, int f) : ch(uch), frequency(f) {}
-    Node(const std::string& n, int f) : name(n), frequency(f) {}
+    Node(uchar uch, int f): ch(uch), frequency(f) {}
+    Node(const std::string& n, int f): name(n), frequency(f) {}
 
     int operator + (const Node& rth) const;
     friend std::ostream& operator<<(std::ostream& os, const Node& t);
