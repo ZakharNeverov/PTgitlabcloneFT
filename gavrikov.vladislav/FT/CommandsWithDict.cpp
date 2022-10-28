@@ -1,4 +1,5 @@
 #include "CommandsWithDict.hpp"
+#include <iostream>
 #include <algorithm>
 #include <fstream>
 #include "AuxiliaryMethods.hpp"

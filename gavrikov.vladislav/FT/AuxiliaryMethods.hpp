@@ -11,14 +11,16 @@ namespace gavrikov
   using enWords = std::set< std::string >;
   using dict_t = std::map< dictName, enWords >;
   using cIterDict = dict_t::const_iterator;
-  using constStr = const std::string;
+  using cRefStr = const std::string&;
 
-  void doInter(dict_t&, constStr&, constStr&, constStr&);
-  void doCompl(dict_t&, constStr&, constStr&, constStr&);
-  void doCycle(cIterDict&, cIterDict&, enWords&, bool);
+  void doInter(dict_t&, cRefStr, cRefStr, cRefStr);
+  void doCompl(dict_t&, cRefStr, cRefStr, cRefStr);
+  void doInterCycle(cIterDict&, cIterDict&, enWords&);
+  void doComplCycle(cIterDict&, cIterDict&, enWords&);
+  void doCycle(cIterDict&, cIterDict&, enWords&);
   std::string getWord(std::string&);
 
-  bool hasPrefix(constStr&, constStr&);
-  bool isUniqueName(constStr&, const dict_t&);
+  bool hasPrefix(cRefStr, cRefStr);
+  bool isUniqueName(cRefStr, const dict_t&);
 }
 #endif

@@ -1,7 +1,7 @@
 #ifndef COMMANDS_WITH_DICT_HPP
 #define COMMANDS_WITH_DICT_HPP
 
-#include <iostream>
+#include <iosfwd>
 #include <set>
 #include <map>
 #include <string>

@@ -1,7 +1,7 @@
 #ifndef ERROR_MESSAGES_HPP
 #define ERROR_MESSAGES_HPP
 
-#include <ostream>
+#include <iosfwd>
 
 namespace gavrikov
 {
